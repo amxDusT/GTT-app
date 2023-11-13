@@ -33,7 +33,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
-        warning 'deprecation'
+        //warning 'deprecation'
+        warningsAsErrors true
     }
     kotlinOptions {
         jvmTarget = '1.8'

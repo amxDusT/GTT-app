@@ -11,16 +11,14 @@ import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 
 class NfcController extends GetxController {
-  final RxMap<dynamic, dynamic> result = {}.obs;
   final _readBuffer = Uint8List(1024);
   void readCard() {
-    result.value = {};
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       try {
         print('reading...');
         await _handleResponse(tag);
       } on PlatformException {
-        Get.snackbar("error", "You removed the card too fast. Try again");
+        Get.snackbar("Error", "You removed the card too fast. Try again");
       } finally {
         NfcManager.instance.stopSession();
       }
@@ -30,13 +28,12 @@ class NfcController extends GetxController {
   void testSmartCard() {}
   void testTicket() {}
   void testDefault() {
-    result.value = {};
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       try {
         await _testDefaultHandleResponse(tag);
         //await Future.delayed(Duration(seconds: 2));
       } on PlatformException {
-        Get.snackbar("error", "You removed the card too fast. Try again");
+        Get.snackbar("Error", "You removed the card too fast. Try again");
       } finally {
         NfcManager.instance.stopSession();
       }
@@ -57,7 +54,7 @@ class NfcController extends GetxController {
       print('nfcA tag');
       await _handleNfcA(nfcaTag);
     } else {
-      throw 'Card not supported';
+      Get.snackbar('Error', 'Card not supported');
     }
   }
 
@@ -67,13 +64,12 @@ class NfcController extends GetxController {
         atqa.length != 2 ||
         atqa[0] != 0x44 ||
         atqa[1] != 0x00) {
-      print('not supported');
+      Get.snackbar('Error', 'Card not supported');
       return;
     }
 
     int pagesRead;
     List<Uint8List> list = [];
-    // TODO: cambiare a 16
     pagesRead = await rdNumPages(tag, 32);
 
     for (int i = 0; i < pagesRead * 4; i += 4) {
@@ -93,17 +89,18 @@ class NfcController extends GetxController {
       /*for(int i = 0; i < list.length; i++){
         result.value.putIfAbsent(i.toString(), () => hex.encode(list[i]));
       }*/
-      result.value = {
-        'number': chip.cardNumber,
-        'typeName': chip.typeName,
-        'firstValidationDate': chip.firstValidationDate,
-        'lastValidationDate': chip.lastValidationDate,
-        'expiredDate': chip.expiredDate,
-        'remainingMins': chip.remainingMinutes,
-        'rides': chip.remainingRides,
-      };
+
+      // print({
+      //   'number': chip.cardNumber,
+      //   'typeName': chip.typeName,
+      //   'firstValidationDate': chip.firstValidationDate,
+      //   'lastValidationDate': chip.lastValidationDate,
+      //   'expiredDate': chip.expiredDate,
+      //   'remainingMins': chip.remainingMinutes,
+      //   'rides': chip.remainingRides,
+      // });
     } else {
-      print('invalid read');
+      Get.snackbar('Error', 'Could not read card');
     }
   }
 
@@ -158,46 +155,17 @@ class NfcController extends GetxController {
     list.add(
         await ApduUtils.readRecordId(tag, CardFileType.TICKET_COUNTERS, 1));
 
-    /*list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2013C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B201F41D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2014C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2024C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2034C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2044C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2054C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2064C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2074C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B2084C1D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B201441D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B202441D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B203441D"))));
-    list.add(await tag.transceive(
-        data: Uint8List.fromList(hex.decode("00B201CC1D"))));*/
-
     if (list.length == 15 && list[1][0] != 0) {
       if (list[2][1] == 0) {
         //empty smartcard
-        print('empty');
+        Get.snackbar('Error', 'Card is empty(?)');
         return;
       }
 
       /// all goood
     } else {
       //invalid
-      print('invalid');
+      Get.snackbar('Error', 'Invalid card');
       return;
     }
     _readData(list);
@@ -205,30 +173,29 @@ class NfcController extends GetxController {
 
   void _readData(List<Uint8List> list) {
     SmartCard smartCard = SmartCard(information: list);
-    print(smartCard.allContracts.length);
     Get.to(
         () => CardInfoPage(
               smartCard: smartCard,
             ),
         arguments: {'card': smartCard});
 
-    result.value = {
-      'type': 'smartcard',
-      'cardType': smartCard.cardType,
-      'creationDate': smartCard.creationDate,
-      'subscriptions': smartCard.hasSubscriptions,
-      'tickets': smartCard.hasTickets,
-      'subType': smartCard.subscriptionName,
-      //'tickType': smartCard.ticketName,
-      'remainingRides': smartCard.remainingRides,
-      'remainingMins': smartCard.remainingMinutes,
-      'startDate': smartCard.startDateAsString,
-      'expiredDate': smartCard.expiredDateAsString,
-      'validationDate': smartCard.validationDateAsString,
-      'isSubExpired': smartCard.isSubscriptionExpired,
-      'subs': smartCard.subscriptions,
-      'tickets2': smartCard.tickets,
-      'cardNumber': smartCard.cardNumber,
-    };
+    // print({
+    //   'type': 'smartcard',
+    //   'cardType': smartCard.cardType,
+    //   'creationDate': smartCard.creationDate,
+    //   'subscriptions': smartCard.hasSubscriptions,
+    //   'tickets': smartCard.hasTickets,
+    //   'subType': smartCard.subscriptionName,
+    //   //'tickType': smartCard.ticketName,
+    //   'remainingRides': smartCard.remainingRides,
+    //   'remainingMins': smartCard.remainingMinutes,
+    //   'startDate': smartCard.startDateAsString,
+    //   'expiredDate': smartCard.expiredDateAsString,
+    //   'validationDate': smartCard.validationDateAsString,
+    //   'isSubExpired': smartCard.isSubscriptionExpired,
+    //   'subs': smartCard.subscriptions,
+    //   'tickets2': smartCard.tickets,
+    //   'cardNumber': smartCard.cardNumber,
+    // });
   }
 }
