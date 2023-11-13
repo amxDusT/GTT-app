@@ -4,14 +4,14 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseCommands {
   static Future<Database>? database;
-  static const stopsName = "gtt_stops";
+  static const stopTable = "gtt_stops";
   static Future<Database> get dbase => database ?? init();
 
   static Future<Database> init() async {
     database = openDatabase(
-      join(await getDatabasesPath(), '$stopsName.db'),
+      join(await getDatabasesPath(), '$stopTable.db'),
       onCreate: (db, version) {
-        return createTable();
+        return createTable(db: db);
       },
       version: 5,
     );
@@ -20,20 +20,20 @@ class DatabaseCommands {
 
   static void deleteTable() async {
     final db = await dbase;
-    await db.execute("DROP TABLE $stopsName");
+    await db.execute("DROP TABLE $stopTable");
   }
 
-  static void createTable() async {
-    final db = await dbase;
+  static void createTable({Database? db}) async {
+    db ??= await dbase;
     await db.execute(
-      'CREATE TABLE $stopsName(id INTEGER PRIMARY KEY, nome TEXT, descrizione TEXT, latitude REAL, longitude REAL)',
+      'CREATE TABLE $stopTable(id INTEGER PRIMARY KEY, nome TEXT, descrizione TEXT, latitude REAL, longitude REAL)',
     );
   }
 
   static Future<void> insertStop(Fermata fermata) async {
     Database db = await dbase;
     await db.insert(
-      stopsName,
+      stopTable,
       fermata.toMap(),
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
@@ -42,7 +42,7 @@ class DatabaseCommands {
   static Future<void> updateStop(Fermata fermata) async {
     Database db = await dbase;
     await db.insert(
-      stopsName,
+      stopTable,
       fermata.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
@@ -50,7 +50,7 @@ class DatabaseCommands {
 
   static Future<List<Fermata>> getFermate() async {
     Database db = await dbase;
-    final List<Map<String, dynamic>> maps = await db.query(stopsName);
+    final List<Map<String, dynamic>> maps = await db.query(stopTable);
     return List.generate(maps.length, (i) {
       return Fermata(
         stopNum: maps[i]['id'] as int,
@@ -63,9 +63,20 @@ class DatabaseCommands {
     });
   }
 
+  static Future<bool> hasStop(int stopNum) async {
+    Database db = await dbase;
+
+    final List<Map<String, dynamic>> result = await db.query(
+      stopTable,
+      where: 'id = ?',
+      whereArgs: [stopNum],
+    );
+    return result.isNotEmpty;
+  }
+
   static Future<List<int>> getStopNums() async {
     Database db = await dbase;
-    final List<Map<String, dynamic>> maps = await db.query(stopsName);
+    final List<Map<String, dynamic>> maps = await db.query(stopTable);
     return List.generate(maps.length, (i) {
       return maps[i]['id'] as int;
     });
@@ -74,7 +85,7 @@ class DatabaseCommands {
   static Future<void> deleteStop(Fermata fermata) async {
     Database db = await dbase;
     await db.delete(
-      stopsName,
+      stopTable,
       where: 'id = ?',
       whereArgs: [fermata.stopNum],
     );
