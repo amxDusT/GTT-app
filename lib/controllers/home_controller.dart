@@ -61,19 +61,17 @@ class HomeController extends GetxController {
     getStops();
   }
 
-  void addStop() {
+  void deleteStop(Fermata fermata) {
+    DatabaseCommands.deleteStop(fermata);
+    getStops();
+  }
+
+  void searchStop() {
     int stopNum = int.parse(searchController.value.text);
 
     searchController.value.clear();
     focusNode.value.unfocus();
     Fermata fermataEmpty = Fermata.empty(stopNum);
-    DatabaseCommands.insertStop(fermataEmpty);
-    getStops();
     Get.to(() => InfoPage(), arguments: {'fermata': fermataEmpty});
-  }
-
-  void deleteStop(Fermata fermata) {
-    DatabaseCommands.deleteStop(fermata);
-    getStops();
   }
 }

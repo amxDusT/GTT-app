@@ -14,9 +14,23 @@ class InfoPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Obx(() => Text(
-          "Fermata ${_infoController.fermataName.value}",
-        ),),
+        title: Obx(
+          () => Text(
+            "Fermata ${_infoController.fermataName.value}",
+          ),
+        ),
+        actions: [
+          Obx(
+            () => IconButton(
+              onPressed: () {
+                _infoController.switchAddDeleteFermata();
+              },
+              icon: Icon(_infoController.isSaved.isTrue
+                  ? Icons.star
+                  : Icons.star_outline),
+            ),
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) => RefreshIndicator(

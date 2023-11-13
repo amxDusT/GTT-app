@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
     final state = _homeController.key.currentState!;
 
     if (state.validate()) {
-      _homeController.addStop();
+      _homeController.searchStop();
     }
   }
 
