@@ -50,6 +50,22 @@ class MapPage extends StatelessWidget {
             ]),
           ),
           Obx(
+            () => MarkerLayer(
+              markers: _flutterMapController.userLocationMarker
+                  .map(
+                    (element) => Marker(
+                      point: element,
+                      child: const Icon(
+                        Icons.location_on,
+                        color: Colors.blue,
+                        size: 30,
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          Obx(
             () => PopupMarkerLayer(
               options: PopupMarkerLayerOptions(
                 markerCenterAnimation: const MarkerCenterAnimation(),
@@ -137,32 +153,58 @@ class MapPage extends StatelessWidget {
               vertical: 20,
               horizontal: 15,
             ),
-            child: Row(
-              //crossAxisAlignment: CrossAxisAlignment.center,
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundColor:
-                      Get.theme.colorScheme.primaryContainer.withOpacity(0.8),
-                  child: IconButton(
-                    tooltip: 'Zoom out',
-                    onPressed: () => _flutterMapController.zoomOut(),
-                    icon: const Icon(Icons.remove),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Obx(
+                    () => CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Get.theme.colorScheme.primaryContainer
+                          .withOpacity(0.8),
+                      child: _flutterMapController.isLocationLoading.isTrue
+                          ? const CircularProgressIndicator()
+                          : IconButton(
+                              tooltip: 'Location',
+                              onPressed: () =>
+                                  _flutterMapController.goToUserLocation(),
+                              icon: const Icon(Icons.location_on),
+                            ),
+                    ),
                   ),
                 ),
                 const SizedBox(
-                  width: 10,
+                  height: 10,
                 ),
-                CircleAvatar(
-                  radius: 25,
-                  backgroundColor:
-                      Get.theme.colorScheme.primaryContainer.withOpacity(0.8),
-                  child: IconButton(
-                    tooltip: 'Zoom in',
-                    onPressed: () => _flutterMapController.zoomIn(),
-                    icon: const Icon(Icons.add),
-                  ),
+                Row(
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Get.theme.colorScheme.primaryContainer
+                          .withOpacity(0.8),
+                      child: IconButton(
+                        tooltip: 'Zoom out',
+                        onPressed: () => _flutterMapController.zoomOut(),
+                        icon: const Icon(Icons.remove),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Get.theme.colorScheme.primaryContainer
+                          .withOpacity(0.8),
+                      child: IconButton(
+                        tooltip: 'Zoom in',
+                        onPressed: () => _flutterMapController.zoomIn(),
+                        icon: const Icon(Icons.add),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
