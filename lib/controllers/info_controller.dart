@@ -16,7 +16,7 @@ class InfoController extends GetxController {
     super.onInit();
     fermataName = fermata.toString().obs;
     lastUpdate = DateTime.now().obs;
-    isSaved.value = (await DatabaseCommands.hasStop(fermata.stopNum));
+    isSaved.value = (await DatabaseCommands.hasStop(fermata));
     getFermata();
   }
   // void addStop() {
