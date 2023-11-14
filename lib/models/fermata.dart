@@ -114,12 +114,13 @@ class Fermata {
     );
   }
 
-  Map<String, dynamic> toMap() => {
-        'id': stopNum,
+  Map<String, dynamic> toDbMap() => {
+        'stopNum': stopNum,
         'nome': nome,
         'descrizione': descrizione,
         'latitude': latitude,
         'longitude': longitude,
+        'date': DateTime.now().millisecondsSinceEpoch ~/ 1000,
       };
 
   @override
