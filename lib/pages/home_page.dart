@@ -18,18 +18,6 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  void showOverlay() {
-    Get.showOverlay(
-        asyncFunction: () => Future.error("error"),
-        loadingWidget: const CircularProgressIndicator());
-    // final context = Get.context!;
-    // final child = Center(child: CircularProgressIndicator());
-    // OverlayEntry entry = OverlayEntry(builder: (context) => child);
-    // Overlay.of(context).insert(entry);
-    // // remove the entry
-    // Future.delayed(Duration(seconds: 2)).whenComplete(() => entry.remove());
-  }
-
   void _showContextMenu(Fermata fermata) {
     showMenu(
       //surfaceTintColor: Colors.red,
@@ -44,9 +32,17 @@ class HomePage extends StatelessWidget {
           child: const Text("Cambia Descrizione"),
           onTap: () => _changeDescription(fermata),
         ),
-        const PopupMenuItem(child: Text("Sposta in cima")),
+        PopupMenuItem(
+          child: const Text("Sposta in cima"),
+          onTap: () => _moveOnTop(fermata),
+        ),
       ],
     );
+  }
+
+  void _moveOnTop(Fermata fermata) {
+    //_homeController.deleteStop(fermata);
+    _homeController.updateStop(fermata);
   }
 
   void _getDeleteConfirm(Fermata fermata) {
@@ -149,21 +145,33 @@ class HomePage extends StatelessWidget {
                   children: [
                     ...controller.fermate.map((e) => Column(
                           children: [
-                            InkWell(
-                              onTapDown: _homeController.getPosition,
-                              onLongPress: () => _showContextMenu(e),
-                              onTap: () => Get.to(() => InfoPage(),
-                                  arguments: {'fermata': e}),
-                              child: Ink(
-                                height: 115,
-                                padding: const EdgeInsets.all(8),
-                                color: Colors.teal[200],
-                                child: Column(
-                                  children: [
-                                    Text(e.toString()),
-                                    const Divider(),
-                                    Text(e.descrizione ?? ''),
-                                  ],
+                            Hero(
+                              tag: 'HeroTagFermata${e.stopNum}',
+                              flightShuttleBuilder: ((flightContext,
+                                      animation,
+                                      flightDirection,
+                                      fromHeroContext,
+                                      toHeroContext) =>
+                                  Material(
+                                    type: MaterialType.transparency,
+                                    child: toHeroContext.widget,
+                                  )),
+                              child: InkWell(
+                                onTapDown: _homeController.getPosition,
+                                onLongPress: () => _showContextMenu(e),
+                                onTap: () => Get.to(() => InfoPage(),
+                                    arguments: {'fermata': e}),
+                                child: Ink(
+                                  height: 115,
+                                  padding: const EdgeInsets.all(8),
+                                  color: Colors.teal[200],
+                                  child: Column(
+                                    children: [
+                                      Text(e.toString()),
+                                      const Divider(),
+                                      Text(e.descrizione ?? ''),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
