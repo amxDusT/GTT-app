@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/models/fermata.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
+import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
-import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
@@ -176,8 +176,9 @@ class HomePage extends StatelessWidget {
                               ),
                             ),
                             InkWell(
-                              onTap: () =>
-                                  MapUtils.openMap(e.latitude, e.longitude),
+                              onTap: () => Get.to(() => MapPointPage(),
+                                  arguments: {'fermata': e}),
+                              //MapUtils.openMap(e.latitude, e.longitude),
                               child: Ink(
                                 width: double.maxFinite,
                                 padding: const EdgeInsets.all(8),
@@ -199,11 +200,14 @@ class HomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(
-              heroTag: 'NFC',
+              heroTag: 'NFCPage',
               child: const Icon(Icons.nfc),
               onPressed: () {
                 Get.to(() => NfcPage());
               },
+            ),
+            const SizedBox(
+              width: 5,
             ),
             FloatingActionButton(
               child: const Icon(Icons.search),

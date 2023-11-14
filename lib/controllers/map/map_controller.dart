@@ -19,9 +19,13 @@ class MapPageController extends GetxController
   MapController mapController = MapController();
   PopupController stopsPopupController = PopupController();
   PopupController vehiclesPopupController = PopupController();
+  final List<AnimationController> _activeAnimations = [];
+
+  //live bus
   late MqttController _mqttController;
   final RxMap<int, MqttData> mqttData = <int, MqttData>{}.obs;
-  final List<AnimationController> _activeAnimations = [];
+
+  // User Location
   LatLng? _userLocation;
   StreamSubscription<LocationData>? _locationSubscription;
   final RxList<LatLng> userLocationMarker = <LatLng>[].obs;
@@ -136,16 +140,13 @@ class MapPageController extends GetxController
 
   void _listenData() async {
     _mqttController.payloadStream.listen((MqttData payload) {
-      print("${payload.vehicleNum} - ${payload.position.toString()}");
+      print("data from Bus ${payload.vehicleNum}");
       if (_vehicle.directionId == payload.direction) {
         if (mqttData.containsKey(payload.vehicleNum)) {
           _animatedMarkerMove(payload);
         } else {
           mqttData.putIfAbsent(payload.vehicleNum, () => payload);
         }
-      } else {
-        print(
-            "is in other direction: ${payload.vehicleNum} - ${payload.position.toString()}");
       }
     });
   }
