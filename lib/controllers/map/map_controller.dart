@@ -185,7 +185,14 @@ class MapPageController extends GetxController
 
   void goToUserLocation() async {
     isLocationLoading.value = true;
-    _animatedMapMove(await userLocation, 17);
+    try {
+      _animatedMapMove(await userLocation, 17);
+    } catch (e) {
+      Get
+        ..closeAllSnackbars()
+        ..snackbar("Errore", "Could not retrieve position");
+    }
+
     isLocationLoading.value = false;
   }
 
