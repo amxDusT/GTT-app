@@ -192,7 +192,7 @@ class PatternDetails {
 class MqttData {
   // [lat, lon, degrees, speed?, tripId, direction, isFull]
   final LatLng position;
-  final int heading;
+  final int? heading;
   final int? speed;
   final int tripId;
   final int direction;
@@ -202,7 +202,7 @@ class MqttData {
   MqttData({
     required this.vehicleNum,
     required this.position,
-    required this.heading,
+    this.heading,
     required this.tripId,
     this.speed,
     required this.direction,
@@ -223,7 +223,7 @@ class MqttData {
     return MqttData(
       vehicleNum: vehicleNum,
       position: LatLng(list[0] as double, list[1] as double),
-      heading: list[2] as int,
+      heading: list[2] as int?,
       speed: list[3] as int?,
       tripId: list[4],
       direction: list[5] as int? ?? 2,

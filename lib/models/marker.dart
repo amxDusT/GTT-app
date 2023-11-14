@@ -14,7 +14,7 @@ class VehicleMarker extends Marker {
       : super(
           point: mqttData.position,
           child: Transform.rotate(
-            angle: mqttData.heading * pi / 180,
+            angle: (mqttData.heading ?? 0) * pi / 180,
             child: const Icon(
               Icons.navigation,
               size: 20,
