@@ -17,7 +17,7 @@ class MqttController {
     _shortName = shortName;
     _client = MqttServerClient.withPort(
         "wss://mapi.5t.torino.it/scre", "randomNameTesting$shortName", 443);
-    _client.logging(on: true);
+    _client.logging(on: false);
     _client.keepAlivePeriod = 60;
     final connMess = MqttConnectMessage().withWillQos(MqttQos.atMostOnce);
 
@@ -72,7 +72,7 @@ class Api {
     if (response.statusCode != 200) {
       throw ApiException(response.statusCode, response.body);
     }
-    print(json.decode(response.body));
+    //print(json.decode(response.body));
     return PatternDetails.fromJson(json.decode(response.body)['data']);
   }
 
