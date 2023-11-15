@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_point_controller.dart';
 import 'package:flutter_gtt/models/fermata.dart';
 import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -46,12 +47,17 @@ class MapPointPage extends StatelessWidget {
                         width: 150,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Align(
+                            Container(
                                 alignment: Alignment.topRight,
-                                child: IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
+                                padding: const EdgeInsets.all(5.0),
+                                child: InkWell(
+                                  child: const Icon(
+                                    Icons.clear,
+                                    size: 20,
+                                  ),
+                                  onTap: () {
                                     _mapController.popupController
                                         .hideAllPopups();
                                   },
@@ -63,6 +69,28 @@ class MapPointPage extends StatelessWidget {
                       ),
                     );
                   },
+                ),
+              ),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Opacity(
+                opacity: 0.7,
+                child: Container(
+                  //color: Get.theme.colorScheme.primaryContainer,
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
+                    ),
+                    child: const Text('Apri in Google Maps'),
+                    onPressed: () => MapUtils.openMap(
+                        _mapController.fermataLocation.latitude,
+                        _mapController.fermataLocation.longitude),
+                  ),
                 ),
               ),
             ),

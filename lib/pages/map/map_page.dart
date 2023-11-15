@@ -125,11 +125,15 @@ class MapPage extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Align(
+                            Container(
                                 alignment: Alignment.topRight,
-                                child: IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
+                                padding: const EdgeInsets.all(5.0),
+                                child: InkWell(
+                                  child: const Icon(
+                                    Icons.clear,
+                                    size: 20,
+                                  ),
+                                  onTap: () {
                                     _flutterMapController
                                         .vehiclesPopupController
                                         .hideAllPopups();
