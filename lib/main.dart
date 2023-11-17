@@ -3,12 +3,14 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
 
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DatabaseCommands.init();
+  Storage.loadSettings();
   //DatabaseCommands.deleteTable();
   //DatabaseCommands.createTable();
   runApp(const MyApp());
