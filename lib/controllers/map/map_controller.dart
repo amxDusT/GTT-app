@@ -17,8 +17,7 @@ class MapPageController extends GetxController
   final Vehicle _vehicle = Get.arguments['vehicle'];
   late final Rx<PatternDetails> patternDetails;
   MapController mapController = MapController();
-  PopupController stopsPopupController = PopupController();
-  PopupController vehiclesPopupController = PopupController();
+  PopupController popupController = PopupController();
   final List<AnimationController> _activeAnimations = [];
 
   //live bus
@@ -46,8 +45,7 @@ class MapPageController extends GetxController
     }
     _mqttController.dispose();
     mapController.dispose();
-    stopsPopupController.dispose();
-    vehiclesPopupController.dispose();
+    popupController.dispose();
     _stopLocationListen();
     super.onClose();
   }

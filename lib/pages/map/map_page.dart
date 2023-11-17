@@ -69,12 +69,15 @@ class MapPage extends StatelessWidget {
             () => PopupMarkerLayer(
               options: PopupMarkerLayerOptions(
                 markerCenterAnimation: const MarkerCenterAnimation(),
-                popupController: _flutterMapController.stopsPopupController,
-                markers: _flutterMapController.patternDetails.value.fermate
-                    .map(
-                      (e) => _buildPin(e),
-                    )
-                    .toList(),
+                popupController: _flutterMapController.popupController,
+                markers: [
+                  ..._flutterMapController.patternDetails.value.fermate.map(
+                    (e) => _buildFermata(e),
+                  ),
+                  ..._flutterMapController.mqttData.values.map(
+                    (data) => _buildVehicle(data),
+                  )
+                ],
                 popupDisplayOptions: PopupDisplayOptions(
                   builder: (BuildContext context, Marker marker) {
                     return Card(
@@ -86,62 +89,19 @@ class MapPage extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Align(
-                                alignment: Alignment.topRight,
-                                child: IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
-                                    _flutterMapController.stopsPopupController
-                                        .hideAllPopups();
-                                  },
-                                )),
+                              alignment: Alignment.topRight,
+                              child: IconButton(
+                                icon: const Icon(Icons.close),
+                                onPressed: () {
+                                  _flutterMapController.popupController
+                                      .hideAllPopups();
+                                },
+                              ),
+                            ),
                             if (marker is FermataMarker)
-                              Text('Fermata ${marker.fermata.nome}'),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-          Obx(
-            () => PopupMarkerLayer(
-              options: PopupMarkerLayerOptions(
-                markerCenterAnimation: const MarkerCenterAnimation(),
-                popupController: _flutterMapController.vehiclesPopupController,
-                markers: _flutterMapController.mqttData.values
-                    .map(
-                      (data) => _buildVehicle(data),
-                    )
-                    .toList(),
-                popupDisplayOptions: PopupDisplayOptions(
-                  builder: (BuildContext context, Marker marker) {
-                    return Card(
-                      color: Colors.yellow.withOpacity(0.9),
-                      child: SizedBox(
-                        //height: 70,
-                        width: 150,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                                alignment: Alignment.topRight,
-                                padding: const EdgeInsets.all(5.0),
-                                child: InkWell(
-                                  child: const Icon(
-                                    Icons.clear,
-                                    size: 20,
-                                  ),
-                                  onTap: () {
-                                    _flutterMapController
-                                        .vehiclesPopupController
-                                        .hideAllPopups();
-                                  },
-                                )),
+                              _containerFermata(marker),
                             if (marker is VehicleMarker)
-                              Text(
-                                  'Bus ${marker.mqttData.vehicleNum} - ${marker.mqttData.nextStop}\n ${marker.mqttData.direction}'),
+                              _containerVehicle(marker),
                           ],
                         ),
                       ),
@@ -227,6 +187,14 @@ class MapPage extends StatelessWidget {
     );
   }
 
-  Marker _buildPin(Fermata fermata) => FermataMarker(fermata: fermata);
+  Widget _containerFermata(FermataMarker marker) {
+    return Text('${marker.fermata.stopNum} - ${marker.fermata.nome}');
+  }
+
+  Widget _containerVehicle(VehicleMarker marker) {
+    return Text('Bus n${marker.mqttData.vehicleNum}');
+  }
+
+  Marker _buildFermata(Fermata fermata) => FermataMarker(fermata: fermata);
   Marker _buildVehicle(MqttData data) => VehicleMarker(mqttData: data);
 }
