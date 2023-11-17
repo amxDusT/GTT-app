@@ -8,14 +8,19 @@ import 'package:intl/intl.dart';
 enum CardType { cardBip, cardPYou, cardEdisu, cardNone }
 
 class Contract {
-  late int code;
-  late int counters;
-  late bool isValid;
-  late bool isTicket;
-  late bool isSubscription;
-  late DateTime _startDate;
-  late DateTime _endDate;
-  Contract({required Uint8List data, required this.counters}) {
+  late final int code;
+  final int counters;
+  late final bool isValid;
+  late final bool isTicket;
+  late final bool isSubscription;
+  late final DateTime _startDate;
+  late final DateTime _endDate;
+  late final bool _isActivated;
+  Contract(
+      {required Uint8List data,
+      required this.counters,
+      required bool activated}) {
+    _isActivated = activated;
     int company = data[0];
     code = Utils.getBytesFromPage(data, 4, 2);
     //code = ((data[4] & 0xff) << 8) | data[5] & 0xff;
@@ -41,6 +46,7 @@ class Contract {
     minutes = ~(Utils.getBytesFromPage(data, 12, 3)) & 0xffffff;
     _endDate = GttDate.decodeFromMinutes(minutes);
   }
+  bool get isActivated => _isActivated;
   bool get isExpired => DateTime.now().isAfter(_endDate);
   String get startDate => Utils.dateToString(_startDate);
   String get endDate => Utils.dateToString(_endDate);
@@ -148,7 +154,10 @@ class SmartCard {
             counter = Utils.getBytesFromPage(countersByte, cpos, 3);
           }
           var data = information[i ~/ 3 + 3];
-          Contract contract = Contract(data: data, counters: counter);
+          Contract contract = Contract(
+              data: data,
+              counters: counter,
+              activated: (contractsByte[i + 1] & 0x0f) == 1);
           if (contract.isValid) {
             allContracts.add(contract);
             if (contract.isSubscription) {
