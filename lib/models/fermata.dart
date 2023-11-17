@@ -1,6 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:latlong2/latlong.dart';
 
+@immutable
 class ResponseId {
   final String id;
   const ResponseId({required this.id});
@@ -10,12 +13,13 @@ class ResponseId {
   }
 }
 
+@immutable
 class Stoptime {
   final bool realtime;
   final DateTime realtimeDeparture;
   final DateTime scheduledDeparture;
 
-  Stoptime(
+  const Stoptime(
       {required this.realtime,
       required this.realtimeDeparture,
       required this.scheduledDeparture});
@@ -35,6 +39,7 @@ class Stoptime {
   }
 }
 
+@immutable
 class Vehicle {
   final String patternCode;
   final String shortName;
@@ -76,21 +81,25 @@ class Vehicle {
   }
 }
 
+@immutable
 class Fermata {
   final String nome;
-  String? descrizione;
+  final String? descrizione;
   final double latitude;
   final double longitude;
   final int stopNum;
   final List<Vehicle> vehicles;
-
-  Fermata({
+  final DateTime dateTime;
+  final Color color;
+  const Fermata({
     required this.stopNum,
     required this.nome,
     this.descrizione,
     required this.latitude,
     required this.longitude,
     required this.vehicles,
+    required this.dateTime,
+    required this.color,
   });
   factory Fermata.empty(int stopNum) {
     return Fermata(
@@ -98,8 +107,27 @@ class Fermata {
       nome: '',
       latitude: 0.0,
       longitude: 0.0,
-      vehicles: [],
+      vehicles: const [],
+      dateTime: DateTime.now(),
+      color: Storage.chosenColor,
     );
+  }
+
+  Fermata copyWith({
+    String? descrizione,
+    DateTime? dateTime,
+    List<Vehicle>? vehicles,
+    Color? color,
+  }) {
+    return Fermata(
+        stopNum: stopNum,
+        nome: nome,
+        latitude: latitude,
+        longitude: longitude,
+        vehicles: vehicles ?? this.vehicles,
+        dateTime: dateTime ?? this.dateTime,
+        descrizione: descrizione ?? this.descrizione,
+        color: color ?? this.color);
   }
 
   factory Fermata.fromJson(Map<String, dynamic> js, int stopNum) {
@@ -111,6 +139,8 @@ class Fermata {
       vehicles: ((js['stopTimes'] ?? []) as List)
           .map((jsData) => Vehicle.fromJson(jsData))
           .toList(),
+      dateTime: DateTime.now(),
+      color: Storage.chosenColor,
     );
   }
 
@@ -120,7 +150,8 @@ class Fermata {
         'descrizione': descrizione,
         'latitude': latitude,
         'longitude': longitude,
-        'date': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        'date': dateTime.millisecondsSinceEpoch ~/ 1000,
+        'color': Storage.colorToString(color),
       };
 
   @override
@@ -129,6 +160,7 @@ class Fermata {
   }
 }
 
+@immutable
 class PatternDetails {
   final String code;
   final String headsign;
@@ -167,9 +199,9 @@ class PatternDetails {
       headsign: '',
       code: '',
       vehicle: Vehicle.empty(),
-      polyline: [],
-      stopPoints: [],
-      fermate: [],
+      polyline: const [],
+      stopPoints: const [],
+      fermate: const [],
     );
   }
   factory PatternDetails.fromJson(Map<String, dynamic> js) {
@@ -189,33 +221,45 @@ class PatternDetails {
   }
 }
 
+@immutable
 class MqttData {
-  // [lat, lon, degrees, speed?, tripId, direction, isFull]
+  // [lat, lon, rotation?, speed?, tripId?, direction, isFull?]
   final LatLng position;
-  final int? heading;
+  final int? rotation;
   final int? speed;
-  final int tripId;
+  final int? tripId;
   final int direction;
   final bool? isFull;
   final int? nextStop;
   final int vehicleNum;
-  MqttData({
+  const MqttData({
     required this.vehicleNum,
     required this.position,
-    this.heading,
-    required this.tripId,
+    this.rotation,
+    this.tripId,
     this.speed,
     required this.direction,
     this.isFull,
     this.nextStop,
   });
-  MqttData copyWith({LatLng? position}) {
+  MqttData copyWith({
+    LatLng? position,
+    int? rotation,
+    int? speed,
+    int? tripId,
+    int? direction,
+    bool? isFull,
+    int? nextStop,
+  }) {
     return MqttData(
       vehicleNum: vehicleNum,
       position: position ?? this.position,
-      heading: heading,
-      tripId: tripId,
-      direction: direction,
+      rotation: rotation ?? this.rotation,
+      speed: speed ?? this.speed,
+      tripId: tripId ?? this.tripId,
+      direction: direction ?? this.direction,
+      isFull: isFull ?? this.isFull,
+      nextStop: nextStop ?? this.nextStop,
     );
   }
 
@@ -223,7 +267,7 @@ class MqttData {
     return MqttData(
       vehicleNum: vehicleNum,
       position: LatLng(list[0] as double, list[1] as double),
-      heading: list[2] as int?,
+      rotation: list[2] as int?,
       speed: list[3] as int?,
       tripId: list[4],
       direction: list[5] as int? ?? 2,

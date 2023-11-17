@@ -8,13 +8,14 @@ class Test {
   //Test({int marker}) : mark = Marker(point: point, child: child);
 }
 
+@immutable
 class VehicleMarker extends Marker {
   final MqttData mqttData;
   VehicleMarker({required this.mqttData})
       : super(
           point: mqttData.position,
           child: Transform.rotate(
-            angle: (mqttData.heading ?? 0) * pi / 180,
+            angle: (mqttData.rotation ?? 0) * pi / 180,
             child: const Icon(
               Icons.navigation,
               size: 20,
@@ -24,6 +25,7 @@ class VehicleMarker extends Marker {
         );
 }
 
+@immutable
 class FermataMarker extends Marker {
   final Fermata fermata;
   FermataMarker({required this.fermata})
