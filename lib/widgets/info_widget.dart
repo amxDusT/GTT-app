@@ -24,9 +24,9 @@ class InfoWidget extends StatelessWidget {
         ...bus.stoptimes
             .getRange(
                 0,
-                bus.stoptimes.length < MAX_HOURS
+                bus.stoptimes.length < maxHours
                     ? bus.stoptimes.length
-                    : MAX_HOURS)
+                    : maxHours)
             .map(
               (e) => Text(
                 DateFormat.Hm(Get.locale?.languageCode)

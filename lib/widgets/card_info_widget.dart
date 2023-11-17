@@ -11,7 +11,8 @@ class CardInfoWidget extends StatelessWidget {
       color: contract.isExpired ? null : Colors.green,
       child: ListTile(
         isThreeLine: true,
-        title: Text('${contract.typeName} ${contract.isExpired? '- Scaduto':''}'),
+        title: Text(
+            '${contract.typeName} ${contract.isExpired ? '- Scaduto' : ''} ${contract.isActivated ? '' : '(Non attivato)'}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
