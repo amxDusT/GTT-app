@@ -93,7 +93,7 @@ class HomePage extends StatelessWidget {
         textConfirm: 'Chiudi',
         onConfirm: () => Get.back(),
         onCancel: () {
-          print('setting new color');
+          //print('setting new color');
           Storage.setParam(
               StorageParam.color, Storage.colorToString(fermata.color));
         });

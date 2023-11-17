@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_gtt/resources/utils/gtt_date.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 
 enum CardType { cardBip, cardPYou, cardEdisu, cardNone }
 
+@immutable
 class Contract {
   late final int code;
   final int counters;
@@ -65,15 +67,15 @@ class Contract {
 }
 
 class SmartCard {
-  late CardType cardType;
-  List<Contract> subscriptions = [];
-  List<Contract> tickets = [];
-  List<Contract> allContracts = [];
-  Contract? mainSubscription;
-  late DateTime _creationDate;
-  late DateTime validationDate;
-  late int remainingMins;
-  late int cardNumber;
+  late final CardType cardType;
+  final List<Contract> subscriptions = [];
+  final List<Contract> tickets = [];
+  final List<Contract> allContracts = [];
+  late final Contract? mainSubscription;
+  late final DateTime _creationDate;
+  late final DateTime validationDate;
+  late final int remainingMins;
+  late final int cardNumber;
   int ridesLeft = 0;
   SmartCard({required List<Uint8List> information}) {
     Uint8List efEnvironment = information[1];

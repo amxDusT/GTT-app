@@ -1,4 +1,5 @@
 import 'package:flutter_gtt/models/fermata.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -26,7 +27,7 @@ class DatabaseCommands {
   static void createTable({Database? db}) async {
     db ??= await dbase;
     await db.execute(
-      'CREATE TABLE $stopTable(id INTEGER PRIMARY KEY AUTOINCREMENT, stopNum INTEGER UNIQUE, nome TEXT, descrizione TEXT, latitude REAL, longitude REAL, date INTEGER)',
+      'CREATE TABLE $stopTable(id INTEGER PRIMARY KEY AUTOINCREMENT, stopNum INTEGER UNIQUE, nome TEXT, descrizione TEXT, latitude REAL, longitude REAL, date INTEGER, color TEXT)',
     );
   }
 
@@ -41,6 +42,7 @@ class DatabaseCommands {
 
   static Future<void> updateStop(Fermata fermata) async {
     Database db = await dbase;
+
     await db.insert(
       stopTable,
       fermata.toDbMap(),
@@ -61,7 +63,10 @@ class DatabaseCommands {
         descrizione: maps[i]['descrizione'] as String?,
         latitude: maps[i]['latitude'] as double,
         longitude: maps[i]['longitude'] as double,
-        vehicles: [],
+        vehicles: const [],
+        dateTime: DateTime.fromMillisecondsSinceEpoch(
+            (maps[i]['date'] as int) * 1000),
+        color: Storage.stringToColor(maps[i]['color'] as String)!,
       );
     });
   }
