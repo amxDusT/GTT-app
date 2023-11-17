@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -22,7 +23,24 @@ class Utils {
     return count;
   }
 
-  static String dateToString(DateTime date){
+  static String dateToString(DateTime date) {
     return DateFormat('d MMMM, y H:mm a', 'it').format(date).capitalizeFirst!;
+  }
+
+  static Color darken(Color c, [int percent = 50]) {
+    assert(1 <= percent && percent <= 100);
+    var f = 1 - percent / 100;
+    return Color.fromARGB(c.alpha, (c.red * f).round(), (c.green * f).round(),
+        (c.blue * f).round());
+  }
+
+  static Color lighten(Color c, [int percent = 50]) {
+    assert(1 <= percent && percent <= 100);
+    var p = percent / 100;
+    return Color.fromARGB(
+        c.alpha,
+        c.red + ((255 - c.red) * p).round(),
+        c.green + ((255 - c.green) * p).round(),
+        c.blue + ((255 - c.blue) * p).round());
   }
 }

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/models/fermata.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
+import 'package:flutter_gtt/resources/globals.dart';
+import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
   final _homeController = Get.put(HomeController());
-
   void _onSubmitted() {
     final state = _homeController.key.currentState!;
 
@@ -36,13 +39,111 @@ class HomePage extends StatelessWidget {
           child: const Text("Sposta in cima"),
           onTap: () => _moveOnTop(fermata),
         ),
+        PopupMenuItem(
+          child: const Text('Cambia Colore'),
+          onTap: () => _changeColor(fermata),
+        )
       ],
+    );
+  }
+
+  void _changeColor(Fermata fermata) {
+    Get.defaultDialog(
+        title: 'Scegli un colore',
+        // actions: [
+        //   ElevatedButton(
+        //     onPressed: () {},
+        //     child: Text('Make Default'),
+        //   ),
+        // ],
+        content: BlockPicker(
+          pickerColor: fermata.color,
+          onColorChanged: (color) {
+            fermata = fermata.copyWith(color: color);
+            _homeController.updateStop(fermata);
+          },
+          availableColors: const [
+            initialColor,
+            Colors.red,
+            Colors.blue,
+            Colors.green,
+            Colors.yellow,
+            Colors.amber,
+            Colors.cyan
+          ],
+          layoutBuilder: (context, colors, child) {
+            return Flexible(
+              child: SizedBox(
+                width: Get.size.width * 0.8,
+                //height: 10.0 + (100 * (colors.length / 3).ceil()),
+                child: GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 5,
+                  mainAxisSpacing: 5,
+                  children: [for (Color color in colors) child(color)],
+                ),
+              ),
+            );
+          },
+          itemBuilder: _pickerItemBuilder,
+        ),
+        textCancel: 'Make Default',
+        textConfirm: 'Chiudi',
+        onConfirm: () => Get.back(),
+        onCancel: () {
+          print('setting new color');
+          Storage.setParam(
+              StorageParam.color, Storage.colorToString(fermata.color));
+        });
+  }
+
+  Widget _pickerItemBuilder(
+      Color color, bool isCurrentColor, void Function() changeColor) {
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: color.value == Storage.chosenColor.value
+            ? Border.all(
+                color: Utils.darken(color, 30),
+                width: 2,
+                strokeAlign: BorderSide.strokeAlignOutside)
+            : null,
+        borderRadius: BorderRadius.circular(50),
+        color: color,
+        boxShadow: [
+          BoxShadow(
+              color: color.withOpacity(0.8),
+              offset: const Offset(1, 2),
+              blurRadius: 5)
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        // shape: color.value == Storage.chosenColor.value
+        //     ? CircleBorder(side: BorderSide(color: Colors.red, width: 5))
+        //     : null,
+        child: InkWell(
+          onTap: changeColor,
+          borderRadius: BorderRadius.circular(50),
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 250),
+            opacity: isCurrentColor ? 1 : 0,
+            child: Icon(
+              Icons.done,
+              size: 24,
+              color: useWhiteForeground(color) ? Colors.white : Colors.black,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
   void _moveOnTop(Fermata fermata) {
     //_homeController.deleteStop(fermata);
-    _homeController.updateStop(fermata);
+    _homeController.updateStop(fermata.copyWith(dateTime: DateTime.now()));
   }
 
   void _getDeleteConfirm(Fermata fermata) {
@@ -75,16 +176,75 @@ class HomePage extends StatelessWidget {
         textCancel: "Annulla",
         onConfirm: () {
           Get.back();
-          fermata.descrizione =
-              _homeController.descriptionController.value.text;
-          _homeController.updateStop(fermata);
+
+          _homeController.updateStop(fermata.copyWith(
+              descrizione: _homeController.descriptionController.value.text));
           //print(_homeController.descriptionController.value.text);
         });
+  }
+
+  Widget _getDrawer() {
+    return Drawer(
+      //backgroundColor: Colors.grey,
+      width: Get.size.width * 0.6,
+      child: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Expanded(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  SizedBox(
+                    height: Get.size.height * 0.5,
+                  ),
+                  Hero(
+                    tag: 'NFCPage',
+                    flightShuttleBuilder: ((flightContext, animation,
+                            flightDirection, fromHeroContext, toHeroContext) =>
+                        Material(
+                          type: MaterialType.transparency,
+                          child: toHeroContext.widget,
+                        )),
+                    child: ListTile(
+                      title: const Text('Leggi Biglietto/Carta'),
+                      onTap: () => Get.to(() => NfcPage()),
+                    ),
+                  ),
+                  const Divider(),
+                  ListTile(
+                    title: const Text('Mappa Bus/Tram'),
+                    onTap: () {
+                      // open Bus list page
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
+                    title: const Text('Impostazioni'),
+                    onTap: () {
+                      // open Settings page??
+                    },
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              alignment: Alignment.bottomRight,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
+              child: const Text('amxDusT'),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _homeController.scaffoldKey,
+      endDrawer: _getDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Gtt Fermate"),
@@ -162,9 +322,15 @@ class HomePage extends StatelessWidget {
                                 onTap: () => Get.to(() => InfoPage(),
                                     arguments: {'fermata': e}),
                                 child: Ink(
+                                  decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.vertical(
+                                      top: Radius.circular(12),
+                                    ),
+                                    color: Utils.lighten(e.color),
+                                  ),
                                   height: 115,
                                   padding: const EdgeInsets.all(8),
-                                  color: Colors.teal[200],
+                                  //color: Utils.lighten(e.color),
                                   child: Column(
                                     children: [
                                       Text(e.toString()),
@@ -182,7 +348,12 @@ class HomePage extends StatelessWidget {
                               child: Ink(
                                 width: double.maxFinite,
                                 padding: const EdgeInsets.all(8),
-                                color: Colors.teal[100],
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.vertical(
+                                    bottom: Radius.circular(12),
+                                  ),
+                                  color: Utils.lighten(e.color, 70),
+                                ),
                                 child: const Center(child: Text('Posizione')),
                               ),
                             ),
@@ -196,20 +367,22 @@ class HomePage extends StatelessWidget {
         ],
       ),
       floatingActionButton: SafeArea(
-        child: Row(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             FloatingActionButton(
-              heroTag: 'NFCPage',
-              child: const Icon(Icons.nfc),
+              elevation: 2,
+              heroTag: '___Menu',
+              child: const Icon(Icons.menu),
               onPressed: () {
-                Get.to(() => NfcPage());
+                _homeController.scaffoldKey.currentState?.openEndDrawer();
               },
             ),
             const SizedBox(
-              width: 5,
+              height: 5,
             ),
             FloatingActionButton(
+              elevation: 2,
               child: const Icon(Icons.search),
               onPressed: () {
                 if (_homeController.focusNode.value.hasFocus) {
