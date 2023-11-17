@@ -10,20 +10,20 @@ class HomeController extends GetxController {
   late final Rx<FocusNode> focusNode;
   late final Rx<TextEditingController> descriptionController;
   final key = GlobalKey<FormState>();
-  late Offset tapXY;
+  late Offset tapPosition;
 
-  // ↓ hold screen size, using first line in build() method
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   RelativeRect get relRectSize => RelativeRect.fromLTRB(
-        tapXY.dx,
-        tapXY.dy,
-        Get.size.width - tapXY.dx,
-        Get.size.height - tapXY.dy,
+        tapPosition.dx,
+        tapPosition.dy,
+        Get.size.width - tapPosition.dx,
+        Get.size.height - tapPosition.dy,
       );
 
   // ↓ get the tap position Offset
   void getPosition(TapDownDetails detail) {
-    tapXY = detail.globalPosition;
+    tapPosition = detail.globalPosition;
   }
 
   @override
@@ -44,7 +44,7 @@ class HomeController extends GetxController {
       () {
         searchController.value.clear();
         if (!focusNode.value.hasFocus) {
-          key.currentState!.reset();
+          key.currentState?.reset();
         }
       },
     );
