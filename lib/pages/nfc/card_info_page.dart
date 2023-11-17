@@ -42,7 +42,7 @@ class CardInfoPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       height: 200,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.red,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
@@ -66,7 +66,7 @@ class CardInfoPage extends StatelessWidget {
               Text(smartCard.creationDate),
             ],
           ),
-           Row(
+          Row(
             children: [
               const Text("Contratti: "),
               Text(smartCard.allContracts.length.toString()),
