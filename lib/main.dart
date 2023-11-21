@@ -4,6 +4,7 @@ import 'package:flutter_gtt/pages/home_page.dart';
 
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/testing/testing_gtsf_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 
@@ -11,8 +12,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DatabaseCommands.init();
   Storage.loadSettings();
+  //DatabaseCommands.deleteTableAgency();
   //DatabaseCommands.deleteTable();
-  //DatabaseCommands.createTable();
+  DatabaseCommands.createTable();
   runApp(const MyApp());
   await FlutterDisplayMode.setHighRefreshRate();
 }
@@ -37,9 +39,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      //home: EmulatorPage(),
-      home: HomePage(),
-      //home: MapPage(),
+      //home: HomePage(),
+      home: TestingPage(),
     );
   }
 }

@@ -138,7 +138,7 @@ class MapPageController extends GetxController
 
   void _listenData() async {
     _mqttController.payloadStream.listen((MqttData payload) {
-      print("data from Bus ${payload.vehicleNum}");
+      //print("data from Bus ${payload.vehicleNum}");
       if (_vehicle.directionId == payload.direction) {
         if (mqttData.containsKey(payload.vehicleNum)) {
           _animatedMarkerMove(payload);

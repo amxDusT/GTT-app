@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/models/fermata.dart';
 import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -192,7 +193,18 @@ class MapPage extends StatelessWidget {
   }
 
   Widget _containerVehicle(VehicleMarker marker) {
-    return Text('Bus n${marker.mqttData.vehicleNum}');
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'Bus ${marker.mqttData.shortName} n${marker.mqttData.vehicleNum}',
+        ),
+        Text(
+          'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
+          style: Get.textTheme.bodySmall,
+        ),
+      ],
+    );
   }
 
   Marker _buildFermata(Fermata fermata) => FermataMarker(fermata: fermata);

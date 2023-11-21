@@ -38,9 +38,9 @@ class MqttController {
       final recMess = c[0].payload as MqttPublishMessage;
       final pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-      List<String> elements = c[0].topic.split("/");
-      MqttData data = MqttData.fromList(jsonDecode(pt) as List<dynamic>,
-          int.parse(elements[elements.length - 1]));
+      //print(c[0].topic);
+      MqttData data =
+          MqttData.fromList(jsonDecode(pt) as List<dynamic>, c[0].topic);
       _payloadStreamController.add(data);
     });
   }

@@ -40,6 +40,7 @@ dependencies:
   flutter_map_marker_popup: ^6.1.2
   flutter_secure_storage: ^9.0.0
   get: ^4.6.6
+  gtfs_realtime_bindings: ^1.0.1
   http: ^1.1.0
   intl: ^0.18.1
   latlong2: ^0.9.0

@@ -1,6 +1,7 @@
 # mine
 /lib/models/edisu.dart
 /z-ignored/
+/lib/testing
 
 # Miscellaneous
 *.class

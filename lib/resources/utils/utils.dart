@@ -23,6 +23,10 @@ class Utils {
     return count;
   }
 
+  static String dateToHourString(DateTime date) {
+    return DateFormat('H:m ', 'it').format(date).capitalizeFirst!;
+  }
+
   static String dateToString(DateTime date) {
     return DateFormat('d MMMM, y H:mm a', 'it').format(date).capitalizeFirst!;
   }
