@@ -12,7 +12,7 @@ class InfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: 'HeroTagFermata${_infoController.fermata.stopNum}',
+      tag: 'HeroTagFermata${_infoController.fermata.code}',
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -63,7 +63,8 @@ class InfoPage extends StatelessWidget {
                                   );
                                 }
                                 return InfoWidget(
-                                    bus: controller.fermata.vehicles[index]);
+                                    vehicle:
+                                        controller.fermata.vehicles[index]);
                               },
                             );
                           },

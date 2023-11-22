@@ -1,7 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter_gtt/models/fermata.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -16,7 +17,7 @@ class MqttController {
   MqttController(String shortName) {
     _shortName = shortName;
     _client = MqttServerClient.withPort(
-        "wss://mapi.5t.torino.it/scre", "randomNameTesting$shortName", 443);
+        'wss://mapi.5t.torino.it/scre', 'randomNameTesting$shortName', 443);
     _client.logging(on: false);
     _client.keepAlivePeriod = 60;
     final connMess = MqttConnectMessage().withWillQos(MqttQos.atMostOnce);
@@ -30,7 +31,7 @@ class MqttController {
   void connect(String shortName) async {
     await _client.connect();
 
-    _client.subscribe("/$shortName/#", MqttQos.atMostOnce);
+    _client.subscribe('/$shortName/#', MqttQos.atMostOnce);
 
     // Set up the subscription
     _subscription =
@@ -47,48 +48,31 @@ class MqttController {
 
   Stream<MqttData> get payloadStream => _payloadStreamController.stream;
 
-  void dispose() {
-    _subscription.cancel();
-    _client.unsubscribe("/$_shortName/#");
+  Future<void> dispose() async {
+    _client.unsubscribe('/$_shortName/#');
+    await _subscription.cancel();
     _client.disconnect();
-    _payloadStreamController.close();
+    await _payloadStreamController.close();
   }
 }
 
 class Api {
   static const String _url =
-      "https://plan.muoversiatorino.it/otp/routers/mato/index/graphql";
-  //static const String _urlBackup =
-  //    "https://mapi.5t.torino.it/routing/v1/routers/mato/index/graphql";
+      'https://plan.muoversiatorino.it/otp/routers/mato/index/graphql';
 
-  static Future<PatternDetails> getPatternDetails(String patternCode) async {
-    final request = json.encode({
-      "id": "q02",
-      "query":
-          "query GetPatternDetails(\$patternCode:String!) {pattern(id: \$patternCode){code directionId headsign stops{name code lat lon} patternGeometry{points} route{shortName longName}}}",
-      "variables": {"patternCode": patternCode}
-    });
-    final response = await _post(request);
-    if (response.statusCode != 200) {
-      throw ApiException(response.statusCode, response.body);
-    }
-    //print(json.decode(response.body));
-    return PatternDetails.fromJson(json.decode(response.body)['data']);
-  }
-
-  static Future<Fermata> getStop(int stopNum) async {
+  static Future<StopWithDetails> getStop(int stopNum) async {
     final int time = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-    const range2 = 60 * 60 * 2;
+    const timeRange = 60 * 60 * 2;
 
     final request = json.encode({
-      "id": "q01",
+      'id': 'q01',
       "query":
-          "query StopPageContentContainer_StopRelayQL(\$id_0:String!,\$startTime_1:Long!,\$timeRange_2:Int!,\$numberOfDepartures_3:Int!) {stop (id:\$id_0) {name, desc, lat, lon, stopTimes:stoptimesForPatterns(startTime:\$startTime_1,timeRange:\$timeRange_2,numberOfDepartures:\$numberOfDepartures_3,omitCanceled:false) {...F1}}} fragment F0 on Route {alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate,trip {pattern {code}}}} fragment F1 on StoptimesInPattern {pattern {code, directionId, route {shortName, longName,...F0}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}",
-      "variables": {
-        "id_0": "gtt:$stopNum",
-        "startTime_1": time,
-        "timeRange_2": range2,
-        "numberOfDepartures_3": 100
+          "query StopPageContentContainer_StopRelayQL(\$id_0:String!,\$startTime_1:Long!,\$timeRange_2:Int!,\$numberOfDepartures_3:Int!) {stop (id:\$id_0) {stopTimes:stoptimesForPatterns(startTime:\$startTime_1,timeRange:\$timeRange_2,numberOfDepartures:\$numberOfDepartures_3,omitCanceled:false) {pattern {code route{alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate}}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}}}",
+      'variables': {
+        'id_0': 'gtt:$stopNum',
+        'startTime_1': time,
+        'timeRange_2': timeRange,
+        'numberOfDepartures_3': 100
       }
     });
 
@@ -98,7 +82,9 @@ class Api {
     }
 
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
-    return Fermata.fromJson(jsonResponse['data']['stop'], stopNum);
+
+    return await StopWithDetails.decodeJson(
+        jsonResponse['data']['stop'], stopNum);
   }
 
   static Future<http.Response> _post(dynamic data) async {
@@ -110,6 +96,72 @@ class Api {
       },
     );
     return response;
+  }
+
+  static Future<List<Agency>> getAgencies() async {
+    final request = json.encode({
+      'query':
+          'query AllFeeds{feeds{feedId agencies{ gtfsId name url fareUrl phone } }}'
+    });
+    final response = await _post(request);
+    if (response.statusCode != 200) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+    for (Map<String, dynamic> data in jsonResponse['data']['feeds']) {
+      if (data['feedId'] != 'gtt') continue;
+      //print(data['agencies']);
+      return (data['agencies'] as List)
+          .map((agency) => Agency.fromJson(agency))
+          .toList();
+    }
+    return [];
+  }
+
+  static Future<(List<Route>, List<Pattern>, List<Stop>, List<PatternStop>)>
+      routesByFeed() async {
+    final request = json.encode({
+      'query':
+          'query AllRoutes(\$feed_id: [String]){routes(feeds: \$feed_id) {agency{gtfsId} gtfsId shortName longName type desc patterns{name code directionId headsign stops{ name code gtfsId lat lon} patternGeometry{points}}}}',
+      'variables': {'feed_id': 'gtt'}
+    });
+    final response = await _post(request);
+    if (response.statusCode != 200) {
+      throw ApiException(response.statusCode, response.body);
+    }
+
+    //compute(_processData2, response.body);
+    //_processData(response.body);
+    return _processData2(response.body);
+    //DatabaseCommands.bulkInsert(json.decode(response.body));
+  }
+
+  static (List<Route>, List<Pattern>, List<Stop>, List<PatternStop>)
+      _processData2(String body) {
+    final Map<String, dynamic> js = json.decode(body);
+    final List<Route> routes = [];
+    final List<Pattern> patterns = [];
+    final List<Stop> stops = [];
+    final List<PatternStop> patternStops = [];
+    for (var route in (js['data']['routes'] as List)) {
+      Route r = Route.fromJson(route);
+      routes.add(r);
+      for (var pattern in (route['patterns'] as List)) {
+        Pattern p = Pattern.fromJson(pattern);
+        patterns.add(p);
+        for (final (index, stop) in (pattern['stops'] as List).indexed) {
+          Stop s = Stop.fromJson(stop);
+          stops.add(s);
+          PatternStop ps = PatternStop(
+            patternCode: p.code,
+            stopId: s.gtfsId,
+            stopOrder: index,
+          );
+          patternStops.add(ps);
+        }
+      }
+    }
+    return (routes, patterns, stops, patternStops);
   }
 }
 

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/models/fermata.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
+import 'package:flutter_gtt/pages/route_list_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -21,7 +22,7 @@ class HomePage extends StatelessWidget {
     }
   }
 
-  void _showContextMenu(Fermata fermata) {
+  void _showContextMenu(FavStop fermata) {
     showMenu(
       //surfaceTintColor: Colors.red,
       context: Get.context!,
@@ -47,7 +48,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _changeColor(Fermata fermata) {
+  void _changeColor(FavStop fermata) {
     Get.defaultDialog(
         title: 'Scegli un colore',
         // actions: [
@@ -141,15 +142,15 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  void _moveOnTop(Fermata fermata) {
+  void _moveOnTop(FavStop fermata) {
     //_homeController.deleteStop(fermata);
     _homeController.updateStop(fermata.copyWith(dateTime: DateTime.now()));
   }
 
-  void _getDeleteConfirm(Fermata fermata) {
+  void _getDeleteConfirm(FavStop fermata) {
     Get.defaultDialog(
         title: "Elimina",
-        middleText: "Vuoi eliminare la fermata ${fermata.stopNum}?",
+        middleText: "Vuoi eliminare la fermata ${fermata.code}?",
         textConfirm: "Elimina",
         textCancel: "Annulla",
         onConfirm: () {
@@ -158,7 +159,7 @@ class HomePage extends StatelessWidget {
         });
   }
 
-  void _changeDescription(Fermata fermata) {
+  void _changeDescription(FavStop fermata) {
     _homeController.descriptionController.value.text =
         fermata.descrizione ?? '';
     Get.defaultDialog(
@@ -212,11 +213,21 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   const Divider(),
-                  ListTile(
-                    title: const Text('Mappa Bus/Tram'),
-                    onTap: () {
-                      // open Bus list page
-                    },
+                  Hero(
+                    tag: 'RouteListPage',
+                    flightShuttleBuilder: ((flightContext, animation,
+                            flightDirection, fromHeroContext, toHeroContext) =>
+                        Material(
+                          type: MaterialType.transparency,
+                          child: toHeroContext.widget,
+                        )),
+                    child: ListTile(
+                      title: const Text('Mappa Bus/Tram'),
+                      onTap: () {
+                        // open Bus list page
+                        Get.to(() => RouteListPage());
+                      },
+                    ),
                   ),
                   const Divider(),
                   ListTile(
@@ -306,7 +317,7 @@ class HomePage extends StatelessWidget {
                     ...controller.fermate.map((e) => Column(
                           children: [
                             Hero(
-                              tag: 'HeroTagFermata${e.stopNum}',
+                              tag: 'HeroTagFermata${e.code}',
                               flightShuttleBuilder: ((flightContext,
                                       animation,
                                       flightDirection,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/fermata.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -27,10 +28,10 @@ class VehicleMarker extends Marker {
 
 @immutable
 class FermataMarker extends Marker {
-  final Fermata fermata;
+  final Stop fermata;
   FermataMarker({required this.fermata})
       : super(
-          point: LatLng(fermata.latitude, fermata.longitude),
+          point: LatLng(fermata.lat, fermata.lon),
           child: const Icon(
             Icons.circle,
             size: 15,

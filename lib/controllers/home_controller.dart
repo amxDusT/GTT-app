@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/fermata.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
-  List<Fermata> fermate = [];
+  List<FavStop> fermate = [];
   late final Rx<TextEditingController> searchController;
   late final Rx<FocusNode> focusNode;
   late final Rx<TextEditingController> descriptionController;
@@ -37,6 +38,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    Get.put(RouteListController());
     searchController = TextEditingController().obs;
     descriptionController = TextEditingController().obs;
     focusNode = FocusNode().obs;
@@ -56,22 +58,26 @@ class HomeController extends GetxController {
     update();
   }
 
-  void updateStop(Fermata fermata) {
+  void updateStop(FavStop fermata) {
     DatabaseCommands.updateStop(fermata);
     getStops();
   }
 
-  void deleteStop(Fermata fermata) {
+  void deleteStop(FavStop fermata) {
     DatabaseCommands.deleteStop(fermata);
     getStops();
   }
 
-  void searchStop() {
+  void searchStop() async {
     int stopNum = int.parse(searchController.value.text);
 
     searchController.value.clear();
     focusNode.value.unfocus();
-    Fermata fermataEmpty = Fermata.empty(stopNum);
-    Get.to(() => InfoPage(), arguments: {'fermata': fermataEmpty});
+    Stop? fermata = await DatabaseCommands.getStop(stopNum);
+    if (fermata == null) {
+      Get.snackbar('Error', 'La fermata non esiste');
+    } else {
+      Get.to(() => InfoPage(), arguments: {'fermata': fermata});
+    }
   }
 }

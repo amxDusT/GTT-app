@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/fermata.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class InfoWidget extends StatelessWidget {
-  final Vehicle bus;
-  const InfoWidget({super.key, required this.bus});
+  final RouteWithDetails vehicle;
+  const InfoWidget({super.key, required this.vehicle});
 
   void _openAlerts() {
-    if (bus.alerts.isEmpty) {
+    if (vehicle.alerts.isEmpty) {
       return;
     }
-    Get.defaultDialog(middleText: bus.alerts[0]);
+    Get.defaultDialog(middleText: vehicle.alerts[0]);
   }
 
   Widget _getHoursRow() {
@@ -21,11 +21,11 @@ class InfoWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       mainAxisSize: MainAxisSize.min,
       children: [
-        ...bus.stoptimes
+        ...vehicle.stoptimes
             .getRange(
                 0,
-                bus.stoptimes.length < maxHours
-                    ? bus.stoptimes.length
+                vehicle.stoptimes.length < maxHours
+                    ? vehicle.stoptimes.length
                     : maxHours)
             .map(
               (e) => Text(
@@ -43,10 +43,10 @@ class InfoWidget extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: () {
-          Get.to(() => MapPage(), arguments: {'vehicle': bus});
+          Get.to(() => MapPage(), arguments: {'vehicle': vehicle});
         },
         title: Text(
-          '${bus.shortName} - ${bus.longName}',
+          '${vehicle.shortName} - ${vehicle.longName}',
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: _getHoursRow(),
@@ -55,10 +55,10 @@ class InfoWidget extends StatelessWidget {
           child: GestureDetector(
             onTap: _openAlerts,
             child: Text(
-              bus.alerts.isEmpty ? "No alerts" : "Alerts",
+              vehicle.alerts.isEmpty ? "No alerts" : "Alerts",
               textAlign: TextAlign.center,
               style: Get.textTheme.labelSmall!.copyWith(
-                  color: bus.alerts.isEmpty
+                  color: vehicle.alerts.isEmpty
                       ? null
                       : Colors.blue), // Get.theme.colorScheme.background,
             ),

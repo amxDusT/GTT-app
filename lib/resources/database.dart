@@ -1,16 +1,21 @@
-import 'package:flutter_gtt/models/fermata.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/testing/testing_gtt_feeds.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseCommands {
   static Future<Database>? database;
   static const _databaseName = 'flutter_gtt';
-  static const stopTable = 'gtt_stops';
-  static const agencyTable = 'gtt_agency';
-  static const vehiclesTable = 'gtt_vehicles';
-  static Future<Database> get dbase => database ?? init();
+  static const _favoritesTable = 'favorites_table';
+
+  static const _agencyTable = 'agencies';
+  static const _routesTable = "routes";
+  static const _patternsTable = "patterns";
+  static const _stopsTable = "stops";
+  static const _patternStopsTable = "pattern_stops";
+
+  static Future<Database> get instance => database ?? init();
 
   static Future<Database> init() async {
     database = openDatabase(
@@ -23,111 +28,283 @@ class DatabaseCommands {
     return database!;
   }
 
-  static void deleteTable() async {
-    final db = await dbase;
-    await db.execute('DROP TABLE $stopTable');
+  // test
+  static Future<void> deleteTable() async {
+    final db = await instance;
+    await db.execute('DROP TABLE $_favoritesTable');
+    await db.execute('DROP TABLE $_stopsTable');
+    await db.execute('DROP TABLE $_agencyTable');
+    await db.execute('DROP TABLE $_routesTable');
+    await db.execute('DROP TABLE $_patternsTable');
+    await db.execute('DROP TABLE $_stopsTable');
+    await db.execute('DROP TABLE $_patternStopsTable');
   }
 
-  static void createTable({Database? db}) async {
-    db ??= await dbase;
-    await db.execute(
-      'CREATE TABLE IF NOT EXISTS $stopTable(id INTEGER PRIMARY KEY AUTOINCREMENT, stopNum INTEGER UNIQUE, nome TEXT, descrizione TEXT, latitude REAL, longitude REAL, date INTEGER, color TEXT)',
+  static Future<void> createTable({Database? db}) async {
+    db ??= await instance;
+    final Batch batch = db.batch();
+    batch.execute(
+      '''CREATE TABLE IF NOT EXISTS $_agencyTable (
+          gtfsId	TEXT,
+          name	TEXT,
+          url	TEXT,
+          fareUrl	TEXT,
+          phone	TEXT,
+          PRIMARY KEY(gtfsId)
+        )''',
     );
 
-    await db.execute(
-      'CREATE TABLE IF NOT EXISTS $agencyTable(id INTEGER PRIMARY KEY AUTOINCREMENT, gtfsId TEXT UNIQUE, name TEXT, url TEXT, fareUrl TEXT, phone TEXT)',
+    batch.execute(
+      '''CREATE TABLE IF NOT EXISTS $_routesTable (
+          gtfsId	TEXT,
+          agencyId	TEXT,
+          shortName	TEXT,
+          longName	TEXT,
+          type	INTEGER,
+          desc	TEXT,
+          PRIMARY KEY(gtfsId),
+          FOREIGN KEY(agencyId) REFERENCES $_agencyTable(gtfsId)
+        )''',
     );
 
-    // await db.execute(
-    //   'CREATE TABLE $vehiclesTable(id INTEGER PRIMARY KEY AUTOINCREMENT, )',
-    // );
+    batch.execute(
+      '''CREATE TABLE IF NOT EXISTS $_patternsTable (
+          code	TEXT PRIMARY KEY,
+          routeId	TEXT,
+          directionId	INTEGER,
+          headsign	TEXT,
+          points TEXT,
+          FOREIGN KEY(routeId) REFERENCES $_routesTable(gtfsId)
+        )''',
+    );
+
+    batch.execute(
+      '''CREATE TABLE IF NOT EXISTS $_stopsTable (
+            gtfsId TEXT PRIMARY KEY,
+            code INTEGER,
+            name TEXT,
+            lat REAL,
+            lon REAL
+        )''',
+    );
+    batch.execute(
+      '''CREATE TABLE IF NOT EXISTS $_patternStopsTable (
+            patternCode TEXT,
+            stopId TEXT,
+            stopOrder INTEGER,
+            PRIMARY KEY (patternCode, stopId),
+            FOREIGN KEY (patternCode) REFERENCES $_patternsTable(patternCode),
+            FOREIGN KEY (stopId) REFERENCES $_stopsTable(gtfsId)
+        )''',
+    );
+    batch.execute(
+      '''CREATE TABLE IF NOT EXISTS $_favoritesTable(
+        stopId TEXT UNIQUE,
+        descrizione TEXT,
+        date INTEGER,
+        color TEXT,
+        FOREIGN KEY (stopId) REFERENCES $_stopsTable(gtfsId)
+      )''',
+    );
+    await batch.commit();
   }
 
-  static Future<void> insertStop(Fermata fermata) async {
-    Database db = await dbase;
+  static Future<void> insertStop(Stop fermata) async {
+    Database db = await instance;
+    final FavStop fermataFav =
+        (fermata is FavStop) ? fermata : FavStop.fromStop(stop: fermata);
     await db.insert(
-      stopTable,
-      fermata.toDbMap(),
+      _favoritesTable,
+      fermataFav.toDbMap(),
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
 
-  static Future<void> updateStop(Fermata fermata) async {
-    Database db = await dbase;
+  static Future<void> updateStop(FavStop fermata) async {
+    Database db = await instance;
 
     await db.insert(
-      stopTable,
+      _favoritesTable,
       fermata.toDbMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  static Future<List<Fermata>> getFermate() async {
-    Database db = await dbase;
-    final List<Map<String, dynamic>> maps = await db.query(
-      stopTable,
-      orderBy: 'date DESC',
+  static Future<List<FavStop>> getFermate() async {
+    Database db = await instance;
+    final List<Map<String, dynamic>> result = await db.rawQuery(
+      '''
+      SELECT $_stopsTable.*, $_favoritesTable.*
+      FROM $_stopsTable
+      JOIN $_favoritesTable ON $_stopsTable.gtfsId = $_favoritesTable.stopId;
+      ORDER BY $_favoritesTable.date DESC
+      ''',
     );
-    return List.generate(maps.length, (i) {
-      return Fermata(
-        stopNum: maps[i]['stopNum'] as int,
-        nome: maps[i]['nome'] as String,
-        descrizione: maps[i]['descrizione'] as String?,
-        latitude: maps[i]['latitude'] as double,
-        longitude: maps[i]['longitude'] as double,
-        vehicles: const [],
-        dateTime: DateTime.fromMillisecondsSinceEpoch(
-            (maps[i]['date'] as int) * 1000),
-        color: Storage.stringToColor(maps[i]['color'] as String)!,
-      );
+
+    return List.generate(result.length, (i) {
+      return FavStop.fromJson(result[i]);
     });
   }
 
-  static Future<bool> hasStop(Fermata fermata) async {
-    Database db = await dbase;
+  static Future<bool> hasStop(Stop fermata) async {
+    Database db = await instance;
 
     final List<Map<String, dynamic>> result = await db.query(
-      stopTable,
-      where: 'stopNum = ?',
-      whereArgs: [fermata.stopNum],
+      _favoritesTable,
+      where: 'stopId = ?',
+      whereArgs: [fermata.gtfsId],
     );
     return result.isNotEmpty;
   }
 
-  static Future<void> deleteStop(Fermata fermata) async {
-    Database db = await dbase;
+  static Future<void> deleteStop(Stop fermata) async {
+    Database db = await instance;
 
     await db.delete(
-      stopTable,
-      where: 'stopNum = ?',
-      whereArgs: [fermata.stopNum],
+      _favoritesTable,
+      where: 'code = ?',
+      whereArgs: [fermata.code],
     );
   }
 
-  static Future<void> insertAgency(GttType agency) async {
-    Database db = await dbase;
-    //print('here');
-    await db.insert(
-      agencyTable,
-      agency.toDbMap(),
-      conflictAlgorithm: ConflictAlgorithm.ignore,
-    );
-  }
+  /*
+    ------------------------------------------------------------------------
+  */
 
-  static Future<List<GttType>> getAgencies() async {
-    Database db = await dbase;
-    final List<Map<String, dynamic>> maps = await db.query(
-      agencyTable,
-      orderBy: 'id DESC',
+  static Future<List<Agency>> get agencies async {
+    final db = await instance;
+    final results = await db.query(
+      _agencyTable,
+      orderBy: 'gtfsId DESC',
     );
-    return List.generate(maps.length, (i) {
-      return GttType.fromJson(maps[i]);
+
+    //return results.map((agency) => Agency.fromJson(agency)).toList();
+    return List.generate(results.length, (i) {
+      return Agency.fromJson(results[i]);
     });
   }
 
-  static Future<void> deleteTableAgency() async {
-    final db = await dbase;
-    await db.execute('DROP TABLE $agencyTable');
+  static Future<List<Route>> get routes async {
+    final db = await instance;
+    final results = await db.query(
+      _routesTable,
+    );
+    return List.generate(results.length, (i) {
+      return Route.fromJson(results[i]);
+    });
+  }
+
+  static Future<List<Pattern>> getPatterns(Route route) async {
+    final db = await instance;
+    final results = await db.query(
+      _patternsTable,
+      where: 'routeId = ?',
+      whereArgs: [route.gtfsId],
+      orderBy: 'directionId, code ASC',
+    );
+    return List.generate(results.length, (i) {
+      return Pattern.fromJson(results[i]);
+    });
+  }
+
+  static Future<void> transaction(List<dynamic> elements) async {
+    if (elements.isEmpty) {
+      return;
+    }
+    String? table;
+
+    if (elements[0] is Route) {
+      table = _routesTable;
+    } else if (elements[0] is Pattern) {
+      table = _patternsTable;
+    } else if (elements[0] is Stop) {
+      table = _stopsTable;
+    } else if (elements[0] is PatternStop) {
+      table = _patternStopsTable;
+    } else if (elements[0] is Agency) {
+      table = _agencyTable;
+    }
+
+    if (table == null) {
+      throw 'Error, Object not found';
+    }
+    final db = await instance;
+    await db.transaction((txn) async {
+      final batch = txn.batch();
+      for (var element in elements) {
+        batch.insert(
+          table!,
+          element.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
+      await batch.commit();
+      print("finished $table");
+    });
+  }
+
+  static Future<Stop?> getStop(int stopNum) async {
+    final db = await instance;
+    final List<Map<String, dynamic>> result = await db.query(
+      _stopsTable,
+      where: 'code = ?',
+      whereArgs: [stopNum],
+    );
+    if (result.isNotEmpty) {
+      print('hello');
+      return Stop.fromJson(result.first);
+    }
+    print('oh no');
+    return null;
+  }
+
+  static Future<List<Stop>> getStopsFromPattern(Pattern pattern) async {
+    final db = await instance;
+    final List<Map<String, dynamic>> result = await db.rawQuery(
+      '''
+      SELECT $_stopsTable.* 
+      FROM $_stopsTable 
+      JOIN $_patternStopsTable ON $_stopsTable.gtfsId = $_patternStopsTable.stopId 
+      WHERE $_patternStopsTable.patternCode = ?
+      ORDER BY $_patternStopsTable.stopOrder ASC
+      ''',
+      [pattern.code],
+    );
+    return List.generate(result.length, (i) {
+      return Stop.fromJson(result[i]);
+    });
+  }
+
+  static Future<List<Route>> getRouteFromStop(Stop stop) async {
+    final db = await instance;
+    final List<Map<String, dynamic>> result = await db.rawQuery('''
+      SELECT DISTINCT $_routesTable.*
+      FROM $_routesTable
+      JOIN $_patternsTable ON $_routesTable.gtfsId = $_patternsTable.routeId
+      JOIN $_patternStopsTable ON $_patternsTable.code = $_patternStopsTable.patternCode
+      JOIN $_stopsTable ON $_patternStopsTable.stopId = $_stopsTable.gtfsId
+      WHERE $_stopsTable.gtfsId = ?
+      ''', [stop.gtfsId]);
+    return List.generate(result.length, (i) {
+      return Route.fromJson(result[i]);
+    });
+  }
+
+  static Future<Pattern> getPatternFromCode(String code) async {
+    final db = await instance;
+    final List<Map<String, dynamic>> result = await db.query(
+      _patternsTable,
+      where: 'code = ?',
+      whereArgs: [code],
+    );
+    return Pattern.fromJson(result.first);
+  }
+
+  // test
+  static Future<void> clearStops() async {
+    final db = await instance;
+    await db.delete(_stopsTable);
+    Get.find<RouteListController>().loadFromApi();
   }
 }
 

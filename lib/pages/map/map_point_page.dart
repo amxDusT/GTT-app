@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_point_controller.dart';
-import 'package:flutter_gtt/models/fermata.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -14,7 +14,7 @@ class MapPointPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Fermata ${_mapController.initialFermata.nome}'),
+          title: Text('Fermata ${_mapController.initialFermata.name}'),
         ),
         body: FlutterMap(
           mapController: _mapController.mapController,
@@ -63,7 +63,7 @@ class MapPointPage extends StatelessWidget {
                                   },
                                 )),
                             if (marker is FermataMarker)
-                              Text('Fermata ${marker.fermata.nome}'),
+                              Text('Fermata ${marker.fermata.name}'),
                           ],
                         ),
                       ),
@@ -98,5 +98,5 @@ class MapPointPage extends StatelessWidget {
         ));
   }
 
-  Marker _buildPin(Fermata fermata) => FermataMarker(fermata: fermata);
+  Marker _buildPin(Stop fermata) => FermataMarker(fermata: fermata);
 }
