@@ -7,7 +7,8 @@ import 'package:intl/intl.dart';
 
 class InfoWidget extends StatelessWidget {
   final RouteWithDetails vehicle;
-  const InfoWidget({super.key, required this.vehicle});
+  final Stop stop;
+  const InfoWidget({super.key, required this.stop, required this.vehicle});
 
   void _openAlerts() {
     if (vehicle.alerts.isEmpty) {
@@ -43,7 +44,8 @@ class InfoWidget extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: () {
-          Get.to(() => MapPage(), arguments: {'vehicle': vehicle});
+          Get.to(() => MapPage(),
+              arguments: {'vehicle': vehicle, 'fermata': stop});
         },
         title: Text(
           '${vehicle.shortName} - ${vehicle.longName}',
