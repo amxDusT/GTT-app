@@ -71,7 +71,7 @@ class SmartCard {
   final List<Contract> subscriptions = [];
   final List<Contract> tickets = [];
   final List<Contract> allContracts = [];
-  late final Contract? mainSubscription;
+  Contract? mainSubscription;
   late final DateTime _creationDate;
   late final DateTime validationDate;
   late final int remainingMins;

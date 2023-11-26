@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/nfc_controller.dart';
-import 'package:flutter_gtt/resources/database.dart';
 import 'package:get/get.dart';
 
 class NfcPage extends StatelessWidget {
@@ -48,10 +47,6 @@ class NfcPage extends StatelessWidget {
                   ElevatedButton(
                       onPressed: _nfcController.testSmartCard,
                       child: const Text('Test SmartCard')),
-                  ElevatedButton(
-                      onPressed: () async =>
-                          await DatabaseCommands.clearStops(),
-                      child: const Text('Test')),
                 ],
               ),
             ),
