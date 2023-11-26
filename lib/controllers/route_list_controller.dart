@@ -7,24 +7,8 @@ class RouteListController extends GetxController {
   List<Agency> agencies = [];
   Map<String, List<Route>> routesMap = {};
 
-  @override
-  void onInit() {
-    super.onInit();
-    _getAgencies();
-  }
-
-  void _getAgencies([bool isFirstTime = true]) async {
-    agencies = await DatabaseCommands.agencies;
-    if (agencies.isEmpty) {
-      // assuming we don't have anything in DB since we don't have the agencies
-      if (isFirstTime) {
-        Get.snackbar('Loading', 'Loading data from GTT');
-        await loadFromApi();
-      } else {
-        Get.snackbar('Error', 'Could not load data');
-      }
-      return;
-    }
+  Future<void> getAgencies([List<Agency>? agencyValues]) async {
+    agencies = agencyValues ?? await DatabaseCommands.agencies;
     update();
   }
 
@@ -36,31 +20,8 @@ class RouteListController extends GetxController {
     }
     _sortResult();
     //_sortRoutesMap();
-    print(routesMap.length);
+    //print(routesMap.length);
     update();
-  }
-
-  void _sortRoutesMap() {
-    int extractNumericPart(String str) {
-      RegExpMatch? match = RegExp(r'\d+').firstMatch(str);
-      if (match != null) {
-        return int.parse(match.group(0)!);
-      } else {
-        return 0;
-      }
-    }
-
-    for (var key in routesMap.keys) {
-      routesMap[key]!.sort((a, b) {
-        int typeCompare = a.type.compareTo(b.type);
-        if (typeCompare != 0) {
-          return typeCompare;
-        }
-        int numA = extractNumericPart(a.shortName);
-        int numB = extractNumericPart(b.shortName);
-        return numA.compareTo(numB);
-      });
-    }
   }
 
   /*
@@ -114,7 +75,7 @@ class RouteListController extends GetxController {
     try {
       List<Agency> agencyList = await Api.getAgencies();
       DatabaseCommands.transaction(agencyList);
-      _getAgencies(true);
+      getAgencies(agencyList);
       List<Route> routeValues;
       List<Pattern> patternValues;
       List<Stop> stopValues;
@@ -127,7 +88,8 @@ class RouteListController extends GetxController {
       await DatabaseCommands.transaction(stopValues);
       await DatabaseCommands.transaction(patternStopValues);
     } on ApiException catch (e) {
-      print(e.message);
+      Get.snackbar('Error', e.message);
+      //print(e.message);
     }
   }
 }
