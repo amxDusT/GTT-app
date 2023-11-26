@@ -18,6 +18,7 @@ class MapPageController extends GetxController
   final double minZoom = 10;
   final double maxZoom = 18;
   final gtt.Route _vehicle = Get.arguments['vehicle'];
+
   late final Rx<gtt.Pattern> currentPattern;
   late final RxList<gtt.Stop> currentFermate;
   RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
@@ -63,6 +64,11 @@ class MapPageController extends GetxController
   }
 
   void onMapReady() async {
+    final gtt.Stop? initialFermata = Get.arguments['fermata'];
+    if (initialFermata != null) {
+      //print("fermata exists");
+      popupController.togglePopup(FermataMarker(fermata: initialFermata));
+    }
     if (_vehicle is gtt.RouteWithDetails) {
       currentPattern = (_vehicle as gtt.RouteWithDetails).pattern.obs;
     } else {
