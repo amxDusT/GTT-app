@@ -1,6 +1,4 @@
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
-import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -136,8 +134,8 @@ class DatabaseCommands {
       '''
       SELECT $_stopsTable.*, $_favoritesTable.*
       FROM $_stopsTable
-      JOIN $_favoritesTable ON $_stopsTable.gtfsId = $_favoritesTable.stopId;
-      ORDER BY $_favoritesTable.date DESC
+      JOIN $_favoritesTable ON $_stopsTable.gtfsId = $_favoritesTable.stopId
+      ORDER BY $_favoritesTable.date DESC;
       ''',
     );
 
@@ -162,8 +160,8 @@ class DatabaseCommands {
 
     await db.delete(
       _favoritesTable,
-      where: 'code = ?',
-      whereArgs: [fermata.code],
+      where: 'stopId = ?',
+      whereArgs: [fermata.gtfsId],
     );
   }
 
@@ -301,10 +299,18 @@ class DatabaseCommands {
   }
 
   // test
-  static Future<void> clearStops() async {
+  static Future<void> clearTables() async {
     final db = await instance;
-    await db.delete(_stopsTable);
-    Get.find<RouteListController>().loadFromApi();
+    await db.transaction((txn) async {
+      final batch = txn.batch();
+      batch.delete(_patternStopsTable);
+      batch.delete(_stopsTable);
+      batch.delete(_patternsTable);
+      batch.delete(_routesTable);
+      batch.delete(_agencyTable);
+      batch.delete(_favoritesTable);
+      await batch.commit();
+    });
   }
 }
 
