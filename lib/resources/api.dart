@@ -24,6 +24,8 @@ class MqttController {
 
     _client.connectionMessage = connMess;
     _client.useWebSocket = true;
+    _client.autoReconnect = true;
+
     _client.setProtocolV311();
 
     connect(shortName);
@@ -32,7 +34,6 @@ class MqttController {
     await _client.connect();
 
     _client.subscribe('/$shortName/#', MqttQos.atMostOnce);
-
     // Set up the subscription
     _subscription =
         _client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
@@ -141,7 +142,7 @@ class Api {
     final Map<String, dynamic> js = json.decode(body);
     final List<Route> routes = [];
     final List<Pattern> patterns = [];
-    final List<Stop> stops = [];
+    final Set<Stop> stops = {};
     final List<PatternStop> patternStops = [];
     for (var route in (js['data']['routes'] as List)) {
       Route r = Route.fromJson(route);
@@ -161,7 +162,7 @@ class Api {
         }
       }
     }
-    return (routes, patterns, stops, patternStops);
+    return (routes, patterns, stops.toList(), patternStops);
   }
 }
 
