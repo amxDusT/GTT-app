@@ -63,6 +63,7 @@ class InfoPage extends StatelessWidget {
                                   );
                                 }
                                 return InfoWidget(
+                                    stop: controller.fermata,
                                     vehicle:
                                         controller.fermata.vehicles[index]);
                               },
