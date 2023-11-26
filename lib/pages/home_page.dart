@@ -6,6 +6,7 @@ import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
 import 'package:flutter_gtt/pages/route_list_page.dart';
+import 'package:flutter_gtt/pages/settings_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -184,10 +185,10 @@ class HomePage extends StatelessWidget {
         });
   }
 
-  Widget _getDrawer() {
+  Widget _getDrawer(BuildContext context) {
     return Drawer(
       //backgroundColor: Colors.grey,
-      width: Get.size.width * 0.6,
+      width: context.width * 0.6,
       child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -197,7 +198,7 @@ class HomePage extends StatelessWidget {
                 shrinkWrap: true,
                 children: [
                   SizedBox(
-                    height: Get.size.height * 0.5,
+                    height: context.height * 0.5,
                   ),
                   Hero(
                     tag: 'NFCPage',
@@ -234,6 +235,7 @@ class HomePage extends StatelessWidget {
                     title: const Text('Impostazioni'),
                     onTap: () {
                       // open Settings page??
+                      Get.to(() => SettingsPage());
                     },
                   ),
                 ],
@@ -255,7 +257,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _homeController.scaffoldKey,
-      endDrawer: _getDrawer(),
+      endDrawer: _getDrawer(context),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Gtt Fermate"),
@@ -314,10 +316,10 @@ class HomePage extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   crossAxisCount: 2,
                   children: [
-                    ...controller.fermate.map((e) => Column(
+                    ...controller.fermate.map((fermata) => Column(
                           children: [
                             Hero(
-                              tag: 'HeroTagFermata${e.code}',
+                              tag: 'HeroTagFermata${fermata.code}',
                               flightShuttleBuilder: ((flightContext,
                                       animation,
                                       flightDirection,
@@ -329,24 +331,24 @@ class HomePage extends StatelessWidget {
                                   )),
                               child: InkWell(
                                 onTapDown: _homeController.getPosition,
-                                onLongPress: () => _showContextMenu(e),
+                                onLongPress: () => _showContextMenu(fermata),
                                 onTap: () => Get.to(() => InfoPage(),
-                                    arguments: {'fermata': e}),
+                                    arguments: {'fermata': fermata}),
                                 child: Ink(
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.vertical(
                                       top: Radius.circular(12),
                                     ),
-                                    color: Utils.lighten(e.color),
+                                    color: Utils.lighten(fermata.color),
                                   ),
                                   height: 115,
                                   padding: const EdgeInsets.all(8),
                                   //color: Utils.lighten(e.color),
                                   child: Column(
                                     children: [
-                                      Text(e.toString()),
+                                      Text(fermata.toString()),
                                       const Divider(),
-                                      Text(e.descrizione ?? ''),
+                                      Text(fermata.descrizione ?? ''),
                                     ],
                                   ),
                                 ),
@@ -354,7 +356,7 @@ class HomePage extends StatelessWidget {
                             ),
                             InkWell(
                               onTap: () => Get.to(() => MapPointPage(),
-                                  arguments: {'fermata': e}),
+                                  arguments: {'fermata': fermata}),
                               //MapUtils.openMap(e.latitude, e.longitude),
                               child: Ink(
                                 width: double.maxFinite,
@@ -363,7 +365,7 @@ class HomePage extends StatelessWidget {
                                   borderRadius: const BorderRadius.vertical(
                                     bottom: Radius.circular(12),
                                   ),
-                                  color: Utils.lighten(e.color, 70),
+                                  color: Utils.lighten(fermata.color, 70),
                                 ),
                                 child: const Center(child: Text('Posizione')),
                               ),
