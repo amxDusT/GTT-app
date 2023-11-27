@@ -34,7 +34,7 @@ class FermataMarker extends Marker {
           point: LatLng(fermata.lat, fermata.lon),
           child: const Icon(
             Icons.circle,
-            size: 15,
+            size: 10,
             color: Colors.red,
           ),
         );

@@ -44,8 +44,10 @@ class InfoWidget extends StatelessWidget {
     return Card(
       child: ListTile(
         onTap: () {
-          Get.to(() => MapPage(),
-              arguments: {'vehicle': vehicle, 'fermata': stop});
+          Get.to(() => MapPage(), arguments: {
+            'vehicles': [vehicle],
+            'fermata': stop
+          });
         },
         title: Text(
           '${vehicle.shortName} - ${vehicle.longName}',

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
+import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -53,13 +54,22 @@ class InfoPage extends StatelessWidget {
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               padding: const EdgeInsets.symmetric(vertical: 12),
-                              itemCount: controller.fermata.vehicles.length + 1,
+                              itemCount: controller.fermata.vehicles.length + 2,
                               itemBuilder: (context, index) {
                                 if (index ==
                                     controller.fermata.vehicles.length) {
                                   return Center(
                                     child: Text(
                                         "Ultimo aggiornamento: ${DateFormat.Hms(Get.locale?.languageCode).format(_infoController.lastUpdate.value)}"),
+                                  );
+                                } else if (index ==
+                                    controller.fermata.vehicles.length + 1) {
+                                  return ElevatedButton(
+                                    onPressed: () =>
+                                        Get.to(() => MapPage(), arguments: {
+                                      'vehicles': controller.fermata.vehicles
+                                    }),
+                                    child: const Text('Guarda sulla mappa'),
                                   );
                                 }
                                 return InfoWidget(

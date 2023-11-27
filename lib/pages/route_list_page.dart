@@ -70,8 +70,9 @@ class RouteListPage extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                             onTap: () {
-                              Get.to(() => MapPage(),
-                                  arguments: {'vehicle': route});
+                              Get.to(() => MapPage(), arguments: {
+                                'vehicles': [route]
+                              });
                             },
                           );
                         },

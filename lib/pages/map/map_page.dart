@@ -29,11 +29,10 @@ class MapPage extends StatelessWidget {
                 child: DropdownMenu(
                   initialSelection:
                       _flutterMapController.isPatternInitialized.isTrue
-                          ? _flutterMapController.currentPattern.value
+                          ? _flutterMapController.patterns.values.first
                           : null,
-                  onSelected: (pattern) => pattern == null
-                      ? null
-                      : _flutterMapController.setCurrentPattern(pattern),
+                  onSelected: (pattern) =>
+                      pattern == null ? null : null, //TODO: setNewPatter
                   dropdownMenuEntries: (_flutterMapController.routePatterns
                       .map((pattern) => DropdownMenuEntry(
                             value: pattern,
@@ -84,14 +83,16 @@ class MapPage extends StatelessWidget {
                 ),
                 Obx(
                   () => PolylineLayer(polylines: [
-                    Polyline(
-                      points: _flutterMapController.isPatternInitialized.isTrue
-                          ? _flutterMapController
-                              .currentPattern.value.polylinePoints
-                          : [],
-                      color: Colors.red,
-                      strokeWidth: 2,
-                    ),
+                    ..._flutterMapController.isPatternInitialized.isTrue
+                        ? _flutterMapController.patterns.values.indexed
+                            .map((value) => Polyline(
+                                  points: value.$2.polylinePoints,
+                                  strokeWidth: 2,
+                                  color: MapPageController.colors[value.$1 %
+                                      MapPageController.colors.length],
+                                  borderColor: Colors.red,
+                                ))
+                        : <Polyline>[],
                   ]),
                 ),
                 Obx(
@@ -117,11 +118,9 @@ class MapPage extends StatelessWidget {
                       popupController: _flutterMapController.popupController,
                       markers: [
                         ..._flutterMapController.isPatternInitialized.isTrue
-                            ? _flutterMapController.currentFermate.map(
-                                (e) => _buildFermata(e),
-                              )
+                            ? _flutterMapController.allStops.map(_buildFermata)
                             : [],
-                        ..._flutterMapController.mqttDirection.values.map(
+                        ..._flutterMapController.allVehiclesInDirection.map(
                           (data) => _buildVehicle(data),
                         )
                       ],

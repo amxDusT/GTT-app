@@ -15,12 +15,21 @@ import 'package:location/location.dart';
 
 class MapPageController extends GetxController
     with GetTickerProviderStateMixin {
-  final double minZoom = 10;
-  final double maxZoom = 18;
-  final gtt.Route _vehicle = Get.arguments['vehicle'];
+  static const double minZoom = 10;
+  static const double maxZoom = 18;
+  static const List colors = [
+    //Colors.red,
+    Colors.green,
+    //Colors.yellow,
+    Colors.brown,
+    Colors.amber,
+    Colors.deepOrange,
+    Colors.deepPurple,
+  ];
 
-  late final Rx<gtt.Pattern> currentPattern;
-  late final RxList<gtt.Stop> currentFermate;
+  late final Map<String, gtt.Route> _newVehicles = {};
+  final RxMap<String, gtt.Pattern> patterns = <String, gtt.Pattern>{}.obs;
+  final RxMap<String, List<gtt.Stop>> stops = <String, List<gtt.Stop>>{}.obs;
   RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
   MapController mapController = MapController();
   PopupController popupController = PopupController();
@@ -28,15 +37,38 @@ class MapPageController extends GetxController
 
   //live bus
   late MqttController _mqttController;
-  final RxMap<int, MqttData> mqttData = <int, MqttData>{}.obs;
-  RxMap<int, MqttData> get mqttDirection => RxMap.from(
-        {
-          for (var element in mqttData.values.where(
-            (element) => element.direction == currentPattern.value.directionId,
-          ))
-            element.vehicleNum: element
-        },
-      );
+
+  final RxMap<String, RxMap<int, MqttData>> newMqttData =
+      <String, RxMap<int, MqttData>>{}.obs;
+
+  List<gtt.Stop> get allStops {
+    List<gtt.Stop> all = [];
+
+    for (var s in stops.values) {
+      all.addAll(s);
+    }
+
+    return all;
+  }
+
+  RxList<MqttData> get allVehiclesInDirection {
+    RxList<MqttData> list = <MqttData>[].obs;
+    for (var mapEntry in newMqttData.entries) {
+      list.addAll(mapEntry.value.values.where(
+        (el) => el.direction == patterns[mapEntry.key]!.directionId,
+      ));
+    }
+    return list;
+  }
+
+  // RxMap<int, MqttData> get mqttDirection => RxMap.from(
+  //       {
+  //         for (var element in mqttData.values.where(
+  //           (element) => element.direction == currentPattern.value.directionId,
+  //         ))
+  //           element.vehicleNum: element
+  //       },
+  //     );
   Marker? lastOpenedMarker;
   // User Location
   LatLng? _userLocation;
@@ -47,8 +79,15 @@ class MapPageController extends GetxController
 
   @override
   void onInit() async {
-    _mqttController = MqttController(_vehicle.shortName);
     super.onInit();
+    _mqttController = MqttController();
+
+    for (gtt.Route route in Get.arguments['vehicles']) {
+      _newVehicles.putIfAbsent(route.shortName, () => route);
+      _mqttController.addSubscription(route.shortName);
+    }
+
+    _mqttController.connect();
   }
 
   @override
@@ -69,18 +108,18 @@ class MapPageController extends GetxController
       //print("fermata exists");
       popupController.togglePopup(FermataMarker(fermata: initialFermata));
     }
-    if (_vehicle is gtt.RouteWithDetails) {
-      currentPattern = (_vehicle as gtt.RouteWithDetails).pattern.obs;
-    } else {
-      routePatterns.value = await DatabaseCommands.getPatterns(_vehicle);
-      if (routePatterns.isEmpty) {
-        //error
-        throw 'Unexpected Behaviour';
-      }
-      currentPattern = routePatterns.first.obs;
+
+    for (gtt.Route route in _newVehicles.values) {
+      patterns.putIfAbsent(
+          route.shortName, () => (route as gtt.RouteWithDetails).pattern);
+
+      List<gtt.Stop> stopsForPattern =
+          await DatabaseCommands.getStopsFromPattern(
+              patterns[route.shortName]!);
+      stops.putIfAbsent(route.shortName, () => stopsForPattern);
+      newMqttData.putIfAbsent(route.shortName, () => <int, MqttData>{}.obs);
     }
-    currentFermate =
-        (await DatabaseCommands.getStopsFromPattern(currentPattern.value)).obs;
+
     isPatternInitialized.value = true;
     _listenData();
     _centerBounds();
@@ -88,7 +127,7 @@ class MapPageController extends GetxController
 
   void _centerBounds() {
     final constrained = CameraFit.coordinates(
-      coordinates: currentPattern.value.polylinePoints,
+      coordinates: patterns.values.first.polylinePoints,
       padding: const EdgeInsets.all(20.0),
     ).fit(mapController.camera);
     _animatedMapMove(constrained.center, constrained.zoom);
@@ -128,10 +167,14 @@ class MapPageController extends GetxController
 
   void _animatedMarkerMove(MqttData payload) {
     final latTween = Tween<double>(
-        begin: mqttData[payload.vehicleNum]!.position.latitude,
+        begin: newMqttData[payload.shortName]![payload.vehicleNum]!
+            .position
+            .latitude,
         end: payload.position.latitude);
     final lngTween = Tween<double>(
-        begin: mqttData[payload.vehicleNum]!.position.longitude,
+        begin: newMqttData[payload.shortName]![payload.vehicleNum]!
+            .position
+            .longitude,
         end: payload.position.longitude);
 
     final controller = AnimationController(
@@ -143,9 +186,15 @@ class MapPageController extends GetxController
       final newLat = latTween.evaluate(animation);
       final newLng = lngTween.evaluate(animation);
 
-      if (mqttData[payload.vehicleNum]?.position.latitude != newLat ||
-          mqttData[payload.vehicleNum]?.position.longitude != newLng) {
-        mqttData.update(
+      if (newMqttData[payload.shortName]![payload.vehicleNum]
+                  ?.position
+                  .latitude !=
+              newLat ||
+          newMqttData[payload.shortName]![payload.vehicleNum]
+                  ?.position
+                  .longitude !=
+              newLng) {
+        newMqttData[payload.shortName]!.update(
           payload.vehicleNum,
           (value) => payload.copyWith(position: LatLng(newLat, newLng)),
         );
@@ -158,16 +207,10 @@ class MapPageController extends GetxController
         controller.dispose();
       }
     });
-    /*
-    popupController.showPopupsOnlyFor(
-        [VehicleMarker(mqttData: mqttData[payload.vehicleNum]!)]);
-    
-    List<Marker> openedMarkers =
-        PopupState.maybeOf(Get.context!)!.selectedMarkers;
-    */
+
     // popup following marker
-    VehicleMarker oldMarker =
-        VehicleMarker(mqttData: mqttData[payload.vehicleNum]!);
+    VehicleMarker oldMarker = VehicleMarker(
+        mqttData: newMqttData[payload.shortName]![payload.vehicleNum]!);
 
     if (lastOpenedMarker != null &&
         lastOpenedMarker is VehicleMarker &&
@@ -182,10 +225,12 @@ class MapPageController extends GetxController
   void _listenData() async {
     _mqttController.payloadStream.listen((MqttData payload) {
       //if (currentPattern.value.directionId == payload.direction) {
-      if (mqttData.containsKey(payload.vehicleNum)) {
+      print(payload.shortName);
+      if (newMqttData[payload.shortName]!.containsKey(payload.vehicleNum)) {
         _animatedMarkerMove(payload);
       } else {
-        mqttData.putIfAbsent(payload.vehicleNum, () => payload);
+        newMqttData[payload.shortName]!
+            .putIfAbsent(payload.vehicleNum, () => payload);
       }
       //}
     });
@@ -280,14 +325,5 @@ class MapPageController extends GetxController
   Future<void> _stopLocationListen() async {
     await _locationSubscription?.cancel();
     _locationSubscription = null;
-  }
-
-  void setCurrentPattern(gtt.Pattern newPattern) async {
-    currentPattern.value = newPattern;
-    currentFermate.value =
-        await DatabaseCommands.getStopsFromPattern(newPattern);
-    popupController.hideAllPopups();
-    _centerBounds();
-    //mqttData.clear();
   }
 }

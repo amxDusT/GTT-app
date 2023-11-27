@@ -8,16 +8,15 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
 class MqttController {
-  static late String _shortName;
+  final Set<String> _shortNames = {};
   late MqttServerClient _client;
   late StreamSubscription<List<MqttReceivedMessage<MqttMessage>>> _subscription;
   final StreamController<MqttData> _payloadStreamController =
       StreamController<MqttData>();
 
-  MqttController(String shortName) {
-    _shortName = shortName;
+  MqttController() {
     _client = MqttServerClient.withPort(
-        'wss://mapi.5t.torino.it/scre', 'randomNameTesting$shortName', 443);
+        'wss://mapi.5t.torino.it/scre', 'randomNameTesting123', 443);
     _client.logging(on: false);
     _client.keepAlivePeriod = 60;
     final connMess = MqttConnectMessage().withWillQos(MqttQos.atMostOnce);
@@ -28,13 +27,20 @@ class MqttController {
 
     _client.setProtocolV311();
 
-    connect(shortName);
+    //connect(shortName);
   }
-  void connect(String shortName) async {
-    await _client.connect();
+  void addSubscription(String shortName) {
+    _shortNames.add(shortName);
+    //_client.clientIdentifier = '${_client.clientIdentifier}$shortName';
+  }
 
-    _client.subscribe('/$shortName/#', MqttQos.atMostOnce);
-    // Set up the subscription
+  void connect() async {
+    await _client.connect();
+    for (String shortName in _shortNames) {
+      _client.subscribe('/$shortName/#', MqttQos.atMostOnce);
+    }
+
+    // listen to subscriptions
     _subscription =
         _client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
       final recMess = c[0].payload as MqttPublishMessage;
@@ -50,7 +56,9 @@ class MqttController {
   Stream<MqttData> get payloadStream => _payloadStreamController.stream;
 
   Future<void> dispose() async {
-    _client.unsubscribe('/$_shortName/#');
+    for (String shortName in _shortNames) {
+      _client.unsubscribe('/$shortName/#');
+    }
     await _subscription.cancel();
     _client.disconnect();
     await _payloadStreamController.close();
