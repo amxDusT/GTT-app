@@ -61,6 +61,25 @@ class RouteWithDetails extends Route {
           gtfsId: gtfsId,
         );
 
+  RouteWithDetails copyWith({
+    Route? route,
+    List<Stoptime>? stoptimes,
+    Pattern? pattern,
+    List<String>? alerts,
+  }) {
+    return RouteWithDetails(
+      agencyId: route?.agencyId ?? agencyId,
+      shortName: route?.shortName ?? shortName,
+      longName: route?.longName ?? longName,
+      type: route?.type ?? type,
+      desc: route?.desc ?? desc,
+      gtfsId: route?.gtfsId ?? gtfsId,
+      stoptimes: stoptimes ?? this.stoptimes,
+      alerts: alerts ?? this.alerts,
+      pattern: pattern ?? this.pattern,
+    );
+  }
+
   factory RouteWithDetails.fromData({
     required Route route,
     required List<Stoptime> stoptimes,

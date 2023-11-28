@@ -67,7 +67,9 @@ class InfoPage extends StatelessWidget {
                                   return ElevatedButton(
                                     onPressed: () =>
                                         Get.to(() => MapPage(), arguments: {
-                                      'vehicles': controller.fermata.vehicles
+                                      'vehicles': controller.fermata.vehicles,
+                                      'multiple-patterns': true,
+                                      'fermata': controller.fermata,
                                     }),
                                     child: const Text('Guarda sulla mappa'),
                                   );

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -24,35 +23,9 @@ class MapPage extends StatelessWidget {
           Obx(
             () => Visibility(
               visible: _flutterMapController.routePatterns.isNotEmpty,
-              child: SizedBox(
-                height: Get.size.height * 0.07,
-                child: DropdownMenu(
-                  initialSelection:
-                      _flutterMapController.isPatternInitialized.isTrue
-                          ? _flutterMapController.patterns.values.first
-                          : null,
-                  onSelected: (pattern) =>
-                      pattern == null ? null : null, //TODO: setNewPatter
-                  dropdownMenuEntries: (_flutterMapController.routePatterns
-                      .map((pattern) => DropdownMenuEntry(
-                            value: pattern,
-                            label: pattern.code,
-                          ))
-                      .toList()),
-                ),
-
-                // child: PopupMenuButton(
-                //   itemBuilder: (context) {
-                //     return (_flutterMapController.routePatterns
-                //         .map((pattern) => PopupMenuItem(
-                //               child: Text(pattern.code),
-                //               onTap: () =>
-                //                   _flutterMapController.changePattern(pattern),
-                //             ))
-                //         .toList());
-                //   },
-                // ),
-              ),
+              child: _flutterMapController.routePatterns.isEmpty
+                  ? Container()
+                  : _buildPatternMenu(),
             ),
           ),
           Flexible(
@@ -84,14 +57,21 @@ class MapPage extends StatelessWidget {
                 Obx(
                   () => PolylineLayer(polylines: [
                     ..._flutterMapController.isPatternInitialized.isTrue
-                        ? _flutterMapController.patterns.values.indexed
-                            .map((value) => Polyline(
-                                  points: value.$2.polylinePoints,
-                                  strokeWidth: 2,
-                                  color: MapPageController.colors[value.$1 %
-                                      MapPageController.colors.length],
-                                  borderColor: Colors.red,
-                                ))
+                        ? _flutterMapController.routes.values.map((route) =>
+                            Polyline(
+                              points: route.pattern.polylinePoints,
+                              strokeWidth: 4,
+                              color: _flutterMapController.routes.length == 1
+                                  ? Colors.red
+                                  : Utils.lighten(
+                                      MapPageController.colors[
+                                          (_flutterMapController.routeIndex[
+                                                      route.shortName] ??
+                                                  0) %
+                                              MapPageController.colors.length],
+                                      20,
+                                    ),
+                            ))
                         : <Polyline>[],
                   ]),
                 ),
@@ -118,11 +98,11 @@ class MapPage extends StatelessWidget {
                       popupController: _flutterMapController.popupController,
                       markers: [
                         ..._flutterMapController.isPatternInitialized.isTrue
-                            ? _flutterMapController.allStops.map(_buildFermata)
+                            ? _flutterMapController.allStops
                             : [],
-                        ..._flutterMapController.allVehiclesInDirection.map(
-                          (data) => _buildVehicle(data),
-                        )
+                        // ..._flutterMapController.allVehiclesInDirection.map(
+                        //   (data) => _buildVehicle(data)),
+                        ..._flutterMapController.allVehiclesInDirection,
                       ],
                       popupDisplayOptions: PopupDisplayOptions(
                         builder: (BuildContext context, Marker marker) {
@@ -234,6 +214,42 @@ class MapPage extends StatelessWidget {
     );
   }
 
+  Widget _buildPatternMenu() {
+    if (_flutterMapController.isPatternInitialized.isFalse) {
+      return Container();
+    }
+    RouteWithDetails route = _flutterMapController.routes.values.first;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      //crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Linea ${route.shortName}'),
+        Text(route.longName),
+        Text(
+            'Current Pattern: ${route.pattern.directionId} - ${route.pattern.headsign}'),
+        DropdownMenu(
+          width: Get.width * 0.9,
+          initialSelection: _flutterMapController.isPatternInitialized.isTrue
+              ? _flutterMapController.routes.values.first.pattern
+              : null,
+          onSelected: (pattern) => pattern == null
+              ? null
+              : _flutterMapController.setCurrentPattern(pattern),
+          dropdownMenuEntries: (_flutterMapController.routePatterns
+              .map((pattern) => DropdownMenuEntry(
+                    value: pattern,
+                    label:
+                        '${pattern.directionId}:${pattern.code.split(':').last} - ${pattern.headsign}',
+                  ))
+              .toList()),
+        ),
+        const SizedBox(
+          height: 5,
+        )
+      ],
+    );
+  }
+
   Widget _containerFermata(FermataMarker marker) {
     return Text('${marker.fermata.code} - ${marker.fermata.name}');
   }
@@ -252,7 +268,4 @@ class MapPage extends StatelessWidget {
       ],
     );
   }
-
-  Marker _buildFermata(Stop fermata) => FermataMarker(fermata: fermata);
-  Marker _buildVehicle(MqttData data) => VehicleMarker(mqttData: data);
 }

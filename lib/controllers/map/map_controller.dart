@@ -7,6 +7,7 @@ import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -27,48 +28,22 @@ class MapPageController extends GetxController
     Colors.deepPurple,
   ];
 
-  late final Map<String, gtt.Route> _newVehicles = {};
-  final RxMap<String, gtt.Pattern> patterns = <String, gtt.Pattern>{}.obs;
-  final RxMap<String, List<gtt.Stop>> stops = <String, List<gtt.Stop>>{}.obs;
-  RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
   MapController mapController = MapController();
   PopupController popupController = PopupController();
   final List<AnimationController> _activeAnimations = [];
 
+  late final RxList<FermataMarker> allStops;
+  final RxMap<int, VehicleMarker> allVehicles = <int, VehicleMarker>{}.obs;
+  final RxMap<String, gtt.RouteWithDetails> routes =
+      <String, gtt.RouteWithDetails>{}.obs;
+  final Map<String, int> routeIndex = {};
+  final RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
   //live bus
-  late MqttController _mqttController;
+  late final MqttController _mqttController;
 
   final RxMap<String, RxMap<int, MqttData>> newMqttData =
       <String, RxMap<int, MqttData>>{}.obs;
 
-  List<gtt.Stop> get allStops {
-    List<gtt.Stop> all = [];
-
-    for (var s in stops.values) {
-      all.addAll(s);
-    }
-
-    return all;
-  }
-
-  RxList<MqttData> get allVehiclesInDirection {
-    RxList<MqttData> list = <MqttData>[].obs;
-    for (var mapEntry in newMqttData.entries) {
-      list.addAll(mapEntry.value.values.where(
-        (el) => el.direction == patterns[mapEntry.key]!.directionId,
-      ));
-    }
-    return list;
-  }
-
-  // RxMap<int, MqttData> get mqttDirection => RxMap.from(
-  //       {
-  //         for (var element in mqttData.values.where(
-  //           (element) => element.direction == currentPattern.value.directionId,
-  //         ))
-  //           element.vehicleNum: element
-  //       },
-  //     );
   Marker? lastOpenedMarker;
   // User Location
   LatLng? _userLocation;
@@ -77,18 +52,14 @@ class MapPageController extends GetxController
   final RxBool isLocationLoading = false.obs;
   final RxBool isPatternInitialized = false.obs;
 
-  @override
-  void onInit() async {
-    super.onInit();
-    _mqttController = MqttController();
-
-    for (gtt.Route route in Get.arguments['vehicles']) {
-      _newVehicles.putIfAbsent(route.shortName, () => route);
-      _mqttController.addSubscription(route.shortName);
-    }
-
-    _mqttController.connect();
-  }
+  RxList<VehicleMarker> get allVehiclesInDirection => allVehicles.values
+      .where(
+        (vehicle) =>
+            vehicle.mqttData.direction ==
+            routes[vehicle.mqttData.shortName]?.pattern.directionId,
+      )
+      .toList()
+      .obs;
 
   @override
   void onClose() async {
@@ -102,23 +73,51 @@ class MapPageController extends GetxController
     super.onClose();
   }
 
+  void _removeOldVehicles() {
+    allVehicles.removeWhere((key, vehicle) => vehicle.mqttData.lastUpdate
+        .isBefore(DateTime.now().subtract(const Duration(minutes: 2))));
+  }
+
   void onMapReady() async {
+    Timer.periodic(const Duration(minutes: 2), (timer) {
+      _removeOldVehicles();
+    });
+    _mqttController = MqttController();
+    //bool isSingleRoute = Get.arguments['vehicles'].length == 1;
+    List<gtt.Stop> stopsTemp = [];
+    List<gtt.Route> routeValues = Get.arguments['vehicles'];
     final gtt.Stop? initialFermata = Get.arguments['fermata'];
+    final bool showMultiplePatterns =
+        Get.arguments['multiple-patterns'] ?? false;
+
     if (initialFermata != null) {
-      //print("fermata exists");
       popupController.togglePopup(FermataMarker(fermata: initialFermata));
     }
 
-    for (gtt.Route route in _newVehicles.values) {
-      patterns.putIfAbsent(
-          route.shortName, () => (route as gtt.RouteWithDetails).pattern);
-
-      List<gtt.Stop> stopsForPattern =
-          await DatabaseCommands.getStopsFromPattern(
-              patterns[route.shortName]!);
-      stops.putIfAbsent(route.shortName, () => stopsForPattern);
-      newMqttData.putIfAbsent(route.shortName, () => <int, MqttData>{}.obs);
+    if (!showMultiplePatterns && routeValues.first is! gtt.RouteWithDetails) {
+      routePatterns
+          .addAll(await DatabaseCommands.getPatterns(routeValues.first));
+      routeValues = [
+        gtt.RouteWithDetails.fromData(
+            route: routeValues.first,
+            stoptimes: [],
+            pattern: routePatterns.first)
+      ];
     }
+
+    for (gtt.Route route in routeValues) {
+      _mqttController
+          .addSubscription((route as gtt.RouteWithDetails).shortName);
+
+      stopsTemp
+          .addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
+      routes.putIfAbsent(route.shortName.replaceAll(' ', ''), () => route);
+      routeIndex.putIfAbsent(
+          route.shortName.replaceAll(' ', ''), () => routeIndex.length);
+    }
+    allStops =
+        stopsTemp.map((stop) => FermataMarker(fermata: stop)).toList().obs;
+    _mqttController.connect();
 
     isPatternInitialized.value = true;
     _listenData();
@@ -127,7 +126,7 @@ class MapPageController extends GetxController
 
   void _centerBounds() {
     final constrained = CameraFit.coordinates(
-      coordinates: patterns.values.first.polylinePoints,
+      coordinates: (routes.values.first).pattern.polylinePoints,
       padding: const EdgeInsets.all(20.0),
     ).fit(mapController.camera);
     _animatedMapMove(constrained.center, constrained.zoom);
@@ -167,14 +166,10 @@ class MapPageController extends GetxController
 
   void _animatedMarkerMove(MqttData payload) {
     final latTween = Tween<double>(
-        begin: newMqttData[payload.shortName]![payload.vehicleNum]!
-            .position
-            .latitude,
+        begin: allVehicles[payload.vehicleNum]!.mqttData.position.latitude,
         end: payload.position.latitude);
     final lngTween = Tween<double>(
-        begin: newMqttData[payload.shortName]![payload.vehicleNum]!
-            .position
-            .longitude,
+        begin: allVehicles[payload.vehicleNum]!.mqttData.position.longitude,
         end: payload.position.longitude);
 
     final controller = AnimationController(
@@ -186,17 +181,24 @@ class MapPageController extends GetxController
       final newLat = latTween.evaluate(animation);
       final newLng = lngTween.evaluate(animation);
 
-      if (newMqttData[payload.shortName]![payload.vehicleNum]
-                  ?.position
-                  .latitude !=
+      if (allVehicles[payload.vehicleNum]!.mqttData.position.latitude !=
               newLat ||
-          newMqttData[payload.shortName]![payload.vehicleNum]
-                  ?.position
-                  .longitude !=
+          allVehicles[payload.vehicleNum]!.mqttData.position.longitude !=
               newLng) {
-        newMqttData[payload.shortName]!.update(
+        allVehicles.update(
           payload.vehicleNum,
-          (value) => payload.copyWith(position: LatLng(newLat, newLng)),
+          (value) => allVehicles[payload.vehicleNum]!.copyWith(
+            mqttData: allVehicles[payload.vehicleNum]!.mqttData.copyWith(
+                  position: LatLng(newLat, newLng),
+                  rotation: payload.rotation,
+                  speed: payload.speed,
+                  tripId: payload.tripId,
+                  direction: payload.direction,
+                  isFull: payload.isFull,
+                  nextStop: payload.nextStop,
+                  lastUpdate: payload.lastUpdate,
+                ),
+          ),
         );
       }
     });
@@ -209,9 +211,7 @@ class MapPageController extends GetxController
     });
 
     // popup following marker
-    VehicleMarker oldMarker = VehicleMarker(
-        mqttData: newMqttData[payload.shortName]![payload.vehicleNum]!);
-
+    VehicleMarker oldMarker = allVehicles[payload.vehicleNum]!;
     if (lastOpenedMarker != null &&
         lastOpenedMarker is VehicleMarker &&
         (lastOpenedMarker as VehicleMarker).point == oldMarker.point) {
@@ -226,11 +226,20 @@ class MapPageController extends GetxController
     _mqttController.payloadStream.listen((MqttData payload) {
       //if (currentPattern.value.directionId == payload.direction) {
       print(payload.shortName);
-      if (newMqttData[payload.shortName]!.containsKey(payload.vehicleNum)) {
+
+      if (allVehicles.containsKey(payload.vehicleNum)) {
         _animatedMarkerMove(payload);
       } else {
-        newMqttData[payload.shortName]!
-            .putIfAbsent(payload.vehicleNum, () => payload);
+        allVehicles.putIfAbsent(
+            payload.vehicleNum,
+            () => VehicleMarker(
+                mqttData: payload,
+                color: routes.length == 1
+                    ? null
+                    : Utils.darken(
+                        colors[(routeIndex[payload.shortName] ?? 0) %
+                            colors.length],
+                        30)));
       }
       //}
     });
@@ -325,5 +334,18 @@ class MapPageController extends GetxController
   Future<void> _stopLocationListen() async {
     await _locationSubscription?.cancel();
     _locationSubscription = null;
+  }
+
+  void setCurrentPattern(gtt.Pattern newPattern) async {
+    allStops.clear();
+    List<gtt.Stop> stopTemp =
+        await DatabaseCommands.getStopsFromPattern(newPattern);
+
+    allStops.addAll(stopTemp.map((stop) => FermataMarker(fermata: stop)));
+    routes.update(routes.keys.first,
+        (value) => routes.values.first.copyWith(pattern: newPattern));
+    popupController.hideAllPopups();
+    _centerBounds();
+    //mqttData.clear();
   }
 }

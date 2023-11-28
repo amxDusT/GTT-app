@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:icon_decoration/icon_decoration.dart';
 import 'package:latlong2/latlong.dart';
 
 class Test {
@@ -12,18 +14,46 @@ class Test {
 @immutable
 class VehicleMarker extends Marker {
   final MqttData mqttData;
-  VehicleMarker({required this.mqttData})
+  final Color? color;
+  VehicleMarker({required this.mqttData, this.color})
       : super(
           point: mqttData.position,
           child: Transform.rotate(
             angle: (mqttData.rotation ?? 0) * pi / 180,
-            child: const Icon(
-              Icons.navigation,
-              size: 20,
-              color: Colors.blue,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned(
+                  //top: 5,
+                  child: Container(
+                    height: 15,
+                    width: 15,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Utils.lighten(color ?? Colors.blue)
+                          .withOpacity(0.9), //color ?? Colors.blue,
+                    ),
+                  ),
+                ),
+                DecoratedIcon(
+                  icon: Icon(
+                    Icons.assistant_navigation,
+                    size: 24,
+                    color: color ?? Colors.blue,
+                  ),
+                  decoration: const IconDecoration(border: IconBorder()),
+                ),
+              ],
             ),
           ),
         );
+
+  VehicleMarker copyWith({MqttData? mqttData, Color? color}) {
+    return VehicleMarker(
+      mqttData: mqttData ?? this.mqttData,
+      color: color ?? this.color,
+    );
+  }
 }
 
 @immutable
