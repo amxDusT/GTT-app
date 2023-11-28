@@ -30,8 +30,10 @@ class MqttController {
     //connect(shortName);
   }
   void addSubscription(String shortName) {
+    // remove spaces for busses like "16 CS/CD"
+    shortName = shortName.replaceAll(' ', '');
     _shortNames.add(shortName);
-    //_client.clientIdentifier = '${_client.clientIdentifier}$shortName';
+    _client.clientIdentifier = '${_client.clientIdentifier}$shortName';
   }
 
   void connect() async {
@@ -47,9 +49,13 @@ class MqttController {
       final pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       //print(c[0].topic);
-      MqttData data =
-          MqttData.fromList(jsonDecode(pt) as List<dynamic>, c[0].topic);
-      _payloadStreamController.add(data);
+      try {
+        MqttData data =
+            MqttData.fromList(json.decode(pt) as List<dynamic>, c[0].topic);
+        _payloadStreamController.add(data);
+      } catch (e) {
+        print('Exception: ${json.decode(pt)}');
+      }
     });
   }
 
