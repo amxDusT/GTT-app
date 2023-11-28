@@ -42,6 +42,7 @@ dependencies:
   get: ^4.6.6
   gtfs_realtime_bindings: ^1.0.1
   http: ^1.1.0
+  icon_decoration: ^2.0.2
   intl: ^0.18.1
   latlong2: ^0.9.0
   location: ^5.0.3
