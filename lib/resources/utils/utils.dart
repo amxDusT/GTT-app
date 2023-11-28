@@ -24,7 +24,7 @@ class Utils {
   }
 
   static String dateToHourString(DateTime date) {
-    return DateFormat('H:m ', 'it').format(date).capitalizeFirst!;
+    return DateFormat('H:M:ss ', 'it').format(date).capitalizeFirst!;
   }
 
   static String dateToString(DateTime date) {
