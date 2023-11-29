@@ -1,21 +1,27 @@
 import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/controllers/loading_controller.dart';
+import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 
 class SettingsController extends GetxController {
-  final RouteListController _routeListController =
-      Get.find<RouteListController>();
-
   final _homeController = Get.find<HomeController>();
-  Future<void> removeData() async {
-    await DatabaseCommands.clearTables();
-    _homeController.getStops();
+
+  final RxBool isFermataShowing = Storage.isFermataShowing.obs;
+
+  void switchFermataShowing() {
+    isFermataShowing.value = !isFermataShowing.value;
+    Storage.setParam(
+        StorageParam.fermataMap, isFermataShowing.value.toString());
   }
 
   void resetData() async {
-    await removeData();
-    await _routeListController.loadFromApi();
+    await DatabaseCommands.clearTables();
+
+    Get.offAll(() => LoadingPage(), arguments: {'first-time': false});
+    Get.find<LoadingController>().checkAndLoad();
+    //await _routeListController.loadFromApi();
     _restoreFavorites();
   }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -251,7 +252,15 @@ class MapPage extends StatelessWidget {
   }
 
   Widget _containerFermata(FermataMarker marker) {
-    return Text('${marker.fermata.code} - ${marker.fermata.name}');
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text('${marker.fermata.code} - ${marker.fermata.name}'),
+        if (marker.fermata is StopWithDetails)
+          Text(
+              '${(marker.fermata as StopWithDetails).vehicles.map((e) => e.shortName)}'),
+      ],
+    );
   }
 
   Widget _containerVehicle(VehicleMarker marker) {

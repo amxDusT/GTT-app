@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:get/get.dart';
@@ -22,19 +23,27 @@ class InfoWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       mainAxisSize: MainAxisSize.min,
       children: [
-        ...vehicle.stoptimes
-            .getRange(
-                0,
-                vehicle.stoptimes.length < maxHours
-                    ? vehicle.stoptimes.length
-                    : maxHours)
-            .map(
-              (e) => Text(
-                DateFormat.Hm(Get.locale?.languageCode)
-                    .format(e.realtimeDeparture),
-                style: TextStyle(color: e.realtime ? Colors.green : null),
-              ),
-            )
+        ...vehicle.stoptimes.isEmpty
+            ? [
+                Text(
+                  'Non ci sono passaggi',
+                  style:
+                      Get.textTheme.labelMedium!.copyWith(letterSpacing: 1.5),
+                ),
+              ]
+            : vehicle.stoptimes
+                .getRange(
+                    0,
+                    vehicle.stoptimes.length < maxHours
+                        ? vehicle.stoptimes.length
+                        : maxHours)
+                .map(
+                  (e) => Text(
+                    DateFormat.Hm(Get.locale?.languageCode)
+                        .format(e.realtimeDeparture),
+                    style: TextStyle(color: e.realtime ? Colors.green : null),
+                  ),
+                )
       ],
     );
   }

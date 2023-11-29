@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
@@ -145,7 +145,8 @@ class HomePage extends StatelessWidget {
 
   void _moveOnTop(FavStop fermata) {
     //_homeController.deleteStop(fermata);
-    _homeController.updateStop(fermata.copyWith(dateTime: DateTime.now()));
+    _homeController.moveOnTop(fermata);
+    //_homeController.updateStop(fermata.copyWith(dateTime: DateTime.now()));
   }
 
   void _getDeleteConfirm(FavStop fermata) {

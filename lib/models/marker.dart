@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -64,7 +64,7 @@ class FermataMarker extends Marker {
           point: LatLng(fermata.lat, fermata.lon),
           child: const Icon(
             Icons.circle,
-            size: 10,
+            size: 12,
             color: Colors.red,
           ),
         );

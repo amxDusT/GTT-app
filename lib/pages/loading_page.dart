@@ -1,40 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/pages/home_page.dart';
+import 'package:flutter_gtt/controllers/loading_controller.dart';
 import 'package:get/get.dart';
 
-class LoadingPage extends StatefulWidget {
-  const LoadingPage({super.key});
-
-  @override
-  State<LoadingPage> createState() => _LoadingPageState();
-}
-
-class _LoadingPageState extends State<LoadingPage> {
-  bool _isShowingMessage = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    checkAndLoad();
-  }
-
-  void checkAndLoad() async {
-    final routeListController = Get.put(RouteListController());
-    await routeListController.getAgencies();
-    Duration duration = const Duration(milliseconds: 1000);
-    if (routeListController.agencies.isEmpty) {
-      setState(() {
-        _isShowingMessage = true;
-      });
-      await routeListController.loadFromApi();
-      duration = const Duration(milliseconds: 1);
-    }
-    await Future.delayed(duration);
-    Get.off(() => HomePage());
-  }
-
+class LoadingPage extends StatelessWidget {
+  LoadingPage({super.key});
+  final LoadingController _loadingController = Get.put(LoadingController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,13 +24,15 @@ class _LoadingPageState extends State<LoadingPage> {
             child: const LinearProgressIndicator(),
           ),
           Flexible(flex: 2, child: Container()),
-          Visibility(
-            visible: _isShowingMessage,
-            child: const Padding(
-              padding: EdgeInsets.all(20.0),
-              child: Text('Scarico i dati GTT per la prima volta..'),
+          Obx(
+            () => Visibility(
+              visible: _loadingController.isShowingMessage.isTrue,
+              child: const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text('Scarico i dati GTT per la prima volta..'),
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -19,13 +21,13 @@ class MapPageController extends GetxController
   static const double minZoom = 10;
   static const double maxZoom = 18;
   static const List colors = [
-    //Colors.red,
     Colors.green,
-    //Colors.yellow,
-    Colors.brown,
     Colors.amber,
     Colors.deepOrange,
     Colors.deepPurple,
+    Colors.brown,
+    Colors.pinkAccent,
+    Colors.tealAccent,
   ];
 
   MapController mapController = MapController();
@@ -84,13 +86,13 @@ class MapPageController extends GetxController
     });
     _mqttController = MqttController();
     //bool isSingleRoute = Get.arguments['vehicles'].length == 1;
-    List<gtt.Stop> stopsTemp = [];
+    Set<Stop> stopsTemp = {};
     List<gtt.Route> routeValues = Get.arguments['vehicles'];
-    final gtt.Stop? initialFermata = Get.arguments['fermata'];
+    final Stop? initialFermata = Get.arguments['fermata'];
     final bool showMultiplePatterns =
         Get.arguments['multiple-patterns'] ?? false;
 
-    if (initialFermata != null) {
+    if (initialFermata != null && Storage.isFermataShowing) {
       popupController.togglePopup(FermataMarker(fermata: initialFermata));
     }
 
@@ -108,9 +110,18 @@ class MapPageController extends GetxController
     for (gtt.Route route in routeValues) {
       _mqttController
           .addSubscription((route as gtt.RouteWithDetails).shortName);
+      List<Stop> stops =
+          await DatabaseCommands.getStopsFromPattern(route.pattern);
 
-      stopsTemp
-          .addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
+      for (var stop in stops) {
+        List<gtt.Route> routeValues =
+            await DatabaseCommands.getRouteFromStop(stop);
+        stopsTemp
+            .add(StopWithDetails.fromStop(stop: stop, vehicles: routeValues));
+      }
+
+      // stopsTemp.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
+
       routes.putIfAbsent(route.shortName.replaceAll(' ', ''), () => route);
       routeIndex.putIfAbsent(
           route.shortName.replaceAll(' ', ''), () => routeIndex.length);
@@ -215,7 +226,6 @@ class MapPageController extends GetxController
     if (lastOpenedMarker != null &&
         lastOpenedMarker is VehicleMarker &&
         (lastOpenedMarker as VehicleMarker).point == oldMarker.point) {
-      //print("position updated?");
       popupController.showPopupsOnlyFor([VehicleMarker(mqttData: payload)]);
       lastOpenedMarker = VehicleMarker(mqttData: payload);
     }
@@ -224,9 +234,6 @@ class MapPageController extends GetxController
 
   void _listenData() async {
     _mqttController.payloadStream.listen((MqttData payload) {
-      //if (currentPattern.value.directionId == payload.direction) {
-      print(payload.shortName);
-
       if (allVehicles.containsKey(payload.vehicleNum)) {
         _animatedMarkerMove(payload);
       } else {
@@ -338,7 +345,7 @@ class MapPageController extends GetxController
 
   void setCurrentPattern(gtt.Pattern newPattern) async {
     allStops.clear();
-    List<gtt.Stop> stopTemp =
+    List<Stop> stopTemp =
         await DatabaseCommands.getStopsFromPattern(newPattern);
 
     allStops.addAll(stopTemp.map((stop) => FermataMarker(fermata: stop)));

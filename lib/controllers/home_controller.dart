@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:get/get.dart';
@@ -56,6 +56,11 @@ class HomeController extends GetxController {
   void getStops() async {
     fermate = await DatabaseCommands.getFermate();
     update();
+  }
+
+  void moveOnTop(Stop stop) {
+    DatabaseCommands.updateStopWithSmallestDate(stop);
+    getStops();
   }
 
   void updateStop(FavStop fermata) {

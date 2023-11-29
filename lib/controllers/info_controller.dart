@@ -1,5 +1,5 @@
 import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:get/get.dart';

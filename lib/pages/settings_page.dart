@@ -14,9 +14,16 @@ class SettingsPage extends StatelessWidget {
       body: ListView(
         children: [
           ListTile(
-            title: const Text('Rimuovi dati GTT'),
+            title: const Text('Mostra fermata nella mappa'),
+            subtitle:
+                const Text('Mostra popup della fermata iniziale nella mappa'),
+            trailing: Obx(() => Switch(
+                  value: _settingsController.isFermataShowing.value,
+                  onChanged: (value) =>
+                      _settingsController.switchFermataShowing(),
+                )),
             onTap: () {
-              _settingsController.removeData();
+              _settingsController.resetData();
             },
           ),
           ListTile(

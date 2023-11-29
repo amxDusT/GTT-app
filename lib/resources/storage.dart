@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-enum StorageParam { color }
+enum StorageParam { color, fermataMap }
 
 class Storage {
   static Color chosenColor = initialColor;
+  static bool isFermataShowing = true;
   static const _storage = FlutterSecureStorage();
 
   static void loadSettings() async {
     chosenColor =
         stringToColor(await getParam(StorageParam.color)) ?? initialColor;
+
+    isFermataShowing =
+        bool.parse(await getParam(StorageParam.fermataMap) ?? 'true');
   }
 
   static String colorToString(Color color) =>

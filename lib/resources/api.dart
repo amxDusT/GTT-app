@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:http/http.dart' as http;
 import 'package:mqtt_client/mqtt_client.dart';

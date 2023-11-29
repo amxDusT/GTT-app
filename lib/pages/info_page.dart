@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
+import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
@@ -76,8 +77,8 @@ class InfoPage extends StatelessWidget {
                                 }
                                 return InfoWidget(
                                     stop: controller.fermata,
-                                    vehicle:
-                                        controller.fermata.vehicles[index]);
+                                    vehicle: (controller.fermata.vehicles[index]
+                                        as RouteWithDetails));
                               },
                             );
                           },

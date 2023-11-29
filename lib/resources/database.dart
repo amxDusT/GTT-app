@@ -1,4 +1,5 @@
 import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -16,6 +17,7 @@ class DatabaseCommands {
   static Future<Database> get instance => database ?? init();
 
   static Future<Database> init() async {
+    print(join(await getDatabasesPath(), '$_databaseName.db'));
     database = openDatabase(
       join(await getDatabasesPath(), '$_databaseName.db'),
       onCreate: (db, version) {
@@ -128,6 +130,16 @@ class DatabaseCommands {
     );
   }
 
+  static Future<void> updateStopWithSmallestDate(Stop stop) async {
+    Database db = await instance;
+
+    await db.rawUpdate('''
+      UPDATE $_favoritesTable
+      SET date = (SELECT MIN(date) FROM $_favoritesTable)-1
+      WHERE stopId = ?;
+    ''', [stop.gtfsId]);
+  }
+
   static Future<List<FavStop>> getFermate() async {
     Database db = await instance;
     final List<Map<String, dynamic>> result = await db.rawQuery(
@@ -135,7 +147,7 @@ class DatabaseCommands {
       SELECT $_stopsTable.*, $_favoritesTable.*
       FROM $_stopsTable
       JOIN $_favoritesTable ON $_stopsTable.gtfsId = $_favoritesTable.stopId
-      ORDER BY $_favoritesTable.date DESC;
+      ORDER BY $_favoritesTable.date ASC;
       ''',
     );
 
