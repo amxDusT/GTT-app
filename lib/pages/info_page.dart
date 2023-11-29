@@ -14,13 +14,13 @@ class InfoPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Hero(
-      tag: 'HeroTagFermata${_infoController.fermata.code}',
+      tag: 'HeroTagFermata${_infoController.fermata.value.code}',
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Obx(
             () => Text(
-              "Fermata ${_infoController.fermataName.value}",
+              "Fermata ${_infoController.fermata.value.name}",
             ),
           ),
           actions: [
@@ -39,52 +39,63 @@ class InfoPage extends StatelessWidget {
         body: LayoutBuilder(
           builder: (context, constraints) => RefreshIndicator(
             onRefresh: () async => _infoController.getFermata(),
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
-              child: Obx(
-                () => ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: _infoController.isLoading.isTrue
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : GetBuilder<InfoController>(
-                          builder: (controller) {
-                            return ListView.builder(
+            child: Stack(
+              alignment: Alignment.topCenter,
+              children: [
+                SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics()),
+                  child: Obx(
+                    () => ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minHeight: constraints.maxHeight),
+                      child: _infoController.isLoading.isTrue
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView.builder(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               padding: const EdgeInsets.symmetric(vertical: 12),
-                              itemCount: controller.fermata.vehicles.length + 2,
+                              itemCount: _infoController
+                                      .fermata.value.vehicles.length +
+                                  1,
                               itemBuilder: (context, index) {
                                 if (index ==
-                                    controller.fermata.vehicles.length) {
-                                  return Center(
+                                    _infoController
+                                        .fermata.value.vehicles.length) {
+                                  return Container(
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.only(
+                                        top: 10, bottom: 60),
                                     child: Text(
                                         "Ultimo aggiornamento: ${DateFormat.Hms(Get.locale?.languageCode).format(_infoController.lastUpdate.value)}"),
                                   );
-                                } else if (index ==
-                                    controller.fermata.vehicles.length + 1) {
-                                  return ElevatedButton(
-                                    onPressed: () =>
-                                        Get.to(() => MapPage(), arguments: {
-                                      'vehicles': controller.fermata.vehicles,
-                                      'multiple-patterns': true,
-                                      'fermata': controller.fermata,
-                                    }),
-                                    child: const Text('Guarda sulla mappa'),
-                                  );
                                 }
                                 return InfoWidget(
-                                    stop: controller.fermata,
-                                    vehicle: (controller.fermata.vehicles[index]
-                                        as RouteWithDetails));
+                                    stop: _infoController.fermata.value,
+                                    vehicle: (_infoController.fermata.value
+                                        .vehicles[index] as RouteWithDetails));
                               },
-                            );
-                          },
-                        ),
+                            ),
+                    ),
+                  ),
                 ),
-              ),
+                Positioned(
+                  bottom: 20,
+                  child: Opacity(
+                    opacity: 0.9,
+                    child: ElevatedButton(
+                      onPressed: () => Get.to(() => MapPage(), arguments: {
+                        'vehicles': _infoController.fermata.value.vehicles,
+                        'multiple-patterns': true,
+                        'fermata': _infoController.fermata.value,
+                      }),
+                      child: const Text('Guarda sulla mappa'),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),

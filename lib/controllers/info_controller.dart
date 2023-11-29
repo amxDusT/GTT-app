@@ -7,7 +7,7 @@ import 'package:get/get.dart';
 class InfoController extends GetxController {
   late final Rx<DateTime> lastUpdate;
   final RxBool isLoading = false.obs;
-  late StopWithDetails fermata;
+  late Rx<StopWithDetails> fermata;
   late RxString fermataName;
   final HomeController _homeController = Get.find<HomeController>();
   final RxBool isSaved = false.obs;
@@ -17,17 +17,17 @@ class InfoController extends GetxController {
     Stop stop = Get.arguments['fermata'];
     fermataName = stop.name.obs;
     lastUpdate = DateTime.now().obs;
-    fermata = StopWithDetails.fromStop(stop: stop);
+    fermata = StopWithDetails.fromStop(stop: stop).obs;
 
     getFermata();
-    isSaved.value = (await DatabaseCommands.hasStop(fermata));
+    isSaved.value = (await DatabaseCommands.hasStop(fermata.value));
   }
 
   void switchAddDeleteFermata() async {
     if (isSaved.isTrue) {
-      DatabaseCommands.deleteStop(fermata);
+      DatabaseCommands.deleteStop(fermata.value);
     } else {
-      DatabaseCommands.insertStop(fermata);
+      DatabaseCommands.insertStop(fermata.value);
     }
     _homeController.getStops();
     isSaved.value = !isSaved.value;
@@ -36,10 +36,10 @@ class InfoController extends GetxController {
   Future<void> getFermata() async {
     isLoading.value = true;
     try {
-      final StopWithDetails newFermata = await Api.getStop(fermata.code);
+      final StopWithDetails newFermata = await Api.getStop(fermata.value.code);
       lastUpdate.value = DateTime.now();
-      fermata = newFermata;
-      fermataName.value = fermata.name;
+      fermata = newFermata.obs;
+      fermataName.value = fermata.value.name;
     } on ApiException catch (e) {
       Get.snackbar("Errore ${e.statusCode}", e.message);
     } finally {
