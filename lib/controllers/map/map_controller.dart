@@ -43,8 +43,8 @@ class MapPageController extends GetxController
   //live bus
   late final MqttController _mqttController;
 
-  final RxMap<String, RxMap<int, MqttData>> newMqttData =
-      <String, RxMap<int, MqttData>>{}.obs;
+  final RxMap<String, RxMap<int, MqttVehicle>> mqttInformation =
+      <String, RxMap<int, MqttVehicle>>{}.obs;
 
   Marker? lastOpenedMarker;
   // User Location
@@ -175,7 +175,7 @@ class MapPageController extends GetxController
     controller.forward();
   }
 
-  void _animatedMarkerMove(MqttData payload) {
+  void _animatedMarkerMove(MqttVehicle payload) {
     final latTween = Tween<double>(
         begin: allVehicles[payload.vehicleNum]!.mqttData.position.latitude,
         end: payload.position.latitude);
@@ -233,7 +233,7 @@ class MapPageController extends GetxController
   }
 
   void _listenData() async {
-    _mqttController.payloadStream.listen((MqttData payload) {
+    _mqttController.payloadStream.listen((MqttVehicle payload) {
       if (allVehicles.containsKey(payload.vehicleNum)) {
         _animatedMarkerMove(payload);
       } else {

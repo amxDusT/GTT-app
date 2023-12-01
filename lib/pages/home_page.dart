@@ -16,9 +16,9 @@ class HomePage extends StatelessWidget {
   HomePage({super.key});
   final _homeController = Get.put(HomeController());
   void _onSubmitted() {
-    final state = _homeController.key.currentState!;
+    final state = _homeController.key.currentState;
 
-    if (state.validate()) {
+    if (state?.validate() ?? false) {
       _homeController.searchStop();
     }
   }
@@ -283,7 +283,7 @@ class HomePage extends StatelessWidget {
                         borderSide: Divider.createBorderSide(context)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                     filled: true,
-                    labelText: 'Cerca numero fermata...',
+                    labelText: 'Cerca fermata...',
                   ),
                   keyboardType: TextInputType.number,
                   validator: (value) {
@@ -302,6 +302,11 @@ class HomePage extends StatelessWidget {
                       return "La fermata non esiste";
                     }
                     return null;
+                  },
+                  onChanged: (val) {
+                    if (val.isEmpty) {
+                      _homeController.key.currentState?.reset();
+                    }
                   },
                   onFieldSubmitted: (val) => _onSubmitted(),
                 ),

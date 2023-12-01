@@ -12,8 +12,8 @@ class MqttController {
   final Set<String> _shortNames = {};
   late MqttServerClient _client;
   late StreamSubscription<List<MqttReceivedMessage<MqttMessage>>> _subscription;
-  final StreamController<MqttData> _payloadStreamController =
-      StreamController<MqttData>();
+  final StreamController<MqttVehicle> _payloadStreamController =
+      StreamController<MqttVehicle>();
 
   MqttController() {
     _client = MqttServerClient.withPort(
@@ -51,8 +51,8 @@ class MqttController {
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
       //print(c[0].topic);
       try {
-        MqttData data =
-            MqttData.fromList(json.decode(pt) as List<dynamic>, c[0].topic);
+        MqttVehicle data =
+            MqttVehicle.fromList(json.decode(pt) as List<dynamic>, c[0].topic);
         _payloadStreamController.add(data);
       } catch (e) {
         print('Exception: ${json.decode(pt)}');
@@ -60,7 +60,7 @@ class MqttController {
     });
   }
 
-  Stream<MqttData> get payloadStream => _payloadStreamController.stream;
+  Stream<MqttVehicle> get payloadStream => _payloadStreamController.stream;
 
   Future<void> dispose() async {
     for (String shortName in _shortNames) {

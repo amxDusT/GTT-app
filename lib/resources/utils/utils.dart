@@ -24,12 +24,15 @@ class Utils {
   }
 
   static String dateToHourString(DateTime date) {
-    //
-    return DateFormat.Hms().format(date).capitalizeFirst!;
+    return DateFormat.Hms(Get.locale?.languageCode)
+        .format(date)
+        .capitalizeFirst!;
   }
 
   static String dateToString(DateTime date) {
-    return DateFormat('d MMMM, y H:mm a', 'it').format(date).capitalizeFirst!;
+    return DateFormat('d MMMM, y H:mm a', Get.locale?.languageCode)
+        .format(date)
+        .capitalizeFirst!;
   }
 
   static Color darken(Color c, [int percent = 50]) {

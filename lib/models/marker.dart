@@ -13,7 +13,7 @@ class Test {
 
 @immutable
 class VehicleMarker extends Marker {
-  final MqttData mqttData;
+  final MqttVehicle mqttData;
   final Color? color;
   VehicleMarker({required this.mqttData, this.color})
       : super(
@@ -48,7 +48,7 @@ class VehicleMarker extends Marker {
           ),
         );
 
-  VehicleMarker copyWith({MqttData? mqttData, Color? color}) {
+  VehicleMarker copyWith({MqttVehicle? mqttData, Color? color}) {
     return VehicleMarker(
       mqttData: mqttData ?? this.mqttData,
       color: color ?? this.color,

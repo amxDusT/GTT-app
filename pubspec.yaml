@@ -39,6 +39,7 @@ dependencies:
   flutter_map: ^6.0.1
   flutter_map_marker_popup: ^6.1.2
   flutter_secure_storage: ^9.0.0
+  flutter_typeahead: ^5.0.1
   get: ^4.6.6
   gtfs_realtime_bindings: ^1.0.1
   http: ^1.1.0

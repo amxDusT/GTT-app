@@ -1,7 +1,6 @@
 import 'package:latlong2/latlong.dart';
 
-class MqttData {
-  // [lat, lon, rotation?, speed?, tripId?, direction, isFull?]
+class MqttVehicle {
   final String shortName;
   final LatLng position;
   final int? rotation;
@@ -12,7 +11,7 @@ class MqttData {
   final int? nextStop;
   final int vehicleNum;
   final DateTime lastUpdate;
-  const MqttData({
+  const MqttVehicle({
     required this.shortName,
     required this.vehicleNum,
     required this.position,
@@ -24,7 +23,7 @@ class MqttData {
     this.nextStop,
     required this.lastUpdate,
   });
-  MqttData copyWith(
+  MqttVehicle copyWith(
       {LatLng? position,
       int? rotation,
       int? speed,
@@ -33,7 +32,7 @@ class MqttData {
       bool? isFull,
       int? nextStop,
       DateTime? lastUpdate}) {
-    return MqttData(
+    return MqttVehicle(
       shortName: shortName,
       vehicleNum: vehicleNum,
       position: position ?? this.position,
@@ -47,10 +46,10 @@ class MqttData {
     );
   }
 
-  factory MqttData.fromList(List<dynamic> list, String topic) {
+  factory MqttVehicle.fromList(List<dynamic> list, String topic) {
     final List<String> splitTopic = topic.split('/');
 
-    return MqttData(
+    return MqttVehicle(
       shortName: splitTopic[1],
       vehicleNum: int.parse(splitTopic[2]),
       position: LatLng(list[0] as double, list[1] as double),

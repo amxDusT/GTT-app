@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class InfoPage extends StatelessWidget {
   InfoPage({super.key});
@@ -69,7 +69,8 @@ class InfoPage extends StatelessWidget {
                                     padding: const EdgeInsets.only(
                                         top: 10, bottom: 60),
                                     child: Text(
-                                        "Ultimo aggiornamento: ${DateFormat.Hms(Get.locale?.languageCode).format(_infoController.lastUpdate.value)}"),
+                                      'Ultimo aggiornamento: ${Utils.dateToHourString(_infoController.lastUpdate.value)}',
+                                    ),
                                   );
                                 }
                                 return InfoWidget(
