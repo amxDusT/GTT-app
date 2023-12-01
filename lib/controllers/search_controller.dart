@@ -34,12 +34,17 @@ class SearchStopsController extends GetxController {
     if (stops.isEmpty) {
       Get.snackbar('Errore', 'La fermata non esiste');
     } else {
-      _openInfoPage(stops.first);
+      openInfoPage(stops.first);
     }
   }
 
-  void _openInfoPage(Stop stop) {
-    Get.to(() => InfoPage(), arguments: {'fermata': stop});
+  void openInfoPage(Stop stop) {
+    Get.to(
+      () => InfoPage(
+        key: UniqueKey(),
+      ),
+      arguments: {'fermata': stop},
+    );
   }
 
   void searchButton() {

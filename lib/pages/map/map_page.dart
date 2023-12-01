@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
+import 'package:flutter_gtt/controllers/search_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
@@ -255,7 +256,18 @@ class MapPage extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text('${marker.fermata.code} - ${marker.fermata.name}'),
+        InkWell(
+          onTap: () async {
+            Get.find<SearchStopsController>().openInfoPage(marker.fermata);
+            /*Get.until(
+                (route) => (route as GetPageRoute).routeName == '/HomePage');
+            Get.delete<InfoController>();
+            Get.find<SearchStopsController>().openInfoPage(marker.fermata);*/
+          },
+          child: Text(
+            '${marker.fermata.code} - ${marker.fermata.name}',
+          ),
+        ),
         if (marker.fermata is StopWithDetails)
           Text(
               '${(marker.fermata as StopWithDetails).vehicles.map((e) => e.shortName)}'),
@@ -268,7 +280,7 @@ class MapPage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Bus ${marker.mqttData.shortName} n${marker.mqttData.vehicleNum}',
+          'Bus ${marker.mqttData.shortName} - ${marker.mqttData.vehicleNum}',
         ),
         Text(
           'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',

@@ -7,10 +7,12 @@ import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
 
 class InfoPage extends StatelessWidget {
-  InfoPage({super.key});
+  final InfoController _infoController;
+  InfoPage({super.key})
+      : _infoController = Get.put(InfoController(), tag: key?.toString());
 
   final now = DateTime.now();
-  final InfoController _infoController = Get.put(InfoController());
+
   @override
   Widget build(BuildContext context) {
     return Hero(

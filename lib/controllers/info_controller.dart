@@ -15,6 +15,7 @@ class InfoController extends GetxController {
   void onInit() async {
     super.onInit();
     Stop stop = Get.arguments['fermata'];
+    print(stop);
     fermataName = stop.name.obs;
     lastUpdate = DateTime.now().obs;
     fermata = StopWithDetails.fromStop(stop: stop).obs;
