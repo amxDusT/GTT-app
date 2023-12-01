@@ -198,6 +198,7 @@ class DatabaseCommands {
     final db = await instance;
     final results = await db.query(
       _routesTable,
+      orderBy: 'type ASC, shortName ASC',
     );
     return List.generate(results.length, (i) {
       return Route.fromJson(results[i]);
@@ -261,7 +262,6 @@ class DatabaseCommands {
       whereArgs: [stopNum],
     );
     if (result.isNotEmpty) {
-      print('hello');
       return Stop.fromJson(result.first);
     }
     print('oh no');
@@ -294,6 +294,7 @@ class DatabaseCommands {
       JOIN $_patternStopsTable ON $_patternsTable.code = $_patternStopsTable.patternCode
       JOIN $_stopsTable ON $_patternStopsTable.stopId = $_stopsTable.gtfsId
       WHERE $_stopsTable.gtfsId = ?
+      ORDER BY $_routesTable.type ASC, $_routesTable.shortName ASC
       ''', [stop.gtfsId]);
     return List.generate(result.length, (i) {
       return Route.fromJson(result[i]);
@@ -308,6 +309,34 @@ class DatabaseCommands {
       whereArgs: [code],
     );
     return Pattern.fromJson(result.first);
+  }
+
+  static Future<List<Stop>> getStopsFromCode(int code, [limit = 25]) async {
+    final db = await instance;
+    final List<Map<String, dynamic>> result = await db.query(
+      _stopsTable,
+      where: 'code LIKE ?',
+      whereArgs: ['$code%'],
+      orderBy: 'code ASC',
+      limit: limit,
+    );
+    return List.generate(result.length, (i) {
+      return Stop.fromJson(result[i]);
+    });
+  }
+
+  static Future<List<Stop>> getStopsFromName(String name, [limit = 25]) async {
+    final db = await instance;
+    final List<Map<String, dynamic>> result = await db.query(
+      _stopsTable,
+      where: 'name LIKE ?',
+      whereArgs: ['$name%'],
+      orderBy: 'code ASC',
+      limit: limit,
+    );
+    return List.generate(result.length, (i) {
+      return Stop.fromJson(result[i]);
+    });
   }
 
   // test

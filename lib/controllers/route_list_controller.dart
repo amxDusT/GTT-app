@@ -19,7 +19,7 @@ class RouteListController extends GetxController {
     for (var route in routes) {
       routesMap.putIfAbsent(route.agencyId, () => []).add(route);
     }
-    _sortResult();
+    //_sortResult();
     //_sortRoutesMap();
     //print(routesMap.length);
     update();

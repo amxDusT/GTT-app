@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
+import 'package:flutter_gtt/controllers/search_controller.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
 import 'package:flutter_gtt/pages/route_list_page.dart';
+import 'package:flutter_gtt/pages/search_page.dart';
 import 'package:flutter_gtt/pages/settings_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
@@ -15,13 +17,7 @@ import 'package:get/get.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
   final _homeController = Get.put(HomeController());
-  void _onSubmitted() {
-    final state = _homeController.key.currentState;
-
-    if (state?.validate() ?? false) {
-      _homeController.searchStop();
-    }
-  }
+  final _searchController = Get.put(SearchStopsController());
 
   void _showContextMenu(FavStop fermata) {
     showMenu(
@@ -52,12 +48,6 @@ class HomePage extends StatelessWidget {
   void _changeColor(FavStop fermata) {
     Get.defaultDialog(
         title: 'Scegli un colore',
-        // actions: [
-        //   ElevatedButton(
-        //     onPressed: () {},
-        //     child: Text('Make Default'),
-        //   ),
-        // ],
         content: BlockPicker(
           pickerColor: fermata.color,
           onColorChanged: (color) {
@@ -77,7 +67,6 @@ class HomePage extends StatelessWidget {
             return Flexible(
               child: SizedBox(
                 width: Get.size.width * 0.8,
-                //height: 10.0 + (100 * (colors.length / 3).ceil()),
                 child: GridView.count(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -123,9 +112,6 @@ class HomePage extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        // shape: color.value == Storage.chosenColor.value
-        //     ? CircleBorder(side: BorderSide(color: Colors.red, width: 5))
-        //     : null,
         child: InkWell(
           onTap: changeColor,
           borderRadius: BorderRadius.circular(50),
@@ -267,52 +253,7 @@ class HomePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 18.0),
-            child: Form(
-              key: _homeController.key,
-              autovalidateMode: AutovalidateMode.disabled,
-              child: Obx(
-                () => TextFormField(
-                  controller: _homeController.searchController.value,
-                  canRequestFocus: true,
-                  focusNode: _homeController.focusNode.value,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderSide: Divider.createBorderSide(context)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                    filled: true,
-                    labelText: 'Cerca fermata...',
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Non puoi lasciare il campo vuoto";
-                    }
-                    if (!value.isNumericOnly) {
-                      return "La fermata può essere solo un valore numerico";
-                    }
-                    if (value.length > 4) {
-                      return "La fermata non esiste";
-                    }
-                    int num = int.parse(value);
-                    if (num <= 0 && num >= 7000) {
-                      // boh
-                      return "La fermata non esiste";
-                    }
-                    return null;
-                  },
-                  onChanged: (val) {
-                    if (val.isEmpty) {
-                      _homeController.key.currentState?.reset();
-                    }
-                  },
-                  onFieldSubmitted: (val) => _onSubmitted(),
-                ),
-              ),
-            ),
-          ),
+          SearchPage(),
           Expanded(
             child: GetBuilder<HomeController>(
               builder: (controller) {
@@ -404,11 +345,7 @@ class HomePage extends StatelessWidget {
               elevation: 2,
               child: const Icon(Icons.search),
               onPressed: () {
-                if (_homeController.focusNode.value.hasFocus) {
-                  _onSubmitted();
-                } else {
-                  _homeController.focusNode.value.requestFocus();
-                }
+                _searchController.searchButton();
               },
             ),
           ],
