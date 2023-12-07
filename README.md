@@ -10,7 +10,7 @@ Some of the features:
 - read GTT tickets/cards through NFC
 - bus list and patterns
 
-
+Video example: [LINK](https://drive.google.com/file/d/1FVkPeRsf-s0bkqW8WVDdeUlNkUEHDkaZ/view?usp=drive_link)
 Credits: 
 - [fabmazz](https://github.com/fabmazz) :
     - how to read tickets
