@@ -20,6 +20,7 @@ Video example: [LINK](https://drive.google.com/file/d/1FVkPeRsf-s0bkqW8WVDdeUlNk
 | ![Screenshot 1](https://drive.google.com/u/0/uc?id=1bGDpB91XDAopNvX19mBFLJ9ydiQsGc9M) | ![Screenshot 2](https://drive.google.com/u/0/uc?id=1bftxp1xhRIBsZdT-6pV8OQt0n-X_JQIf) | ![Screenshot 3](https://drive.google.com/u/0/uc?id=1AZY5cwjSrJPlR_HKULVPeVbjPjlm5cs_) | ![Screenshot 4](https://drive.google.com/u/0/uc?id=1NXkbKrJewlALQhAQ7_a_EkxEvRFEqkP4) |
 
 </details>
+
 Credits: 
 - [fabmazz](https://github.com/fabmazz) :
     - how to read tickets
