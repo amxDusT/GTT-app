@@ -3,12 +3,13 @@
 Started as a simple idea to just save my favorite stops.. now I'm trying to make it as much complete as I can.
 
 Some of the features: 
-- search by stop num and see busses passing in the stop (data from mato.muoversiatorino.it)
+- search by stop num or name and see busses passing in the stop (data from mato.muoversiatorino.it)
 - save a stop to favorites
 - add description to a stop in favorites
 - map of a bus' stops and live busses (data from mapi.5t.torino.it)
 - read GTT tickets/cards through NFC
 - bus list and patterns
+- map of all busses passing in that stop
 
 Video example: [LINK](https://drive.google.com/file/d/1FVkPeRsf-s0bkqW8WVDdeUlNkUEHDkaZ/view?usp=drive_link)
 
