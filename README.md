@@ -22,10 +22,11 @@ Video example: [LINK](https://drive.google.com/file/d/1FVkPeRsf-s0bkqW8WVDdeUlNk
 
 </details>
 
-Credits: 
+Credits:
 - [fabmazz](https://github.com/fabmazz) :
     - how to read tickets
     - hot to read and get live bus positions
     - libre-busto reference for design and what to add
 - [madbob/gtt-pirate-api](https://github.com/madbob/gtt-pirate-api) : bus times api
 - [MATO](https://mato.muoversiatorino.it/) : bus times and live bus position api (network tab in devTools)
+- [5t torino](https://www.5t.torino.it/wp-content/uploads/2022/07/Allegato-A1-Specifica-tecnica-della-smartcard-BIP.pdf) : how to read cards
