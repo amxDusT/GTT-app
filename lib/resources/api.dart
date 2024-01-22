@@ -1,12 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:http/http.dart' as http;
+import 'package:install_plugin/install_plugin.dart';
+//import 'package:install_plugin/install_plugin.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class MqttController {
   final Set<String> _shortNames = {};
@@ -17,7 +21,7 @@ class MqttController {
 
   MqttController() {
     _client = MqttServerClient.withPort(
-        'wss://mapi.5t.torino.it/scre', 'randomNameTesting123', 443);
+        'wss://mapi.5t.torino.it/scre', 'busInformation', 443);
     _client.logging(on: false);
     _client.keepAlivePeriod = 60;
     final connMess = MqttConnectMessage().withWillQos(MqttQos.atMostOnce);
@@ -75,6 +79,9 @@ class MqttController {
 class Api {
   static const String _url =
       'https://plan.muoversiatorino.it/otp/routers/mato/index/graphql';
+
+  static const String _releaseUrl =
+      "https://api.github.com/repos/amxDust/GTT-app/releases/latest";
 
   static Future<StopWithDetails> getStop(int stopNum) async {
     final int time = DateTime.now().millisecondsSinceEpoch ~/ 1000;
@@ -145,15 +152,11 @@ class Api {
     if (response.statusCode != 200) {
       throw ApiException(response.statusCode, response.body);
     }
-
-    //compute(_processData2, response.body);
-    //_processData(response.body);
-    return _processData2(response.body);
-    //DatabaseCommands.bulkInsert(json.decode(response.body));
+    return _processData(response.body);
   }
 
   static (List<Route>, List<Pattern>, List<Stop>, List<PatternStop>)
-      _processData2(String body) {
+      _processData(String body) {
     final Map<String, dynamic> js = json.decode(body);
     final List<Route> routes = [];
     final List<Pattern> patterns = [];
@@ -178,6 +181,54 @@ class Api {
       }
     }
     return (routes, patterns, stops.toList(), patternStops);
+  }
+
+  static Future<bool> checkVersion() async {
+    final response = await http.get(Uri.parse(_releaseUrl));
+    if (response.statusCode != 200) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+    final String latestVersion = jsonResponse['tag_name'];
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    final String currentVersion = packageInfo.version;
+    return latestVersion != currentVersion;
+  }
+
+  static Future<Map<String, dynamic>> getDownloadUrl() async {
+    final response = await http.get(Uri.parse(_releaseUrl));
+    if (response.statusCode != 200) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+    final Map<String, dynamic> result = {
+      'version': jsonResponse['tag_name'],
+      'url': jsonResponse['assets'][0]['browser_download_url'],
+      'update': jsonResponse['body'] ?? '',
+    };
+    return result;
+  }
+
+  static Future<void> downloadNewVersion() async {
+    final Map<String, dynamic> result = await getDownloadUrl();
+
+    final response = await http.get(Uri.parse(result['url']));
+    if (response.statusCode != 200) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    final bodyBytes = response.bodyBytes;
+
+    final String path =
+        '/storage/emulated/0/Download/GTT-${result['version']}.apk';
+    File file = File(path);
+    // save apk to download folder
+    await file.writeAsBytes(bodyBytes);
+    await _localInstallApk(path);
+  }
+
+  static Future<void> _localInstallApk(String path) async {
+    await InstallPlugin.install(path);
   }
 }
 

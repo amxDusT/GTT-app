@@ -89,11 +89,15 @@ class InfoPage extends StatelessWidget {
                   child: Opacity(
                     opacity: 0.9,
                     child: ElevatedButton(
-                      onPressed: () => Get.to(() => MapPage(), arguments: {
-                        'vehicles': _infoController.fermata.value.vehicles,
-                        'multiple-patterns': true,
-                        'fermata': _infoController.fermata.value,
-                      }),
+                      onPressed: () => Get.to(
+                          () => MapPage(
+                                key: UniqueKey(),
+                              ),
+                          arguments: {
+                            'vehicles': _infoController.fermata.value.vehicles,
+                            'multiple-patterns': true,
+                            'fermata': _infoController.fermata.value,
+                          }),
                       child: const Text('Guarda sulla mappa'),
                     ),
                   ),

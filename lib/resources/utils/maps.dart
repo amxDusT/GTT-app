@@ -50,4 +50,11 @@ class MapUtils {
 
     return decodedPoints;
   }
+
+  static List<LatLng> polylineOffset(List<LatLng> initialPolyline,
+      [double offset = 0.0001]) {
+    return initialPolyline
+        .map((point) => LatLng(point.latitude + offset, point.longitude))
+        .toList();
+  }
 }

@@ -63,6 +63,14 @@ class MapPageController extends GetxController
       .toList()
       .obs;
 
+  double get offsetVal {
+    int len = routes.length;
+    if (len == 1) return 0.0;
+    if (len == 2) return 0.0002;
+    if (len == 3) return 0.0001;
+    return 0.00005;
+  }
+
   @override
   void onClose() async {
     for (var element in _activeAnimations) {

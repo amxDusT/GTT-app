@@ -4,6 +4,7 @@ import 'package:flutter_gtt/controllers/search_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -11,8 +12,10 @@ import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatelessWidget {
-  MapPage({super.key});
-  final MapPageController _flutterMapController = Get.put(MapPageController());
+  final MapPageController _flutterMapController;
+  MapPage({super.key})
+      : _flutterMapController =
+            Get.put(MapPageController(), tag: key?.toString());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,9 +62,17 @@ class MapPage extends StatelessWidget {
                 Obx(
                   () => PolylineLayer(polylines: [
                     ..._flutterMapController.isPatternInitialized.isTrue
-                        ? _flutterMapController.routes.values.map((route) =>
-                            Polyline(
-                              points: route.pattern.polylinePoints,
+                        ? _flutterMapController.routes.values.indexed
+                            .map((value) {
+                            var route = value.$2;
+                            var index = value.$1;
+
+                            double offset =
+                                index * _flutterMapController.offsetVal;
+                            return Polyline(
+                              points: MapUtils.polylineOffset(
+                                  route.pattern.polylinePoints, offset),
+                              //points: route.pattern.polylinePoints,
                               strokeWidth: 4,
                               color: _flutterMapController.routes.length == 1
                                   ? Colors.red
@@ -73,7 +84,8 @@ class MapPage extends StatelessWidget {
                                               MapPageController.colors.length],
                                       20,
                                     ),
-                            ))
+                            );
+                          })
                         : <Polyline>[],
                   ]),
                 ),
@@ -138,6 +150,44 @@ class MapPage extends StatelessWidget {
                             ),
                           );
                         },
+                      ),
+                    ),
+                  ),
+                ),
+                Obx(
+                  () => Opacity(
+                    opacity: _flutterMapController.routes.length > 1 ? 0.8 : 0,
+                    child: Container(
+                      alignment: Alignment.topLeft,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 15),
+                      // show which color each route has
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ..._flutterMapController.routes.values.indexed
+                              .map(
+                                (value) => Container(
+                                  width: 50,
+                                  height: 20,
+                                  color: Utils.lighten(
+                                    MapPageController.colors[value.$1 %
+                                        MapPageController.colors.length],
+                                    20,
+                                  ),
+                                  margin: const EdgeInsets.all(2),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    value.$2.shortName,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ],
                       ),
                     ),
                   ),
