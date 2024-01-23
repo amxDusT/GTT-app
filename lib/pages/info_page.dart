@@ -22,7 +22,7 @@ class InfoPage extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Obx(
             () => Text(
-              "Fermata ${_infoController.fermata.value.name}",
+              _infoController.fermata.value.toString(),
             ),
           ),
           actions: [
