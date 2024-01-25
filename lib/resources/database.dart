@@ -198,7 +198,7 @@ class DatabaseCommands {
     final db = await instance;
     final results = await db.query(
       _routesTable,
-      orderBy: 'type ASC, shortName ASC',
+      orderBy: 'type ASC',
     );
     return List.generate(results.length, (i) {
       return Route.fromJson(results[i]);

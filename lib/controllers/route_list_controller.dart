@@ -10,6 +10,7 @@ class RouteListController extends GetxController {
 
   Future<void> getAgencies([List<Agency>? agencyValues]) async {
     agencies = agencyValues ?? await DatabaseCommands.agencies;
+    _sortAgencies();
     update();
   }
 
@@ -19,16 +20,20 @@ class RouteListController extends GetxController {
     for (var route in routes) {
       routesMap.putIfAbsent(route.agencyId, () => []).add(route);
     }
-    //_sortResult();
+    _sortResult();
     //_sortRoutesMap();
     //print(routesMap.length);
     update();
   }
 
+  void _sortAgencies() {
+    agencies.sort((a, b) => b.name.compareTo(a.name));
+  }
+
   /*
     sorts results:
     - priority is vehicle type and if bus starts with number
-    - if starts with number, numeric part is compared, otherwise string comparison
+    - if starts with number (or 'M', to include M1s/M1), numeric part is compared, otherwise string comparison
   */
   void _sortResult() {
     int extractNumericPart(String str) {
@@ -41,7 +46,7 @@ class RouteListController extends GetxController {
     }
 
     bool startWithNumber(String s) {
-      return RegExp(r'^[0-9]').hasMatch(s);
+      return RegExp(r'^[0-9M]').hasMatch(s);
     }
 
     int compareWithNumbers(Route a, Route b) {
@@ -56,12 +61,15 @@ class RouteListController extends GetxController {
 
     for (var key in routesMap.keys) {
       routesMap[key]!.sort((a, b) {
+        // compare by type
         int compareWithType = a.type.compareTo(b.type);
         if (compareWithType != 0) {
           return compareWithType;
+          // compare by number
         } else if (startWithNumber(a.shortName) &&
             startWithNumber(b.shortName)) {
           return compareWithNumbers(a, b);
+          // compare by name
         } else if (!startWithNumber(a.shortName) &&
             !startWithNumber(b.shortName)) {
           return a.shortName.compareTo(b.shortName);
