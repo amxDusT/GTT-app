@@ -8,18 +8,12 @@ class StopWithDetails extends Stop {
   List<Route> vehicles;
   StopWithDetails({
     required this.vehicles,
-    required String gtfsId,
-    required int code,
-    required String name,
-    required double lat,
-    required double lon,
-  }) : super(
-          gtfsId: gtfsId,
-          code: code,
-          name: name,
-          lat: lat,
-          lon: lon,
-        );
+    required super.gtfsId,
+    required super.code,
+    required super.name,
+    required super.lat,
+    required super.lon,
+  });
 
   static Future<StopWithDetails> decodeJson(
     Map<String, dynamic> json,
@@ -99,18 +93,12 @@ class FavStop extends Stop {
     required this.dateTime,
     required this.color,
     this.descrizione,
-    required gtfsId,
-    required code,
-    required name,
-    required lat,
-    required lon,
-  }) : super(
-          code: code,
-          gtfsId: gtfsId,
-          name: name,
-          lat: lat,
-          lon: lon,
-        );
+    required super.gtfsId,
+    required super.code,
+    required super.name,
+    required super.lat,
+    required super.lon,
+  });
   factory FavStop.fromStop({
     required Stop stop,
     DateTime? dateTime,

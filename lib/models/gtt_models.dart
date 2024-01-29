@@ -39,23 +39,16 @@ class RouteWithDetails extends Route {
   final List<String> alerts;
   final Pattern pattern;
   const RouteWithDetails({
-    required agencyId,
-    required shortName,
-    required longName,
-    required type,
-    required desc,
-    required gtfsId,
+    required super.agencyId,
+    required super.shortName,
+    required super.longName,
+    required super.type,
+    required super.desc,
+    required super.gtfsId,
     required this.stoptimes,
     required this.alerts,
     required this.pattern,
-  }) : super(
-          agencyId: agencyId,
-          shortName: shortName,
-          longName: longName,
-          type: type,
-          desc: desc,
-          gtfsId: gtfsId,
-        );
+  });
 
   RouteWithDetails copyWith({
     Route? route,
