@@ -165,28 +165,26 @@ class MapPage extends StatelessWidget {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ..._flutterMapController.routes.values.indexed
-                              .map(
-                                (value) => Container(
-                                  width: 50,
-                                  height: 20,
-                                  color: Utils.lighten(
-                                    MapPageController.colors[value.$1 %
-                                        MapPageController.colors.length],
-                                    20,
-                                  ),
-                                  margin: const EdgeInsets.all(2),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    value.$2.shortName,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                          ..._flutterMapController.routes.values.indexed.map(
+                            (value) => Container(
+                              width: 50,
+                              height: 20,
+                              color: Utils.lighten(
+                                MapPageController.colors[
+                                    value.$1 % MapPageController.colors.length],
+                                20,
+                              ),
+                              margin: const EdgeInsets.all(2),
+                              alignment: Alignment.center,
+                              child: Text(
+                                value.$2.shortName,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              )
-                              .toList(),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -278,7 +276,7 @@ class MapPage extends StatelessWidget {
         Text('Linea ${route.shortName}'),
         Text(route.longName),
         Text(
-            'Current Pattern: ${route.pattern.directionId} - ${route.pattern.headsign}'),
+            '${_flutterMapController.firstStop[route.pattern.code]!.name} --> ${route.pattern.headsign}'),
         DropdownMenu(
           width: Get.width * 0.9,
           initialSelection: _flutterMapController.isPatternInitialized.isTrue

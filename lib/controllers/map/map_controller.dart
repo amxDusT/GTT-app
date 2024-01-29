@@ -34,6 +34,7 @@ class MapPageController extends GetxController
 
   MapController mapController = MapController();
   PopupController popupController = PopupController();
+  // used for deleting animations that are not finished yet when closing the page
   final List<AnimationController> _activeAnimations = [];
 
   late final RxList<FermataMarker> allStops;
@@ -42,6 +43,7 @@ class MapPageController extends GetxController
       <String, gtt.RouteWithDetails>{}.obs;
   final Map<String, int> routeIndex = {};
   final RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
+
   //live bus
   late final MqttController _mqttController;
 
@@ -56,6 +58,9 @@ class MapPageController extends GetxController
   final RxBool isLocationLoading = false.obs;
   final RxBool isPatternInitialized = false.obs;
 
+  // for single route, for showing the direction
+  final Map<String, Stop> firstStop = {};
+
   RxList<VehicleMarker> get allVehiclesInDirection => allVehicles.values
       .where(
         (vehicle) =>
@@ -67,10 +72,16 @@ class MapPageController extends GetxController
 
   double get offsetVal {
     int len = routes.length;
-    if (len == 1) return 0.0;
-    if (len == 2) return 0.0002;
-    if (len == 3) return 0.0001;
-    return 0.00005;
+    switch (len) {
+      case 1:
+        return 0.0;
+      case 2:
+        return 0.0002;
+      case 3:
+        return 0.0001;
+      default:
+        return 0.00005;
+    }
   }
 
   @override
@@ -96,19 +107,25 @@ class MapPageController extends GetxController
     });
     _mqttController = MqttController();
     //bool isSingleRoute = Get.arguments['vehicles'].length == 1;
-    Set<Stop> stopsTemp = {};
+    Set<Stop> uniqueStops = {};
     List<gtt.Route> routeValues = Get.arguments['vehicles'];
-    final Stop? initialFermata = Get.arguments['fermata'];
+    final Stop? initialStop = Get.arguments['fermata'];
     final bool showMultiplePatterns =
         Get.arguments['multiple-patterns'] ?? false;
 
-    if (initialFermata != null && Storage.isFermataShowing) {
-      popupController.togglePopup(FermataMarker(fermata: initialFermata));
+    if (initialStop != null && Storage.isFermataShowing) {
+      popupController.togglePopup(FermataMarker(fermata: initialStop));
     }
-
+    // if opened from bus list
     if (!showMultiplePatterns && routeValues.first is! gtt.RouteWithDetails) {
       routePatterns
           .addAll(await DatabaseCommands.getPatterns(routeValues.first));
+
+      for (var pattern in routePatterns) {
+        Stop firstStopValue =
+            (await DatabaseCommands.getStopsFromPattern(pattern)).first;
+        firstStop.putIfAbsent(pattern.code, () => firstStopValue);
+      }
       routeValues = [
         gtt.RouteWithDetails.fromData(
             route: routeValues.first,
@@ -116,7 +133,7 @@ class MapPageController extends GetxController
             pattern: routePatterns.first)
       ];
     }
-    int added = 0; // limit to 'maxRoutesInMap' routes
+    int routeCount = 0; // limit to 'maxRoutesInMap' routes
     for (gtt.Route route in routeValues) {
       if (!Storage.isRouteWithoutPassagesShowing &&
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
@@ -129,7 +146,7 @@ class MapPageController extends GetxController
       for (var stop in stops) {
         List<gtt.Route> routeValues =
             await DatabaseCommands.getRouteFromStop(stop);
-        stopsTemp
+        uniqueStops
             .add(StopWithDetails.fromStop(stop: stop, vehicles: routeValues));
       }
 
@@ -139,10 +156,10 @@ class MapPageController extends GetxController
       routeIndex.putIfAbsent(
           route.shortName.replaceAll(' ', ''), () => routeIndex.length);
 
-      if (++added >= maxRoutesInMap) break;
+      if (++routeCount >= maxRoutesInMap) break;
     }
     allStops =
-        stopsTemp.map((stop) => FermataMarker(fermata: stop)).toList().obs;
+        uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
     _mqttController.connect();
 
     isPatternInitialized.value = true;
