@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
+import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
@@ -43,6 +45,30 @@ class InfoController extends GetxController {
       fermataName.value = fermata.value.name;
     } on ApiException catch (e) {
       Get.snackbar("Errore ${e.statusCode}", e.message);
+    } on Error {
+      Get.defaultDialog(
+        title: "Errore",
+        content: const Align(
+          alignment: Alignment.topLeft,
+          child: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text("Ooops... Problema nel risolvere la richiesta."),
+                Text(
+                    "Riprova, o prova a resettare i dati di GTT nelle impostazioni."),
+              ],
+            ),
+          ),
+        ),
+        textConfirm: "Resetta",
+        onConfirm: () {
+          Get.back();
+          Get.put(SettingsController()).resetData();
+        },
+        textCancel: "Annulla",
+      );
     } finally {
       isLoading.value = false;
       update();
