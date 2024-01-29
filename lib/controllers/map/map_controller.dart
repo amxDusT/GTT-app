@@ -20,7 +20,9 @@ class MapPageController extends GetxController
     with GetTickerProviderStateMixin {
   static const double minZoom = 10;
   static const double maxZoom = 18;
+  static const int maxRoutesInMap = 4;
   static const List colors = [
+    Colors.blue,
     Colors.green,
     Colors.amber,
     Colors.deepOrange,
@@ -114,8 +116,11 @@ class MapPageController extends GetxController
             pattern: routePatterns.first)
       ];
     }
-
+    int added = 0; // limit to 'maxRoutesInMap' routes
     for (gtt.Route route in routeValues) {
+      if (!Storage.isRouteWithoutPassagesShowing &&
+          (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
+
       _mqttController
           .addSubscription((route as gtt.RouteWithDetails).shortName);
       List<Stop> stops =
@@ -133,6 +138,8 @@ class MapPageController extends GetxController
       routes.putIfAbsent(route.shortName.replaceAll(' ', ''), () => route);
       routeIndex.putIfAbsent(
           route.shortName.replaceAll(' ', ''), () => routeIndex.length);
+
+      if (++added >= maxRoutesInMap) break;
     }
     allStops =
         stopsTemp.map((stop) => FermataMarker(fermata: stop)).toList().obs;

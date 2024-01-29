@@ -27,6 +27,20 @@ class SettingsPage extends StatelessWidget {
             },
           ),
           ListTile(
+            title: const Text('Visualizza tratte senza passaggi'),
+            subtitle: const Text(
+                'Mostra tratte senza passaggi da \'Guarda sulla mappa\''),
+            trailing: Obx(() => Switch(
+                  value:
+                      _settingsController.isRouteWithoutPassagesShowing.value,
+                  onChanged: (value) =>
+                      _settingsController.switchRouteWithoutPassagesShowing(),
+                )),
+            onTap: () {
+              _settingsController.resetData();
+            },
+          ),
+          ListTile(
             title: const Text('Resetta dati GTT'),
             onTap: () {
               _settingsController.resetData();

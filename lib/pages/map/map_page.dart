@@ -309,10 +309,6 @@ class MapPage extends StatelessWidget {
         InkWell(
           onTap: () async {
             Get.find<SearchStopsController>().openInfoPage(marker.fermata);
-            /*Get.until(
-                (route) => (route as GetPageRoute).routeName == '/HomePage');
-            Get.delete<InfoController>();
-            Get.find<SearchStopsController>().openInfoPage(marker.fermata);*/
           },
           child: Text(
             '${marker.fermata.code} - ${marker.fermata.name}',
@@ -330,7 +326,7 @@ class MapPage extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Bus ${marker.mqttData.shortName} - ${marker.mqttData.vehicleNum}',
+          '${_isTram(marker) ? 'Tram' : 'Bus'} ${marker.mqttData.shortName} - ${marker.mqttData.vehicleNum}',
         ),
         Text(
           'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
@@ -338,5 +334,19 @@ class MapPage extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  /*
+    Check if vehicle is bus or tram.
+    Trams have vehicle number:
+    - 28xx : old trams, yellow/orange
+    - 50xx : "TPR", grey trams
+    - 60xx : "Cityway" trams, quadrati
+    - 80xx : "Hitachirail" trams, new ones, blue.
+    rest is bus
+  */
+  bool _isTram(VehicleMarker marker) {
+    return RegExp(r'^[28|50|60|80]')
+        .hasMatch(marker.mqttData.vehicleNum.toString());
   }
 }

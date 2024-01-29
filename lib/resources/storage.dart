@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-enum StorageParam { color, fermataMap }
+enum StorageParam { color, fermataMap, routeWithoutPassagesMap }
 
 class Storage {
   static Color chosenColor = initialColor;
   static bool isFermataShowing = true;
+  static bool isRouteWithoutPassagesShowing = true;
   static const _storage = FlutterSecureStorage();
 
   static void loadSettings() async {
@@ -15,6 +16,9 @@ class Storage {
 
     isFermataShowing =
         bool.parse(await getParam(StorageParam.fermataMap) ?? 'true');
+
+    isRouteWithoutPassagesShowing = bool.parse(
+        await getParam(StorageParam.routeWithoutPassagesMap) ?? 'true');
   }
 
   static String colorToString(Color color) =>

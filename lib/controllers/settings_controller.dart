@@ -9,11 +9,18 @@ class SettingsController extends GetxController {
   final _homeController = Get.find<HomeController>();
 
   final RxBool isFermataShowing = Storage.isFermataShowing.obs;
-
+  final RxBool isRouteWithoutPassagesShowing =
+      Storage.isRouteWithoutPassagesShowing.obs;
   void switchFermataShowing() {
     isFermataShowing.value = !isFermataShowing.value;
     Storage.setParam(
         StorageParam.fermataMap, isFermataShowing.value.toString());
+  }
+
+  void switchRouteWithoutPassagesShowing() {
+    isRouteWithoutPassagesShowing.value = !isRouteWithoutPassagesShowing.value;
+    Storage.setParam(StorageParam.routeWithoutPassagesMap,
+        isRouteWithoutPassagesShowing.value.toString());
   }
 
   void resetData() async {

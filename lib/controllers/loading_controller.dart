@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
 import 'package:flutter_gtt/resources/api.dart';
+import 'package:flutter_gtt/testing/testing_page.dart';
 import 'package:get/get.dart';
 
 class LoadingController extends GetxController {
@@ -82,5 +83,6 @@ class LoadingController extends GetxController {
     }
     await Future.delayed(duration);
     Get.off(() => HomePage());
+    //Get.off(() => Testing());
   }
 }

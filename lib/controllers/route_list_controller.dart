@@ -45,7 +45,7 @@ class RouteListController extends GetxController {
       }
     }
 
-    bool startWithNumber(String s) {
+    bool startWithNumberOrM(String s) {
       return RegExp(r'^[0-9M]').hasMatch(s);
     }
 
@@ -66,15 +66,15 @@ class RouteListController extends GetxController {
         if (compareWithType != 0) {
           return compareWithType;
           // compare by number
-        } else if (startWithNumber(a.shortName) &&
-            startWithNumber(b.shortName)) {
+        } else if (startWithNumberOrM(a.shortName) &&
+            startWithNumberOrM(b.shortName)) {
           return compareWithNumbers(a, b);
           // compare by name
-        } else if (!startWithNumber(a.shortName) &&
-            !startWithNumber(b.shortName)) {
+        } else if (!startWithNumberOrM(a.shortName) &&
+            !startWithNumberOrM(b.shortName)) {
           return a.shortName.compareTo(b.shortName);
         } else {
-          return startWithNumber(a.shortName) ? -1 : 1;
+          return startWithNumberOrM(a.shortName) ? -1 : 1;
         }
       });
     }
