@@ -28,15 +28,6 @@ class InfoController extends GetxController {
     isSelecting.value = !isSelecting.value;
     if (!isSelecting.value) {
       selectedRoutes.clear();
-    } else {
-      // add maxRoutesInMap routes
-      selectedRoutes.addAll(fermata.value.vehicles
-          .getRange(
-              0,
-              fermata.value.vehicles.length < maxRoutesInMap
-                  ? fermata.value.vehicles.length
-                  : maxRoutesInMap)
-          .toList());
     }
   }
 
