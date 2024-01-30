@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:get/get.dart';
 
 class InfoController extends GetxController {
@@ -13,6 +15,50 @@ class InfoController extends GetxController {
   late RxString fermataName;
   final HomeController _homeController = Get.find<HomeController>();
   final RxBool isSaved = false.obs;
+
+  // select elements to be displayed in map
+  final RxList<gtt.Route> selectedRoutes = <gtt.Route>[].obs;
+  final RxBool isSelecting = false.obs;
+  void onLongPress(gtt.Route route) {
+    isSelecting.value = true;
+    selectedRoutes.add(route);
+  }
+
+  void switchSelecting() {
+    isSelecting.value = !isSelecting.value;
+    if (!isSelecting.value) {
+      selectedRoutes.clear();
+    } else {
+      // add maxRoutesInMap routes
+      selectedRoutes.addAll(fermata.value.vehicles
+          .getRange(
+              0,
+              fermata.value.vehicles.length < maxRoutesInMap
+                  ? fermata.value.vehicles.length
+                  : maxRoutesInMap)
+          .toList());
+    }
+  }
+
+  void onSelectedClick(gtt.Route route) {
+    if (selectedRoutes.contains(route)) {
+      selectedRoutes.remove(route);
+    } else {
+      if (selectedRoutes.length >= maxRoutesInMap) {
+        Get
+          ..closeAllSnackbars()
+          ..snackbar("Attenzione",
+              "Puoi selezionare al massimo $maxRoutesInMap veicoli");
+        return;
+      }
+      selectedRoutes.add(route);
+    }
+
+    if (selectedRoutes.isEmpty) {
+      isSelecting.value = false;
+    }
+  }
+
   @override
   void onInit() async {
     super.onInit();

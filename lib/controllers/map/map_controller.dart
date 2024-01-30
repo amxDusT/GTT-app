@@ -8,6 +8,7 @@ import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -20,7 +21,6 @@ class MapPageController extends GetxController
     with GetTickerProviderStateMixin {
   static const double minZoom = 10;
   static const double maxZoom = 18;
-  static const int maxRoutesInMap = 4;
   static const List colors = [
     Colors.blue,
     Colors.green,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
@@ -22,10 +23,25 @@ class InfoPage extends StatelessWidget {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: Obx(
             () => Text(
-              _infoController.fermata.value.toString(),
+              _infoController.isSelecting.isTrue
+                  ? '${_infoController.selectedRoutes.length} / $maxRoutesInMap  veicoli'
+                  : _infoController.fermata.value.toString(),
             ),
           ),
           actions: [
+            Obx(
+              () => IconButton(
+                onPressed: () {
+                  _infoController.switchSelecting();
+                },
+                icon: Icon(_infoController.isSelecting.isTrue
+                    ? Icons.close
+                    : Icons.select_all),
+                tooltip: _infoController.isSelecting.isTrue
+                    ? 'Annulla'
+                    : 'Seleziona tutto',
+              ),
+            ),
             Obx(
               () => IconButton(
                 onPressed: () {
@@ -34,6 +50,9 @@ class InfoPage extends StatelessWidget {
                 icon: Icon(_infoController.isSaved.isTrue
                     ? Icons.star
                     : Icons.star_outline),
+                tooltip: _infoController.isSaved.isTrue
+                    ? 'Rimuovi dalla home'
+                    : 'Salva in home',
               ),
             ),
           ],
@@ -88,17 +107,29 @@ class InfoPage extends StatelessWidget {
                   bottom: 20,
                   child: Opacity(
                     opacity: 0.9,
-                    child: ElevatedButton(
-                      onPressed: () => Get.to(
-                          () => MapPage(
-                                key: UniqueKey(),
-                              ),
-                          arguments: {
-                            'vehicles': _infoController.fermata.value.vehicles,
-                            'multiple-patterns': true,
-                            'fermata': _infoController.fermata.value,
-                          }),
-                      child: const Text('Guarda sulla mappa'),
+                    child: Obx(
+                      () => ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _infoController.isSelecting.isTrue
+                              ? Get.theme.colorScheme.primaryContainer
+                              : Theme.of(context).colorScheme.background,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        onPressed: () => Get.to(
+                            () => MapPage(
+                                  key: UniqueKey(),
+                                ),
+                            arguments: {
+                              'vehicles': _infoController.isSelecting.isTrue
+                                  ? _infoController.selectedRoutes
+                                  : _infoController.fermata.value.vehicles,
+                              'multiple-patterns': true,
+                              'fermata': _infoController.fermata.value,
+                            }),
+                        child: const Text('Guarda sulla mappa'),
+                      ),
                     ),
                   ),
                 ),
