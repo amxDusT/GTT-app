@@ -195,7 +195,7 @@ class Api {
     return latestVersion != currentVersion;
   }
 
-  static Future<Map<String, dynamic>> getDownloadUrl() async {
+  static Future<Map<String, dynamic>> getAppInfo() async {
     final response = await http.get(Uri.parse(_releaseUrl));
     if (response.statusCode != 200) {
       throw ApiException(response.statusCode, response.body);
@@ -211,7 +211,7 @@ class Api {
   }
 
   static Future<void> downloadNewVersion() async {
-    final Map<String, dynamic> result = await getDownloadUrl();
+    final Map<String, dynamic> result = await getAppInfo();
 
     final response = await http.get(Uri.parse(result['url']));
     if (response.statusCode != 200) {

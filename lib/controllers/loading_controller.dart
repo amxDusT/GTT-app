@@ -16,15 +16,26 @@ class LoadingController extends GetxController {
 
   Future<void> checkVersion() async {
     bool isDifferent = await Api.checkVersion();
+
     if (isDifferent) {
+      final Map<String, dynamic> infoApp = await Api.getAppInfo();
       RxBool isDownloading = false.obs;
       //bool isDownloading = false;
       await Get.defaultDialog(
         barrierDismissible: false,
-        title: 'Nuova versione disponibile',
+        title: 'Nuova versione disponibile (${infoApp['version']})',
         content: Column(
           children: [
             const Text('È disponibile una nuova versione dell\'app'),
+            const SizedBox(height: 10),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '  Novità:',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Text(infoApp['update']),
             const SizedBox(height: 10),
             Obx(
               () => Visibility(
