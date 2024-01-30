@@ -11,40 +11,55 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Impostazioni'),
       ),
-      body: ListView(
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          ListTile(
-            title: const Text('Mostra fermata nella mappa'),
-            subtitle:
-                const Text('Mostra popup della fermata iniziale nella mappa'),
-            trailing: Obx(() => Switch(
-                  value: _settingsController.isFermataShowing.value,
-                  onChanged: (value) =>
-                      _settingsController.switchFermataShowing(),
-                )),
-            onTap: () {
-              _settingsController.resetData();
-            },
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ListTile(
+                  title: const Text('Mostra fermata nella mappa'),
+                  subtitle: const Text(
+                      'Mostra popup della fermata iniziale nella mappa'),
+                  trailing: Obx(() => Switch(
+                        value: _settingsController.isFermataShowing.value,
+                        onChanged: (value) =>
+                            _settingsController.switchFermataShowing(),
+                      )),
+                  onTap: () {
+                    _settingsController.resetData();
+                  },
+                ),
+                ListTile(
+                  title: const Text('Visualizza tratte senza passaggi'),
+                  subtitle: const Text(
+                      'Mostra tratte senza passaggi da \'Guarda sulla mappa\''),
+                  trailing: Obx(() => Switch(
+                        value: _settingsController
+                            .isRouteWithoutPassagesShowing.value,
+                        onChanged: (value) => _settingsController
+                            .switchRouteWithoutPassagesShowing(),
+                      )),
+                  onTap: () {
+                    _settingsController.resetData();
+                  },
+                ),
+                ListTile(
+                  title: const Text('Resetta dati GTT'),
+                  onTap: () {
+                    _settingsController.resetData();
+                  },
+                ),
+              ],
+            ),
           ),
-          ListTile(
-            title: const Text('Visualizza tratte senza passaggi'),
-            subtitle: const Text(
-                'Mostra tratte senza passaggi da \'Guarda sulla mappa\''),
-            trailing: Obx(() => Switch(
-                  value:
-                      _settingsController.isRouteWithoutPassagesShowing.value,
-                  onChanged: (value) =>
-                      _settingsController.switchRouteWithoutPassagesShowing(),
-                )),
-            onTap: () {
-              _settingsController.resetData();
-            },
-          ),
-          ListTile(
-            title: const Text('Resetta dati GTT'),
-            onTap: () {
-              _settingsController.resetData();
-            },
+          Container(
+            alignment: Alignment.bottomCenter,
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
+            child: Obx(
+              () => Text('Versione: ${_settingsController.version}'),
+            ),
           )
         ],
       ),

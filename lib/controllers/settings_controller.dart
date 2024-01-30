@@ -4,6 +4,7 @@ import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsController extends GetxController {
   final _homeController = Get.find<HomeController>();
@@ -11,6 +12,16 @@ class SettingsController extends GetxController {
   final RxBool isFermataShowing = Storage.isFermataShowing.obs;
   final RxBool isRouteWithoutPassagesShowing =
       Storage.isRouteWithoutPassagesShowing.obs;
+
+  final RxString version = ''.obs;
+
+  @override
+  void onInit() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    version.value = packageInfo.version;
+    super.onInit();
+  }
+
   void switchFermataShowing() {
     isFermataShowing.value = !isFermataShowing.value;
     Storage.setParam(
