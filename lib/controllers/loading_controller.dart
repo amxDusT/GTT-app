@@ -25,6 +25,7 @@ class LoadingController extends GetxController {
         barrierDismissible: false,
         title: 'Nuova versione disponibile (${infoApp['version']})',
         content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             const Text('È disponibile una nuova versione dell\'app'),
             const SizedBox(height: 10),
@@ -35,7 +36,13 @@ class LoadingController extends GetxController {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
-            Text(infoApp['update']),
+            SizedBox(
+              height: 150,
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Text(infoApp['update']),
+              ),
+            ),
             const SizedBox(height: 10),
             Obx(
               () => Visibility(
