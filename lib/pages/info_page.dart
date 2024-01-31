@@ -109,10 +109,11 @@ class InfoPage extends StatelessWidget {
                                     );
                                   }
                                   return InfoWidget(
-                                      stop: _infoController.fermata.value,
-                                      vehicle: (_infoController
-                                              .fermata.value.vehicles[index]
-                                          as RouteWithDetails));
+                                    stop: _infoController.fermata.value,
+                                    vehicle: (_infoController.fermata.value
+                                        .vehicles[index] as RouteWithDetails),
+                                    infoControllerKey: key?.toString(),
+                                  );
                                 },
                               ),
                       ),

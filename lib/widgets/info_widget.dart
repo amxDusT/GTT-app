@@ -10,9 +10,13 @@ import 'package:intl/intl.dart';
 class InfoWidget extends StatelessWidget {
   final RouteWithDetails vehicle;
   final Stop stop;
-
-  InfoWidget({super.key, required this.stop, required this.vehicle});
-  final _infoController = Get.find<InfoController>();
+  final InfoController _infoController;
+  InfoWidget(
+      {super.key,
+      required this.stop,
+      required this.vehicle,
+      String? infoControllerKey})
+      : _infoController = Get.find<InfoController>(tag: infoControllerKey);
 
   void _openAlerts() {
     if (vehicle.alerts.isEmpty) {
