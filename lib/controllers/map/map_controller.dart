@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +25,11 @@ class MapPageController extends GetxController
   static const List colors = [
     Colors.blue,
     Colors.green,
-    Colors.amber,
-    Colors.deepOrange,
-    Colors.deepPurple,
-    Colors.brown,
     Colors.pinkAccent,
+    Colors.brown,
+    Colors.deepPurple,
     Colors.tealAccent,
+    Colors.deepOrange,
   ];
 
   MapController mapController = MapController();
@@ -270,18 +270,28 @@ class MapPageController extends GetxController
         _animatedMarkerMove(payload);
       } else {
         allVehicles.putIfAbsent(
-            payload.vehicleNum,
-            () => VehicleMarker(
-                mqttData: payload,
-                color: routes.length == 1
-                    ? null
-                    : Utils.darken(
-                        colors[(routeIndex[payload.shortName] ?? 0) %
-                            colors.length],
-                        30)));
+          payload.vehicleNum,
+          () => VehicleMarker(
+            mqttData: payload,
+            color: routes.length == 1
+                ? null
+                : Utils.darken(
+                    colors[
+                        (routeIndex[payload.shortName] ?? 0) % colors.length],
+                    30),
+            internalColor:
+                routes[payload.shortName]?.type == 0 && !_isTram(payload)
+                    ? Colors.white
+                    : null,
+          ),
+        );
       }
       //}
     });
+  }
+
+  bool _isTram(MqttVehicle vehicle) {
+    return RegExp(r'^[28|50|60|80]').hasMatch(vehicle.vehicleNum.toString());
   }
 
   void zoomIn() => _zoomAnimation(true);

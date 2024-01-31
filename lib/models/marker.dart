@@ -15,7 +15,8 @@ class Test {
 class VehicleMarker extends Marker {
   final MqttVehicle mqttData;
   final Color? color;
-  VehicleMarker({required this.mqttData, this.color})
+  final Color? internalColor;
+  VehicleMarker({required this.mqttData, this.color, this.internalColor})
       : super(
           point: mqttData.position,
           child: Transform.rotate(
@@ -30,8 +31,9 @@ class VehicleMarker extends Marker {
                     width: 15,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Utils.lighten(color ?? Colors.blue)
-                          .withOpacity(0.9), //color ?? Colors.blue,
+                      color: internalColor ??
+                          Utils.lighten(color ?? Colors.blue)
+                              .withOpacity(0.9), //color ?? Colors.blue,
                     ),
                   ),
                 ),
@@ -48,11 +50,15 @@ class VehicleMarker extends Marker {
           ),
         );
 
-  VehicleMarker copyWith({MqttVehicle? mqttData, Color? color}) {
+  VehicleMarker copyWith({
+    MqttVehicle? mqttData,
+    Color? color,
+    Color? internalColor,
+  }) {
     return VehicleMarker(
-      mqttData: mqttData ?? this.mqttData,
-      color: color ?? this.color,
-    );
+        mqttData: mqttData ?? this.mqttData,
+        color: color ?? this.color,
+        internalColor: internalColor ?? this.internalColor);
   }
 }
 
