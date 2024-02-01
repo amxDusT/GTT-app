@@ -6,6 +6,7 @@ import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 
 class InfoController extends GetxController {
@@ -17,9 +18,16 @@ class InfoController extends GetxController {
   final RxBool isSaved = false.obs;
 
   // select elements to be displayed in map
-  final RxList<gtt.Route> selectedRoutes = <gtt.Route>[].obs;
+  final RxList<gtt.RouteWithDetails> selectedRoutes =
+      <gtt.RouteWithDetails>[].obs;
   final RxBool isSelecting = false.obs;
-  void onLongPress(gtt.Route route) {
+
+  bool get canShowMap =>
+      isSelecting.isTrue &&
+      selectedRoutes.isNotEmpty &&
+      (Storage.isRouteWithoutPassagesShowing ||
+          selectedRoutes.any((route) => route.stoptimes.isNotEmpty));
+  void onLongPress(gtt.RouteWithDetails route) {
     isSelecting.value = true;
     selectedRoutes.add(route);
   }
@@ -31,7 +39,7 @@ class InfoController extends GetxController {
     }
   }
 
-  void onSelectedClick(gtt.Route route) {
+  void onSelectedClick(gtt.RouteWithDetails route) {
     if (selectedRoutes.contains(route)) {
       selectedRoutes.remove(route);
     } else {

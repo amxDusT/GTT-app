@@ -4,6 +4,7 @@ import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -64,8 +65,16 @@ class InfoWidget extends StatelessWidget {
             if (_infoController.isSelecting.isTrue) {
               _infoController.onSelectedClick(vehicle);
               return;
+            } else if (!Storage.isRouteWithoutPassagesShowing &&
+                vehicle.stoptimes.isEmpty) {
+              Get
+                ..closeAllSnackbars()
+                ..snackbar(
+                  "Attenzione",
+                  "Non ci sono passaggi per questo veicolo",
+                );
+              return;
             }
-
             Get.to(
                 () => MapPage(
                       key: UniqueKey(),

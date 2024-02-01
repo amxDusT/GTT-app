@@ -3,6 +3,7 @@ import 'package:flutter_gtt/controllers/info_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
@@ -123,10 +124,7 @@ class InfoPage extends StatelessWidget {
                     bottom: 20,
                     child: Obx(
                       () => Opacity(
-                        opacity: _infoController.isSelecting.isFalse ||
-                                _infoController.selectedRoutes.isNotEmpty
-                            ? 0.9
-                            : 0.0,
+                        opacity: _infoController.canShowMap ? 0.9 : 0.0,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: _infoController.isSelecting.isTrue
