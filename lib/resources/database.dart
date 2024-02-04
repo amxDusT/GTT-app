@@ -205,14 +205,28 @@ class DatabaseCommands {
     });
   }
 
+  // static Future<List<Pattern>> getPatterns(Route route) async {
+  //   final db = await instance;
+  //   final results = await db.query(
+  //     _patternsTable,
+  //     where: 'routeId = ?',
+  //     whereArgs: [route.gtfsId],
+  //     orderBy: 'directionId, code ASC',
+  //   );
+  //   return List.generate(results.length, (i) {
+  //     return Pattern.fromJson(results[i]);
+  //   });
+  // }
   static Future<List<Pattern>> getPatterns(Route route) async {
     final db = await instance;
-    final results = await db.query(
-      _patternsTable,
-      where: 'routeId = ?',
-      whereArgs: [route.gtfsId],
-      orderBy: 'directionId, code ASC',
-    );
+    final results = await db.rawQuery('''
+    SELECT $_patternsTable.*, COUNT($_patternStopsTable.stopId) AS numStops
+    FROM $_patternsTable
+    LEFT JOIN $_patternStopsTable ON $_patternsTable.code = $_patternStopsTable.patternCode
+    WHERE $_patternsTable.routeId = ?
+    GROUP BY $_patternsTable.code
+    ORDER BY $_patternsTable.directionId ASC, numStops DESC
+  ''', [route.gtfsId]);
     return List.generate(results.length, (i) {
       return Pattern.fromJson(results[i]);
     });

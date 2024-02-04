@@ -10,6 +10,7 @@ import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 
 class InfoController extends GetxController {
+  final RxBool isBacking = false.obs;
   late final Rx<DateTime> lastUpdate;
   final RxBool isLoading = false.obs;
   late Rx<StopWithDetails> fermata;

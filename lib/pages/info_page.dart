@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 
 class InfoPage extends StatelessWidget {
   final InfoController _infoController;
+
   InfoPage({super.key})
       : _infoController = Get.put(InfoController(), tag: key?.toString());
 
@@ -23,10 +24,8 @@ class InfoPage extends StatelessWidget {
           _infoController.switchSelecting();
         } else {
           Future.delayed(Duration.zero, () {
-            Get.back();
+            if (!didPop) Get.back();
           });
-          //Navigator.pop(context);
-          //Get.back();
         }
       },
       child: Hero(

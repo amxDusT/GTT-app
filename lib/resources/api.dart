@@ -58,7 +58,7 @@ class MqttController {
         MqttVehicle data =
             MqttVehicle.fromList(json.decode(pt) as List<dynamic>, c[0].topic);
         _payloadStreamController.add(data);
-      } on FormatException catch (e) {
+      } on FormatException {
         print('Exception: ${json.decode(pt)}');
       }
     });

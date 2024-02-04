@@ -25,6 +25,10 @@ class MapInfoController extends GetxController {
     return result;
   }
 
+  List<String> get routes {
+    return fermata.value.vehicles.map((route) => route.shortName).toList();
+  }
+
   @override
   void onInit() async {
     if (Get.arguments['fermata'] != null) {
