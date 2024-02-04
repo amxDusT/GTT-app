@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
+import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
@@ -15,7 +16,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
 
 class MapPageController extends GetxController
     with GetTickerProviderStateMixin {
@@ -50,11 +50,10 @@ class MapPageController extends GetxController
       <String, RxMap<int, MqttVehicle>>{}.obs;
 
   Marker? lastOpenedMarker;
-  // User Location
-  LatLng? _userLocation;
-  StreamSubscription<LocationData>? _locationSubscription;
-  final RxList<LatLng> userLocationMarker = <LatLng>[].obs;
+
+  final MapLocation userLocation = Get.put(MapLocation(), permanent: true);
   final RxBool isLocationLoading = false.obs;
+
   final RxBool isPatternInitialized = false.obs;
 
   // for single route, for showing the direction
@@ -91,7 +90,9 @@ class MapPageController extends GetxController
     await _mqttController.dispose();
     mapController.dispose();
     popupController.dispose();
-    _stopLocationListen();
+    mapInfoController.dispose();
+    userLocation.onMapDispose();
+
     super.onClose();
   }
 
@@ -299,48 +300,6 @@ class MapPageController extends GetxController
 
   void zoomOut() => _zoomAnimation(false);
 
-  FutureOr<LatLng> get userLocation async {
-    if (_locationSubscription == null) {
-      Location location = Location();
-      bool serviceEnabled = await location.serviceEnabled();
-      if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
-          throw 'Service not enabled';
-        }
-      }
-
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          throw 'Permission denied';
-        }
-      }
-      LocationData locationData = await location.getLocation();
-      _listenLocation(location);
-      return LatLng(locationData.latitude!, locationData.longitude!);
-    } else if (_userLocation == null) {
-      LocationData locationData = await Location().getLocation();
-      return LatLng(locationData.latitude!, locationData.longitude!);
-    }
-
-    return _userLocation!;
-  }
-
-  void goToUserLocation() async {
-    isLocationLoading.value = true;
-    try {
-      _animatedMapMove(await userLocation, 17);
-    } catch (e) {
-      Get
-        ..closeAllSnackbars()
-        ..snackbar("Errore", "Could not retrieve position");
-    }
-
-    isLocationLoading.value = false;
-  }
-
   Future<void> _zoomAnimation(bool isZoomIn) async {
     final animController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -369,23 +328,6 @@ class MapPageController extends GetxController
     animController.forward();
   }
 
-  Future<void> _listenLocation(Location location) async {
-    _locationSubscription =
-        location.onLocationChanged.handleError((dynamic err) {
-      _stopLocationListen();
-    }).listen((currentLocation) {
-      _userLocation =
-          LatLng(currentLocation.latitude!, currentLocation.longitude!);
-      userLocationMarker.clear();
-      userLocationMarker.add(_userLocation!);
-    });
-  }
-
-  Future<void> _stopLocationListen() async {
-    await _locationSubscription?.cancel();
-    _locationSubscription = null;
-  }
-
   void setCurrentPattern(gtt.Pattern newPattern) async {
     allStops.clear();
     List<Stop> stopTemp =
@@ -397,5 +339,23 @@ class MapPageController extends GetxController
     popupController.hideAllPopups();
     centerBounds();
     //mqttData.clear();
+  }
+
+  void goToUserLocation() async {
+    isLocationLoading.value = true;
+    try {
+      if (userLocation.isLocationInitialized.isTrue) {
+        _animatedMapMove(userLocation.userLocationMarker.value, 16);
+      } else {
+        await userLocation.userLocation;
+        _animatedMapMove(userLocation.userLocationMarker.value, 16);
+      }
+    } catch (e) {
+      Get
+        ..closeAllSnackbars()
+        ..snackbar("Errore", e.toString());
+    }
+
+    isLocationLoading.value = false;
   }
 }

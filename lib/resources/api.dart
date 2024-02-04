@@ -15,7 +15,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class MqttController {
   final Set<String> _shortNames = {};
   late MqttServerClient _client;
-  late StreamSubscription<List<MqttReceivedMessage<MqttMessage>>> _subscription;
+  StreamSubscription<List<MqttReceivedMessage<MqttMessage>>>? _subscription;
   final StreamController<MqttVehicle> _payloadStreamController =
       StreamController<MqttVehicle>();
 
@@ -57,22 +57,25 @@ class MqttController {
       try {
         MqttVehicle data =
             MqttVehicle.fromList(json.decode(pt) as List<dynamic>, c[0].topic);
-        _payloadStreamController.add(data);
+        if (!_payloadStreamController.isClosed)
+          _payloadStreamController.add(data);
       } on FormatException {
         print('Exception: ${json.decode(pt)}');
       }
     });
   }
 
-  Stream<MqttVehicle> get payloadStream => _payloadStreamController.stream;
+  Stream<MqttVehicle> get payloadStream => _payloadStreamController.isClosed
+      ? throw 'error'
+      : _payloadStreamController.stream;
 
   Future<void> dispose() async {
     for (String shortName in _shortNames) {
       _client.unsubscribe('/$shortName/#');
     }
-    await _subscription.cancel();
+    _subscription?.cancel();
     _client.disconnect();
-    await _payloadStreamController.close();
+    _payloadStreamController.close();
   }
 }
 

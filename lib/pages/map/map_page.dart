@@ -94,18 +94,19 @@ class MapPage extends StatelessWidget {
                 ),
                 Obx(
                   () => MarkerLayer(
-                    markers: _flutterMapController.userLocationMarker
-                        .map(
-                          (element) => Marker(
-                            point: element,
-                            child: const Icon(
-                              Icons.location_on,
-                              color: Colors.blue,
-                              size: 30,
-                            ),
+                    markers: [
+                      if (_flutterMapController
+                          .userLocation.isLocationAvailable.isTrue)
+                        Marker(
+                          point: _flutterMapController
+                              .userLocation.userLocationMarker.value,
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.blue,
+                            size: 30,
                           ),
-                        )
-                        .toList(),
+                        ),
+                    ],
                   ),
                 ),
                 Obx(
@@ -237,9 +238,23 @@ class MapPage extends StatelessWidget {
                                       ? const CircularProgressIndicator()
                                       : IconButton(
                                           tooltip: 'Location',
-                                          onPressed: () => _flutterMapController
-                                              .goToUserLocation(),
-                                          icon: const Icon(Icons.location_on),
+                                          onPressed: () {
+                                            _flutterMapController.userLocation
+                                                .switchLocationShowing();
+                                            if (_flutterMapController
+                                                .userLocation
+                                                .isLocationShowing
+                                                .isTrue) {
+                                              _flutterMapController
+                                                  .goToUserLocation();
+                                            }
+                                          },
+                                          icon: _flutterMapController
+                                                  .userLocation
+                                                  .isLocationShowing
+                                                  .isFalse
+                                              ? const Icon(Icons.location_on)
+                                              : const Icon(Icons.location_off),
                                         ),
                             ),
                           ),
