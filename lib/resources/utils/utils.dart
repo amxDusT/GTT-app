@@ -24,10 +24,10 @@ class Utils {
     return count;
   }
 
-  static String dateToHourString(DateTime date) {
-    return Storage.showSecondsInUpdates
-        ? DateFormat.Hms(Get.locale?.languageCode).format(date).capitalizeFirst!
-        : DateFormat.Hm(Get.locale?.languageCode).format(date).capitalizeFirst!;
+  static String dateToHourString(DateTime date, [checkSeconds = true]) {
+    return checkSeconds && Storage.showSecondsInUpdates
+        ? DateFormat.Hms(Get.locale?.languageCode).format(date)
+        : DateFormat.Hm(Get.locale?.languageCode).format(date);
   }
 
   static String dateToString(DateTime date) {

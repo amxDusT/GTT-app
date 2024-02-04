@@ -5,8 +5,8 @@ import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class InfoWidget extends StatelessWidget {
   final RouteWithDetails vehicle;
@@ -47,8 +47,7 @@ class InfoWidget extends StatelessWidget {
                         : maxHours)
                 .map(
                   (e) => Text(
-                    DateFormat.Hm(Get.locale?.languageCode)
-                        .format(e.realtimeDeparture),
+                    Utils.dateToHourString(e.realtimeDeparture, false),
                     style: TextStyle(color: e.realtime ? Colors.green : null),
                   ),
                 )
