@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -24,9 +25,9 @@ class Utils {
   }
 
   static String dateToHourString(DateTime date) {
-    return DateFormat.Hms(Get.locale?.languageCode)
-        .format(date)
-        .capitalizeFirst!;
+    return Storage.showSecondsInUpdates
+        ? DateFormat.Hms(Get.locale?.languageCode).format(date).capitalizeFirst!
+        : DateFormat.Hm(Get.locale?.languageCode).format(date).capitalizeFirst!;
   }
 
   static String dateToString(DateTime date) {

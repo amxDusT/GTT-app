@@ -6,6 +6,7 @@ import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:flutter_gtt/widgets/map_info_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -13,7 +14,8 @@ import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatelessWidget {
   final MapPageController _flutterMapController;
-  MapPage({super.key})
+  final String? infoKey;
+  MapPage({super.key, this.infoKey})
       : _flutterMapController =
             Get.put(MapPageController(), tag: key?.toString());
   @override
@@ -120,6 +122,12 @@ class MapPage extends StatelessWidget {
                       ],
                       popupDisplayOptions: PopupDisplayOptions(
                         builder: (BuildContext context, Marker marker) {
+                          if (_flutterMapController.lastOpenedMarker !=
+                                  marker &&
+                              marker is FermataMarker) {
+                            _flutterMapController.mapInfoController
+                                .getFermata(marker.fermata.code);
+                          }
                           _flutterMapController.lastOpenedMarker = marker;
                           return Card(
                             color: Colors.yellow.withOpacity(0.9),
@@ -312,9 +320,7 @@ class MapPage extends StatelessWidget {
             '${marker.fermata.code} - ${marker.fermata.name}',
           ),
         ),
-        if (marker.fermata is StopWithDetails)
-          Text(
-              '${(marker.fermata as StopWithDetails).vehicles.map((e) => e.shortName)}'),
+        MapInfoWidget(stop: marker.fermata),
       ],
     );
   }

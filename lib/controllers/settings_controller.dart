@@ -9,6 +9,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class SettingsController extends GetxController {
   final _homeController = Get.find<HomeController>();
 
+  final RxBool showSecondsInUpdates = Storage.showSecondsInUpdates.obs;
   final RxBool isFermataShowing = Storage.isFermataShowing.obs;
   final RxBool isRouteWithoutPassagesShowing =
       Storage.isRouteWithoutPassagesShowing.obs;
@@ -32,6 +33,12 @@ class SettingsController extends GetxController {
     isRouteWithoutPassagesShowing.value = !isRouteWithoutPassagesShowing.value;
     Storage.setParam(StorageParam.routeWithoutPassagesMap,
         isRouteWithoutPassagesShowing.value.toString());
+  }
+
+  void switchShowSecondsInUpdates() {
+    showSecondsInUpdates.value = !showSecondsInUpdates.value;
+    Storage.setParam(StorageParam.showSecondsInUpdates,
+        showSecondsInUpdates.value.toString());
   }
 
   void resetData() async {

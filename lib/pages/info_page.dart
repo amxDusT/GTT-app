@@ -3,7 +3,6 @@ import 'package:flutter_gtt/controllers/info_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
@@ -143,6 +142,7 @@ class InfoPage extends StatelessWidget {
                             Get.to(
                                 () => MapPage(
                                       key: UniqueKey(),
+                                      infoKey: key?.toString(),
                                     ),
                                 arguments: {
                                   'vehicles': _infoController.isSelecting.isTrue

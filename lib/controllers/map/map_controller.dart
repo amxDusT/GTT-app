@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
@@ -29,7 +30,7 @@ class MapPageController extends GetxController
     Colors.tealAccent,
     Colors.deepOrange,
   ];
-
+  late MapInfoController mapInfoController;
   MapController mapController = MapController();
   PopupController popupController = PopupController();
   // used for deleting animations that are not finished yet when closing the page
@@ -104,10 +105,9 @@ class MapPageController extends GetxController
       _removeOldVehicles();
     });
     _mqttController = MqttController();
-    //bool isSingleRoute = Get.arguments['vehicles'].length == 1;
-    Set<Stop> uniqueStops = {};
     List<gtt.Route> routeValues = Get.arguments['vehicles'];
     final Stop? initialStop = Get.arguments['fermata'];
+    mapInfoController = Get.put(MapInfoController());
     final bool showMultiplePatterns =
         Get.arguments['multiple-patterns'] ?? false;
 
@@ -132,21 +132,21 @@ class MapPageController extends GetxController
       ];
     }
     int routeCount = 0; // limit to 'maxRoutesInMap' routes
+    Set<Stop> stops = {};
     for (gtt.Route route in routeValues) {
       if (!Storage.isRouteWithoutPassagesShowing &&
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
 
       _mqttController
           .addSubscription((route as gtt.RouteWithDetails).shortName);
-      List<Stop> stops =
-          await DatabaseCommands.getStopsFromPattern(route.pattern);
+      stops.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
 
-      for (var stop in stops) {
+      /*for (var stop in stops) {
         List<gtt.Route> routeValues =
             await DatabaseCommands.getRouteFromStop(stop);
         uniqueStops
             .add(StopWithDetails.fromStop(stop: stop, vehicles: routeValues));
-      }
+      }*/
 
       // stopsTemp.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
 
@@ -156,8 +156,10 @@ class MapPageController extends GetxController
 
       if (++routeCount >= maxRoutesInMap) break;
     }
-    allStops =
+    allStops = stops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
+    /*allStops =
         uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
+    */
     _mqttController.connect();
 
     isPatternInitialized.value = true;

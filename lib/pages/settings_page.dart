@@ -19,6 +19,15 @@ class SettingsPage extends StatelessWidget {
               shrinkWrap: true,
               children: [
                 ListTile(
+                  title:
+                      const Text('Mostra secondi dall\'ultimo aggiornamento'),
+                  trailing: Obx(() => Switch(
+                        value: _settingsController.showSecondsInUpdates.value,
+                        onChanged: (value) =>
+                            _settingsController.switchShowSecondsInUpdates(),
+                      )),
+                ),
+                ListTile(
                   title: const Text('Mostra fermata nella mappa'),
                   subtitle: const Text(
                       'Mostra popup della fermata iniziale nella mappa'),
@@ -27,9 +36,6 @@ class SettingsPage extends StatelessWidget {
                         onChanged: (value) =>
                             _settingsController.switchFermataShowing(),
                       )),
-                  onTap: () {
-                    _settingsController.resetData();
-                  },
                 ),
                 ListTile(
                   title: const Text('Visualizza tratte senza passaggi'),
@@ -41,9 +47,6 @@ class SettingsPage extends StatelessWidget {
                         onChanged: (value) => _settingsController
                             .switchRouteWithoutPassagesShowing(),
                       )),
-                  onTap: () {
-                    _settingsController.resetData();
-                  },
                 ),
                 ListTile(
                   title: const Text('Resetta dati GTT'),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 const int maxRoutesInMap = 4;
 const maxHours = 4;
+const maxHoursMap = 2;
 const Color initialColor = Colors.teal;
 const Map<int, String> ticketCodes = {
   // tickets
