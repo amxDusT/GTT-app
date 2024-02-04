@@ -347,8 +347,7 @@ class MapPageController extends GetxController
       if (userLocation.isLocationInitialized.isTrue) {
         _animatedMapMove(userLocation.userLocationMarker.value, 16);
       } else {
-        await userLocation.userLocation;
-        _animatedMapMove(userLocation.userLocationMarker.value, 16);
+        _animatedMapMove(await userLocation.userLocation, 16);
       }
     } catch (e) {
       Get
