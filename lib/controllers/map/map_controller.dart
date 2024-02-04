@@ -134,7 +134,8 @@ class MapPageController extends GetxController
     int routeCount = 0; // limit to 'maxRoutesInMap' routes
     Set<Stop> stops = {};
     for (gtt.Route route in routeValues) {
-      if (!Storage.isRouteWithoutPassagesShowing &&
+      if (showMultiplePatterns &&
+          !Storage.isRouteWithoutPassagesShowing &&
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
 
       _mqttController
@@ -164,10 +165,10 @@ class MapPageController extends GetxController
 
     isPatternInitialized.value = true;
     _listenData();
-    _centerBounds();
+    centerBounds();
   }
 
-  void _centerBounds() {
+  void centerBounds() {
     final constrained = CameraFit.coordinates(
       coordinates: (routes.values.first).pattern.polylinePoints,
       padding: const EdgeInsets.all(20.0),
@@ -394,7 +395,7 @@ class MapPageController extends GetxController
     routes.update(routes.keys.first,
         (value) => routes.values.first.copyWith(pattern: newPattern));
     popupController.hideAllPopups();
-    _centerBounds();
+    centerBounds();
     //mqttData.clear();
   }
 }

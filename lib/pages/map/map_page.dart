@@ -40,6 +40,8 @@ class MapPage extends StatelessWidget {
             child: FlutterMap(
               mapController: _flutterMapController.mapController,
               options: MapOptions(
+                maxZoom: MapPageController.maxZoom,
+                minZoom: MapPageController.minZoom,
                 initialZoom: 15,
                 onMapReady: _flutterMapController.onMapReady,
                 interactionOptions: const InteractionOptions(
@@ -207,25 +209,42 @@ class MapPage extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Obx(
-                          () => CircleAvatar(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          CircleAvatar(
                             radius: 25,
                             backgroundColor: Get
                                 .theme.colorScheme.primaryContainer
                                 .withOpacity(0.8),
-                            child:
-                                _flutterMapController.isLocationLoading.isTrue
-                                    ? const CircularProgressIndicator()
-                                    : IconButton(
-                                        tooltip: 'Location',
-                                        onPressed: () => _flutterMapController
-                                            .goToUserLocation(),
-                                        icon: const Icon(Icons.location_on),
-                                      ),
+                            child: IconButton(
+                              tooltip: 'Center Bounds',
+                              onPressed: () =>
+                                  _flutterMapController.centerBounds(),
+                              icon: const Icon(Icons.center_focus_strong),
+                            ),
                           ),
-                        ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Obx(
+                            () => CircleAvatar(
+                              radius: 25,
+                              backgroundColor: Get
+                                  .theme.colorScheme.primaryContainer
+                                  .withOpacity(0.8),
+                              child:
+                                  _flutterMapController.isLocationLoading.isTrue
+                                      ? const CircularProgressIndicator()
+                                      : IconButton(
+                                          tooltip: 'Location',
+                                          onPressed: () => _flutterMapController
+                                              .goToUserLocation(),
+                                          icon: const Icon(Icons.location_on),
+                                        ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(
                         height: 10,
