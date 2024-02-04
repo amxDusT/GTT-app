@@ -24,10 +24,10 @@ class InfoController extends GetxController {
   final RxBool isSelecting = false.obs;
 
   bool get canShowMap =>
-      isSelecting.isTrue &&
+      isSelecting.isFalse ||
       selectedRoutes.isNotEmpty &&
-      (Storage.isRouteWithoutPassagesShowing ||
-          selectedRoutes.any((route) => route.stoptimes.isNotEmpty));
+          (Storage.isRouteWithoutPassagesShowing ||
+              selectedRoutes.any((route) => route.stoptimes.isNotEmpty));
   void onLongPress(gtt.RouteWithDetails route) {
     isSelecting.value = true;
     selectedRoutes.add(route);

@@ -107,7 +107,7 @@ class InfoWidget extends StatelessWidget {
           trailing: SizedBox(
             width: 30,
             child: GestureDetector(
-              onTap: _openAlerts,
+              onTap: vehicle.alerts.isEmpty ? null : _openAlerts,
               child: Text(
                 vehicle.alerts.isEmpty ? "No alerts" : "Alerts",
                 textAlign: TextAlign.center,

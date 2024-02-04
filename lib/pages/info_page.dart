@@ -121,39 +121,47 @@ class InfoPage extends StatelessWidget {
                   Positioned(
                     bottom: 20,
                     child: Obx(
-                      () => Opacity(
-                        opacity: _infoController.canShowMap ? 0.9 : 0.0,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: _infoController.isSelecting.isTrue
-                                ? Get.theme.colorScheme.primaryContainer
-                                : Theme.of(context).colorScheme.background,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+                      () {
+                        if (!_infoController.canShowMap) {
+                          return const SizedBox();
+                        }
+                        return Opacity(
+                          opacity: 0.9,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _infoController
+                                      .isSelecting.isTrue
+                                  ? Get.theme.colorScheme.primaryContainer
+                                  : Theme.of(context).colorScheme.background,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
                             ),
-                          ),
-                          onPressed: () {
-                            if (_infoController.isSelecting.isTrue &&
-                                _infoController.selectedRoutes.isEmpty) {
-                              return;
-                            }
+                            onPressed: () {
+                              if (_infoController.isSelecting.isTrue &&
+                                  _infoController.selectedRoutes.isEmpty) {
+                                return;
+                              }
 
-                            Get.to(
-                                () => MapPage(
-                                      key: UniqueKey(),
-                                      infoKey: key?.toString(),
-                                    ),
-                                arguments: {
-                                  'vehicles': _infoController.isSelecting.isTrue
-                                      ? _infoController.selectedRoutes
-                                      : _infoController.fermata.value.vehicles,
-                                  'multiple-patterns': true,
-                                  'fermata': _infoController.fermata.value,
-                                });
-                          },
-                          child: const Text('Guarda sulla mappa'),
-                        ),
-                      ),
+                              Get.to(
+                                  () => MapPage(
+                                        key: UniqueKey(),
+                                        infoKey: key?.toString(),
+                                      ),
+                                  arguments: {
+                                    'vehicles':
+                                        _infoController.isSelecting.isTrue
+                                            ? _infoController.selectedRoutes
+                                            : _infoController
+                                                .fermata.value.vehicles,
+                                    'multiple-patterns': true,
+                                    'fermata': _infoController.fermata.value,
+                                  });
+                            },
+                            child: const Text('Guarda sulla mappa'),
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
