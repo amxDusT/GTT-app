@@ -38,7 +38,7 @@ class MapInfoWidget extends StatelessWidget {
               }
               RouteWithDetails route = _mapInfoController.fermata.value.vehicles
                   .elementAt(index) as RouteWithDetails;
-              if (route.stoptimes.isEmpty) return null;
+              if (route.stoptimes.isEmpty) return const SizedBox();
               return Row(
                 children: [
                   Expanded(
