@@ -37,8 +37,8 @@ class RouteWithDetails extends Route {
   final List<Stoptime> stoptimes;
   //TODO: remove alerts => always empty
   final List<String> alerts;
-  final Pattern pattern;
-  const RouteWithDetails({
+  Pattern pattern;
+  RouteWithDetails({
     required super.agencyId,
     required super.shortName,
     required super.longName,
@@ -244,5 +244,10 @@ class Stoptime {
       realtimeDeparture: _getDate(js['realtimeDeparture'] as int),
       scheduledDeparture: _getDate(js['scheduledDeparture'] as int),
     );
+  }
+
+  @override
+  String toString() {
+    return 'Stoptime{realtime: $realtime, realtimeDeparture: $realtimeDeparture, scheduledDeparture: $scheduledDeparture}';
   }
 }

@@ -36,17 +36,23 @@ class StopWithDetails extends Stop {
           '${patternCode.split(':')[0]}:${patternCode.split(':')[1]}';
       Pattern pattern = await DatabaseCommands.getPatternFromCode(patternCode);
 
-      //print(routeId);
-      routesWithDetails.update(
-        routesWithDetails[routeId]!.gtfsId,
-        (route) => RouteWithDetails.fromData(
-          route: route,
-          stoptimes: (js['stoptimes'] as List)
-              .map((stoptimeJs) => Stoptime.fromJson(stoptimeJs))
-              .toList(),
-          pattern: pattern,
-        ),
-      );
+      /*
+      sometimes the query returns different patterns and stoptimes for the same route
+      so we keep the first pattern and add the stoptimes to it
+      */
+      routesWithDetails.update(routesWithDetails[routeId]!.gtfsId, (route) {
+        RouteWithDetails r = routesWithDetails[routeId]!;
+        if (r.stoptimes.isEmpty) {
+          r.pattern = pattern;
+        }
+        r.stoptimes.addAll((js['stoptimes'] as List)
+            .map((stoptimeJs) => Stoptime.fromJson(stoptimeJs))
+            .toList());
+
+        r.stoptimes
+            .sort((a, b) => a.realtimeDeparture.compareTo(b.realtimeDeparture));
+        return r;
+      });
     }
     return StopWithDetails(
       vehicles: routesWithDetails.values.toList(),
