@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/physics.dart';
 import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
@@ -58,6 +59,9 @@ class MapPageController extends GetxController
 
   // for single route, for showing the direction
   final Map<String, Stop> firstStop = {};
+
+  // save last view
+  late MapCamera lastView;
 
   RxList<VehicleMarker> get allVehiclesInDirection => allVehicles.values
       .where(
@@ -166,15 +170,30 @@ class MapPageController extends GetxController
 
     isPatternInitialized.value = true;
     _listenData();
+    lastView = _getCenterBounds();
     centerBounds();
   }
 
   void centerBounds() {
-    final constrained = CameraFit.coordinates(
+    final constrained = _getCenterBounds();
+
+    if (nearEqual(constrained.zoom, mapController.camera.zoom, 0.0001) &&
+        nearEqual(constrained.center.latitude,
+            mapController.camera.center.latitude, 0.0001) &&
+        nearEqual(constrained.center.longitude,
+            mapController.camera.center.longitude, 0.0001)) {
+      _animatedMapMove(lastView.center, lastView.zoom);
+    } else {
+      lastView = mapController.camera;
+      _animatedMapMove(constrained.center, constrained.zoom);
+    }
+  }
+
+  MapCamera _getCenterBounds() {
+    return CameraFit.coordinates(
       coordinates: (routes.values.first).pattern.polylinePoints,
       padding: const EdgeInsets.all(20.0),
     ).fit(mapController.camera);
-    _animatedMapMove(constrained.center, constrained.zoom);
   }
 
   void _animatedMapMove(LatLng destLocation, double destZoom) {
