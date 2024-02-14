@@ -53,14 +53,13 @@ class MqttController {
       final recMess = c[0].payload as MqttPublishMessage;
       final pt =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
+      if (pt.isEmpty) return;
       //print(c[0].topic);
-      try {
-        MqttVehicle data =
-            MqttVehicle.fromList(json.decode(pt) as List<dynamic>, c[0].topic);
-        if (!_payloadStreamController.isClosed)
-          _payloadStreamController.add(data);
-      } on FormatException {
-        print('Exception: ${json.decode(pt)}');
+
+      MqttVehicle data =
+          MqttVehicle.fromList(json.decode(pt) as List<dynamic>, c[0].topic);
+      if (!_payloadStreamController.isClosed) {
+        _payloadStreamController.add(data);
       }
     });
   }
@@ -91,9 +90,8 @@ class Api {
     const timeRange = 60 * 60 * 2;
 
     final request = json.encode({
-      'id': 'q01',
-      "query":
-          "query StopPageContentContainer_StopRelayQL(\$id_0:String!,\$startTime_1:Long!,\$timeRange_2:Int!,\$numberOfDepartures_3:Int!) {stop (id:\$id_0) {stopTimes:stoptimesForPatterns(startTime:\$startTime_1,timeRange:\$timeRange_2,numberOfDepartures:\$numberOfDepartures_3,omitCanceled:false) {pattern {code route{alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate}}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}}}",
+      'query':
+          'query StopPageContentContainer_StopRelayQL(\$id_0:String!,\$startTime_1:Long!,\$timeRange_2:Int!,\$numberOfDepartures_3:Int!) {stop (id:\$id_0) {stopTimes:stoptimesForPatterns(startTime:\$startTime_1,timeRange:\$timeRange_2,numberOfDepartures:\$numberOfDepartures_3,omitCanceled:false) {pattern {code route{alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate}}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}}}',
       'variables': {
         'id_0': 'gtt:$stopNum',
         'startTime_1': time,
@@ -187,15 +185,26 @@ class Api {
   }
 
   static Future<bool> checkVersion() async {
+    // thx to https://stackoverflow.com/a/70136908
+    int getExtendedVersionNumber(String version) {
+      List versionCells = version.split('.');
+      versionCells = versionCells.map((i) => int.parse(i)).toList();
+      return versionCells[0] * 100000 +
+          versionCells[1] * 1000 +
+          versionCells[2];
+    }
+
     final response = await http.get(Uri.parse(_releaseUrl));
     if (response.statusCode != 200) {
       throw ApiException(response.statusCode, response.body);
     }
     final Map<String, dynamic> jsonResponse = json.decode(response.body);
-    final String latestVersion = jsonResponse['tag_name'];
+    final String gitVersion = jsonResponse['tag_name'];
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     final String currentVersion = packageInfo.version;
-    return latestVersion != currentVersion;
+
+    return getExtendedVersionNumber(gitVersion) >
+        getExtendedVersionNumber(currentVersion);
   }
 
   static Future<Map<String, dynamic>> getAppInfo() async {
