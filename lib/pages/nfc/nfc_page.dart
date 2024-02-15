@@ -22,13 +22,14 @@ class NfcPage extends StatelessWidget {
               child: Obx(
                 () => InkWell(
                   //radius: 100,
-                  borderRadius: BorderRadius.circular(100),
+                  borderRadius:
+                      BorderRadius.circular(_nfcController.value.value),
                   onTap: _nfcController.isReading.isTrue
                       ? _nfcController.stopReading
                       : _nfcController.readCard,
                   child: Ink(
-                      height: 150,
-                      width: 150,
+                      height: _nfcController.value.value,
+                      width: _nfcController.value.value,
                       decoration: BoxDecoration(
                           color: Get.theme.primaryColorLight,
                           shape: BoxShape.circle,
@@ -49,7 +50,7 @@ class NfcPage extends StatelessWidget {
             ),
             Obx(
               () => Positioned(
-                bottom: _nfcController.isReading.isTrue ? 20 : 20,
+                bottom: _nfcController.isReading.isTrue ? 20 : -100,
                 child: TextButton(
                   onPressed: _nfcController.stopReading,
                   style: TextButton.styleFrom(

@@ -1,4 +1,5 @@
 import 'package:convert/convert.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_gtt/models/smart_card/card_files.dart';
 import 'package:flutter_gtt/models/smart_card/chip_paper.dart';
@@ -10,22 +11,46 @@ import 'package:get/get.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 
-class NfcController extends GetxController {
+class NfcController extends GetxController with GetTickerProviderStateMixin {
   final RxBool isReading = false.obs;
   final _readBuffer = Uint8List(1024);
+  static const Duration _duration = Duration(milliseconds: 500);
+  static const _containerHeight = 150.0;
+
+  late final AnimationController _animationController;
+  late final Animation<double> animation;
+  late final RxDouble value = _containerHeight.obs;
+
+  @override
+  void onInit() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: _duration,
+    );
+    animation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    final Tween<double> tween =
+        Tween(begin: _containerHeight, end: _containerHeight + 50);
+    _animationController.addListener(() {
+      value.value = tween.evaluate(animation);
+    });
+    super.onInit();
+  }
 
   @override
   void onClose() {
     stopReading();
+    _animationController.dispose();
     super.onClose();
   }
 
   void readCard() {
     isReading.value = true;
+    _startAnimation();
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       try {
-        //print('reading...');
-
         await _handleResponse(tag);
       } on PlatformException {
         Get.snackbar("Error", "You removed the card too fast. Try again");
@@ -35,9 +60,14 @@ class NfcController extends GetxController {
     });
   }
 
+  void _startAnimation() {
+    _animationController.repeat(reverse: true);
+  }
+
   void stopReading() {
     NfcManager.instance.stopSession();
     isReading.value = false;
+    _animationController.reset();
   }
 
   Future<void> _handleResponse(NfcTag tag) async {
