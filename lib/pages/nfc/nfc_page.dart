@@ -3,9 +3,8 @@ import 'package:flutter_gtt/controllers/nfc_controller.dart';
 import 'package:get/get.dart';
 
 class NfcPage extends StatelessWidget {
-  NfcPage({super.key});
-
-  final _nfcController = Get.put(NfcController());
+  final NfcController _nfcController;
+  NfcPage({super.key}) : _nfcController = Get.put(NfcController());
 
   @override
   Widget build(BuildContext context) {
@@ -15,39 +14,63 @@ class NfcPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Leggi Carta'),
         ),
-        body: Flex(
-          direction: Axis.vertical,
+        body: Stack(
+          alignment: Alignment.topCenter,
           children: [
-            Flexible(
-              flex: 2,
-              child: Container(
-                margin: const EdgeInsets.all(4),
-                constraints: const BoxConstraints.expand(),
-                decoration: BoxDecoration(border: Border.all()),
-                child: const SingleChildScrollView(
-                  child: Text('non importante'),
+            Align(
+              alignment: Alignment.center,
+              child: Obx(
+                () => InkWell(
+                  //radius: 100,
+                  borderRadius: BorderRadius.circular(100),
+                  onTap: _nfcController.isReading.isTrue
+                      ? _nfcController.stopReading
+                      : _nfcController.readCard,
+                  child: Ink(
+                      height: 150,
+                      width: 150,
+                      decoration: BoxDecoration(
+                          color: Get.theme.primaryColorLight,
+                          shape: BoxShape.circle,
+                          border: Border.all(width: 1)
+                          //borderRadius: BorderRadius.circular(100),
+                          ),
+                      child: Center(
+                        child: Text(
+                          _nfcController.isReading.isTrue
+                              ? 'Sto leggendo..'
+                              : 'Leggi',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 16),
+                        ),
+                      )),
                 ),
               ),
             ),
-            Flexible(
-              flex: 3,
-              child: GridView.count(
-                padding: const EdgeInsets.all(4),
-                crossAxisCount: 2,
-                childAspectRatio: 4,
-                crossAxisSpacing: 4,
-                mainAxisSpacing: 4,
-                children: [
-                  ElevatedButton(
-                      onPressed: _nfcController.readCard,
-                      child: const Text('Read Card')),
-                  ElevatedButton(
-                      onPressed: _nfcController.testTicket,
-                      child: const Text('Test Ticket')),
-                  ElevatedButton(
-                      onPressed: _nfcController.testSmartCard,
-                      child: const Text('Test SmartCard')),
-                ],
+            Obx(
+              () => Positioned(
+                bottom: _nfcController.isReading.isTrue ? 20 : 20,
+                child: TextButton(
+                  onPressed: _nfcController.stopReading,
+                  style: TextButton.styleFrom(
+                    backgroundColor: Get.theme.colorScheme.errorContainer,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Get.theme.colorScheme.secondary,
+                        width: 1,
+                        style: BorderStyle.solid,
+                      ),
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
+                  child: Text(
+                    'Annulla',
+                    style: TextStyle(color: Get.theme.colorScheme.secondary),
+                  ),
+                ),
               ),
             ),
           ],

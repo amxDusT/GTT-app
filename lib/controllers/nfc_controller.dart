@@ -11,37 +11,33 @@ import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
 
 class NfcController extends GetxController {
+  final RxBool isReading = false.obs;
   final _readBuffer = Uint8List(1024);
+
+  @override
+  void onClose() {
+    stopReading();
+    super.onClose();
+  }
+
   void readCard() {
+    isReading.value = true;
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       try {
-        print('reading...');
+        //print('reading...');
+
         await _handleResponse(tag);
       } on PlatformException {
         Get.snackbar("Error", "You removed the card too fast. Try again");
       } finally {
-        NfcManager.instance.stopSession();
+        stopReading();
       }
     });
   }
 
-  void testSmartCard() {}
-  void testTicket() {}
-  void testDefault() {
-    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-      try {
-        await _testDefaultHandleResponse(tag);
-        //await Future.delayed(Duration(seconds: 2));
-      } on PlatformException {
-        Get.snackbar("Error", "You removed the card too fast. Try again");
-      } finally {
-        NfcManager.instance.stopSession();
-      }
-    });
-  }
-
-  Future<void> _testDefaultHandleResponse(NfcTag tag) async {
-    update();
+  void stopReading() {
+    NfcManager.instance.stopSession();
+    isReading.value = false;
   }
 
   Future<void> _handleResponse(NfcTag tag) async {
