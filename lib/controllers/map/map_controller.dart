@@ -20,7 +20,7 @@ import 'package:latlong2/latlong.dart';
 
 class MapPageController extends GetxController
     with GetTickerProviderStateMixin {
-  static const double minZoom = 10;
+  static const double minZoom = 12;
   static const double maxZoom = 18;
   static const List colors = [
     Colors.blue,
@@ -37,7 +37,7 @@ class MapPageController extends GetxController
   // used for deleting animations that are not finished yet when closing the page
   final List<AnimationController> _activeAnimations = [];
 
-  late final RxList<FermataMarker> allStops;
+  late RxList<FermataMarker> allStops;
   final RxMap<int, VehicleMarker> allVehicles = <int, VehicleMarker>{}.obs;
   final RxMap<String, gtt.RouteWithDetails> routes =
       <String, gtt.RouteWithDetails>{}.obs;
@@ -62,6 +62,9 @@ class MapPageController extends GetxController
 
   // save last view
   late MapCamera lastView;
+
+  // map event related
+  double lastZoom = 0.0;
 
   RxList<VehicleMarker> get allVehiclesInDirection => allVehicles.values
       .where(
@@ -103,6 +106,18 @@ class MapPageController extends GetxController
   void _removeOldVehicles() {
     allVehicles.removeWhere((key, vehicle) => vehicle.mqttData.lastUpdate
         .isBefore(DateTime.now().subtract(const Duration(minutes: 2))));
+  }
+
+  void onMapEvent(MapEvent mapEvent) {
+    if (lastZoom != mapEvent.camera.zoom && isPatternInitialized.isTrue) {
+      lastZoom = mapEvent.camera.zoom;
+
+      List<FermataMarker> list = allStops
+          .map((marker) => marker.copyWith(zoom: mapEvent.camera.zoom))
+          .toList();
+      allStops.clear();
+      allStops.addAll(list);
+    }
   }
 
   void onMapReady() async {

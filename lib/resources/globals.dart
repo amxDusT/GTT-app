@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+const double markerMinSize = 10;
+const double fermataMarkerMinSize = 12;
+const double markerMaxSize = 60;
+const double fermataMarkerMaxSize = 20;
 const int maxRoutesInMap = 4;
 const maxHours = 4;
 const maxHoursMap = 2;

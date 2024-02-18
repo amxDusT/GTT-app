@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:icon_decoration/icon_decoration.dart';
@@ -65,13 +67,53 @@ class VehicleMarker extends Marker {
 @immutable
 class FermataMarker extends Marker {
   final Stop fermata;
-  FermataMarker({required this.fermata})
+  final double? zoom;
+  FermataMarker({required this.fermata, this.zoom})
       : super(
+          height: getSize(
+            zoom: zoom,
+            minSize: markerMinSize,
+            maxSize: markerMaxSize,
+          ),
+          width: getSize(
+            zoom: zoom,
+            minSize: markerMinSize,
+            maxSize: markerMaxSize,
+          ),
           point: LatLng(fermata.lat, fermata.lon),
-          child: const Icon(
-            Icons.circle,
-            size: 12,
-            color: Colors.red,
+          child: Container(
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              //color: Colors.white,
+            ),
+            child: Icon(
+              Icons.circle,
+              size: getSize(
+                zoom: zoom,
+                minSize: fermataMarkerMinSize,
+                maxSize: fermataMarkerMaxSize,
+              ),
+              color: Colors.red,
+            ),
           ),
         );
+
+  FermataMarker copyWith({double? zoom}) {
+    return FermataMarker(
+      fermata: fermata,
+      zoom: zoom ?? this.zoom,
+    );
+  }
+
+  static double getSize(
+      {required double? zoom,
+      required double minSize,
+      required double maxSize}) {
+    return zoom != null
+        ? minSize +
+            ((zoom - MapPageController.minZoom) /
+                    (MapPageController.maxZoom - MapPageController.minZoom)) *
+                (maxSize - MapPageController.minZoom)
+        : minSize;
+  }
 }

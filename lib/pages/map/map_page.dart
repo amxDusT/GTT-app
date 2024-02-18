@@ -43,6 +43,7 @@ class MapPage extends StatelessWidget {
                 minZoom: MapPageController.minZoom,
                 initialZoom: 15,
                 onMapReady: _flutterMapController.onMapReady,
+                onMapEvent: _flutterMapController.onMapEvent,
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
                 ),
