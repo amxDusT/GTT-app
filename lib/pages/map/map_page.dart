@@ -126,14 +126,14 @@ class MapPage extends StatelessWidget {
                                   Container(
                                     alignment: Alignment.topRight,
                                     padding: const EdgeInsets.all(5),
-                                    child: GestureDetector(
-                                      onTap: () {
+                                    child: IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () {
                                         _flutterMapController.popupController
                                             .hidePopupsOnlyFor([marker]);
                                         _flutterMapController.lastOpenedMarker =
                                             null;
                                       },
-                                      child: const Icon(Icons.close),
                                     ),
                                   ),
                                   if (marker is FermataMarker)
