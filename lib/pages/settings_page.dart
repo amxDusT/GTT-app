@@ -54,6 +54,12 @@ class SettingsPage extends StatelessWidget {
                     _settingsController.resetData();
                   },
                 ),
+                ListTile(
+                  title: const Text('Informazioni app'),
+                  onTap: () {
+                    _settingsController.infoApp();
+                  },
+                ),
               ],
             ),
           ),
