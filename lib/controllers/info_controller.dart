@@ -7,6 +7,7 @@ import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class InfoController extends GetxController {
@@ -45,10 +46,11 @@ class InfoController extends GetxController {
       selectedRoutes.remove(route);
     } else {
       if (selectedRoutes.length >= maxRoutesInMap) {
-        Get
-          ..closeAllSnackbars()
-          ..snackbar("Attenzione",
-              "Puoi selezionare al massimo $maxRoutesInMap veicoli");
+        Utils.showSnackBar(
+          "Puoi selezionare al massimo $maxRoutesInMap veicoli",
+          //title: "Attenzione",
+          closePrevious: true,
+        );
         return;
       }
       selectedRoutes.add(route);
@@ -90,7 +92,7 @@ class InfoController extends GetxController {
       fermata = newFermata.obs;
       fermataName.value = fermata.value.name;
     } on ApiException catch (e) {
-      Get.snackbar("Errore ${e.statusCode}", e.message);
+      Utils.showSnackBar(e.message, title: "Errore ${e.statusCode}");
     } on Error {
       Get.defaultDialog(
         title: "Errore",

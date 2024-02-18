@@ -66,12 +66,11 @@ class InfoWidget extends StatelessWidget {
               return;
             } else if (!Storage.isRouteWithoutPassagesShowing &&
                 vehicle.stoptimes.isEmpty) {
-              Get
-                ..closeAllSnackbars()
-                ..snackbar(
-                  "Attenzione",
-                  "Non ci sono passaggi per questo veicolo",
-                );
+              Utils.showSnackBar(
+                "Non ci sono passaggi per questo veicolo",
+                closePrevious: true,
+              );
+
               return;
             }
             Get.to(

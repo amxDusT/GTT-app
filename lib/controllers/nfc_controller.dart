@@ -7,6 +7,7 @@ import 'package:flutter_gtt/models/smart_card/smart_card.dart';
 import 'package:flutter_gtt/pages/nfc/card_info_page.dart';
 import 'package:flutter_gtt/pages/nfc/ticket_info_page.dart';
 import 'package:flutter_gtt/resources/utils/apdu_utils.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
@@ -53,7 +54,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
       try {
         await _handleResponse(tag);
       } on PlatformException {
-        Get.snackbar("Error", "You removed the card too fast. Try again");
+        Utils.showSnackBar('Hai rimosso la carta troppo presto. Riprova');
       } finally {
         stopReading();
       }
@@ -77,10 +78,9 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
     if (isoDepTag != null) {
       await _handleIsoDep(isoDepTag);
     } else if (nfcaTag != null) {
-      print('nfcA tag');
       await _handleNfcA(nfcaTag);
     } else {
-      Get.snackbar('Error', 'Card not supported');
+      Utils.showSnackBar('Carta non supportata');
     }
   }
 
@@ -90,7 +90,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
         atqa.length != 2 ||
         atqa[0] != 0x44 ||
         atqa[1] != 0x00) {
-      Get.snackbar('Error', 'Card not supported');
+      Utils.showSnackBar('Biglietto non supportato');
       return;
     }
 
@@ -126,7 +126,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
       //   'rides': chip.remainingRides,
       // });
     } else {
-      Get.snackbar('Error', 'Could not read card');
+      Utils.showSnackBar('Hai rimosso il biglietto troppo presto. Riprova');
     }
   }
 
@@ -184,14 +184,15 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
     if (list.length == 15 && list[1][0] != 0) {
       if (list[2][1] == 0) {
         //empty smartcard
-        Get.snackbar('Error', 'Card is empty(?)');
+        Utils.showSnackBar('Carta vuota');
+        //Get.snackbar('Error', 'Card is empty(?)');
         return;
       }
 
       /// all goood
     } else {
       //invalid
-      Get.snackbar('Error', 'Invalid card');
+      Utils.showSnackBar('Carta non supportata');
       return;
     }
     _readData(list);

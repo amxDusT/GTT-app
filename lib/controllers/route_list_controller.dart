@@ -2,6 +2,7 @@ import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class RouteListController extends GetxController {
@@ -97,8 +98,7 @@ class RouteListController extends GetxController {
       await DatabaseCommands.transaction(stopValues);
       await DatabaseCommands.transaction(patternStopValues);
     } on ApiException catch (e) {
-      Get.snackbar('Error', e.message);
-      //print(e.message);
+      Utils.showSnackBar(e.message, title: 'Error ${e.statusCode}');
     }
   }
 }

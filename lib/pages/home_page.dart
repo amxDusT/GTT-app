@@ -279,8 +279,10 @@ class HomePage extends StatelessWidget {
                               child: InkWell(
                                 onTapDown: _homeController.getPosition,
                                 onLongPress: () => _showContextMenu(fermata),
-                                onTap: () => Get.to(() => InfoPage(),
-                                    arguments: {'fermata': fermata}),
+                                onTap: () => Get.to(
+                                  () => InfoPage(),
+                                  arguments: {'fermata': fermata},
+                                ),
                                 child: Ink(
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.vertical(

@@ -52,4 +52,29 @@ class Utils {
         c.green + ((255 - c.green) * p).round(),
         c.blue + ((255 - c.blue) * p).round());
   }
+
+  static void showSnackBar(String message,
+      {String? title,
+      bool? closePrevious,
+      SnackPosition? snackPosition}) async {
+    if (closePrevious ?? false) {
+      await Get.closeCurrentSnackbar();
+    }
+    Get.showSnackbar(
+      GetSnackBar(
+        title: title,
+        message: message,
+        duration: const Duration(seconds: 2),
+        animationDuration: const Duration(milliseconds: 300),
+        snackPosition: snackPosition ?? SnackPosition.BOTTOM,
+        snackStyle: SnackStyle.GROUNDED,
+        mainButton: TextButton(
+          onPressed: () async {
+            await Get.closeCurrentSnackbar();
+          },
+          child: const Text("Chiudi"),
+        ),
+      ),
+    );
+  }
 }

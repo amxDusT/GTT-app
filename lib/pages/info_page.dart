@@ -24,7 +24,7 @@ class InfoPage extends StatelessWidget {
           _infoController.switchSelecting();
         } else {
           Future.delayed(Duration.zero, () {
-            if (!didPop) Get.back();
+            if (!didPop) Get.back(closeOverlays: true);
           });
         }
       },

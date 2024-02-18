@@ -384,9 +384,7 @@ class MapPageController extends GetxController
         _animatedMapMove(await userLocation.userLocation, 16);
       }
     } catch (e) {
-      Get
-        ..closeAllSnackbars()
-        ..snackbar("Errore", e.toString());
+      Utils.showSnackBar(e.toString(), title: "Error");
     }
 
     isLocationLoading.value = false;
