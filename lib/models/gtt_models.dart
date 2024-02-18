@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:latlong2/latlong.dart';
 

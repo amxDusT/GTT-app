@@ -105,12 +105,12 @@ class InfoController extends GetxController {
               children: [
                 Text("Ooops... Problema nel risolvere la richiesta."),
                 Text(
-                    "Riprova, o prova a resettare i dati di GTT nelle impostazioni."),
+                    "Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni."),
               ],
             ),
           ),
         ),
-        textConfirm: "Resetta",
+        textConfirm: "Aggiorna",
         onConfirm: () {
           Get.back();
           Get.put(SettingsController()).resetData();

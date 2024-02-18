@@ -49,7 +49,7 @@ class SettingsPage extends StatelessWidget {
                       )),
                 ),
                 ListTile(
-                  title: const Text('Resetta dati GTT'),
+                  title: const Text('Aggiorna dati GTT'),
                   onTap: () {
                     _settingsController.resetData();
                   },
