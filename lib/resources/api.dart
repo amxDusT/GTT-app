@@ -112,8 +112,10 @@ class Api {
   }
 
   static Future<http.Response> _post(dynamic data) async {
-    http.Response response = await http.post(Uri.parse(_url),
-        body: data, headers: {'Content-Type': 'application/json'}).timeout(
+    http.Response response =
+        await http.post(Uri.parse(_url), body: data, headers: {
+      'Content-Type': 'application/json',
+    }).timeout(
       const Duration(seconds: 30),
       onTimeout: () {
         return http.Response('Time out', 408);
@@ -158,7 +160,7 @@ class Api {
 
   static (List<Route>, List<Pattern>, List<Stop>, List<PatternStop>)
       _processData(String body) {
-    final Map<String, dynamic> js = json.decode(body);
+    final Map<String, dynamic> js = json.decode(utf8.decode(body.codeUnits));
     final List<Route> routes = [];
     final List<Pattern> patterns = [];
     final Set<Stop> stops = {};

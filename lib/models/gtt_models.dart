@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -135,6 +137,7 @@ class Route {
   });
 
   factory Route.fromJson(Map<String, dynamic> json) {
+    //print(jsonDecode(json['desc'] ?? ''));
     return Route(
       gtfsId: json['gtfsId'] ?? '',
       agencyId: json['agency']?['gtfsId'] ?? json['agencyId'] ?? '',

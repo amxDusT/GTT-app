@@ -26,12 +26,13 @@ class TicketInfoPage extends StatelessWidget {
       ),
     );
   }
+
   Widget _infoTicket() {
     return Container(
       padding: const EdgeInsets.all(20),
       height: 200,
       decoration: BoxDecoration(
-        color: ticket.isExpired? Colors.red:Colors.green,
+        color: ticket.isExpired ? Colors.red : Colors.green,
         borderRadius: const BorderRadius.all(Radius.circular(20)),
       ),
       child: Column(
@@ -69,10 +70,11 @@ class TicketInfoPage extends StatelessWidget {
           Row(
             children: [
               const Text("Minuti mancanti: "),
-              Text(ticket.isExpired? 'Scaduto':ticket.remainingMinutes.toString()),
+              Text(ticket.isExpired
+                  ? 'Scaduto'
+                  : ticket.remainingMinutes.toString()),
             ],
           ),
-           
         ],
       ),
     );

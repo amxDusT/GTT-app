@@ -43,7 +43,7 @@ class CardInfoPage extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       height: 200,
       decoration: const BoxDecoration(
-        color: Colors.red,
+        color: Colors.lightBlue,
         borderRadius: BorderRadius.all(Radius.circular(20)),
       ),
       child: Column(
