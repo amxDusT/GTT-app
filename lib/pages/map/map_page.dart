@@ -94,23 +94,6 @@ class MapPage extends StatelessWidget {
                   ]),
                 ),
                 Obx(
-                  () => MarkerLayer(
-                    markers: [
-                      if (_flutterMapController
-                          .userLocation.isLocationAvailable.isTrue)
-                        Marker(
-                          point: _flutterMapController
-                              .userLocation.userLocationMarker.value,
-                          child: const Icon(
-                            Icons.location_on,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                Obx(
                   () => PopupMarkerLayer(
                     options: PopupMarkerLayerOptions(
                       markerCenterAnimation: const MarkerCenterAnimation(),
@@ -140,16 +123,17 @@ class MapPage extends StatelessWidget {
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Align(
+                                  Container(
                                     alignment: Alignment.topRight,
-                                    child: IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () {
+                                    padding: const EdgeInsets.all(5),
+                                    child: GestureDetector(
+                                      onTap: () {
                                         _flutterMapController.popupController
                                             .hidePopupsOnlyFor([marker]);
                                         _flutterMapController.lastOpenedMarker =
                                             null;
                                       },
+                                      child: const Icon(Icons.close),
                                     ),
                                   ),
                                   if (marker is FermataMarker)
@@ -197,6 +181,57 @@ class MapPage extends StatelessWidget {
                             ),
                           )
                         ],
+                      ),
+                    ),
+                  ),
+                ),
+                Obx(
+                  () => Opacity(
+                    opacity:
+                        _flutterMapController.followVehicle.value > 0 ? 0.8 : 0,
+                    child: Container(
+                      alignment: Alignment.topRight,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 20, horizontal: 15),
+                      // show which color each route has
+                      child: GestureDetector(
+                        onTap: () => _flutterMapController.moveToFollowed(),
+                        child: Container(
+                            width: 140,
+                            height: 22,
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            margin: const EdgeInsets.all(2),
+                            alignment: Alignment.topCenter,
+                            child: Text.rich(
+                              TextSpan(
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 16,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text:
+                                        'Seguito:  ${_flutterMapController.followVehicle.value}',
+                                  ),
+                                  const WidgetSpan(child: SizedBox(width: 10)),
+                                  WidgetSpan(
+                                    alignment: PlaceholderAlignment.middle,
+                                    child: GestureDetector(
+                                      onTap: () => _flutterMapController
+                                          .stopFollowingVehicle(),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        //size: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )),
                       ),
                     ),
                   ),
@@ -298,6 +333,23 @@ class MapPage extends StatelessWidget {
                     ],
                   ),
                 ),
+                Obx(
+                  () => MarkerLayer(
+                    markers: [
+                      if (_flutterMapController
+                          .userLocation.isLocationAvailable.isTrue)
+                        Marker(
+                          point: _flutterMapController
+                              .userLocation.userLocationMarker.value,
+                          child: const Icon(
+                            Icons.location_on,
+                            color: Colors.blue,
+                            size: 30,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -370,6 +422,23 @@ class MapPage extends StatelessWidget {
           'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
           style: Get.textTheme.bodySmall,
         ),
+        TextButton(
+          onPressed: () => _flutterMapController.followVehicle.value ==
+                  marker.mqttData.vehicleNum
+              ? _flutterMapController.stopFollowingVehicle()
+              : _flutterMapController.followVehicleMarker(marker.mqttData),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+          ),
+          child: Obx(
+            () => Text(
+              _flutterMapController.followVehicle.value ==
+                      marker.mqttData.vehicleNum
+                  ? 'Smetti di seguire'
+                  : 'Segui',
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -384,7 +453,7 @@ class MapPage extends StatelessWidget {
     rest is bus
   */
   bool _isTram(VehicleMarker marker) {
-    return RegExp(r'^[28|50|60|80]')
+    return RegExp(r'^[28|50|60|80]\d{3}$')
         .hasMatch(marker.mqttData.vehicleNum.toString());
   }
 }

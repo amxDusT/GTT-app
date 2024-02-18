@@ -66,6 +66,9 @@ class MapPageController extends GetxController
   // map event related
   double lastZoom = 0.0;
 
+  // follow vehicle
+  final RxInt followVehicle = 0.obs; // <= 0 = not following
+
   RxList<VehicleMarker> get allVehiclesInDirection => allVehicles.values
       .where(
         (vehicle) =>
@@ -104,8 +107,24 @@ class MapPageController extends GetxController
   }
 
   void _removeOldVehicles() {
-    allVehicles.removeWhere((key, vehicle) => vehicle.mqttData.lastUpdate
-        .isBefore(DateTime.now().subtract(const Duration(minutes: 2))));
+    allVehicles.removeWhere((key, vehicle) {
+      if (vehicle.mqttData.lastUpdate
+          .isBefore(DateTime.now().subtract(const Duration(minutes: 2)))) {
+        if (followVehicle.value != 0 &&
+            vehicle.mqttData.vehicleNum == followVehicle.value) {
+          stopFollowingVehicle();
+          Utils.showSnackBar('Il veicolo che stavi seguendo è stato rimosso');
+        }
+        if (lastOpenedMarker != null &&
+            lastOpenedMarker is VehicleMarker &&
+            (lastOpenedMarker as VehicleMarker).mqttData.vehicleNum ==
+                vehicle.mqttData.vehicleNum) {
+          popupController.hideAllPopups();
+        }
+        return true;
+      }
+      return false;
+    });
   }
 
   void onMapEvent(MapEvent mapEvent) {
@@ -121,7 +140,7 @@ class MapPageController extends GetxController
   }
 
   void onMapReady() async {
-    Timer.periodic(const Duration(minutes: 2), (timer) {
+    Timer.periodic(const Duration(minutes: 1), (timer) {
       _removeOldVehicles();
     });
     _mqttController = MqttController();
@@ -297,6 +316,9 @@ class MapPageController extends GetxController
       popupController.showPopupsOnlyFor([VehicleMarker(mqttData: payload)]);
       lastOpenedMarker = VehicleMarker(mqttData: payload);
     }
+    if (followVehicle.value == payload.vehicleNum) {
+      _animatedMapMove(payload.position, mapController.camera.zoom);
+    }
     controller.forward();
   }
 
@@ -327,7 +349,8 @@ class MapPageController extends GetxController
   }
 
   bool _isTram(MqttVehicle vehicle) {
-    return RegExp(r'^[28|50|60|80]').hasMatch(vehicle.vehicleNum.toString());
+    return RegExp(r'^[28|50|60|80]\d{3}$')
+        .hasMatch(vehicle.vehicleNum.toString());
   }
 
   void zoomIn() => _zoomAnimation(true);
@@ -388,5 +411,21 @@ class MapPageController extends GetxController
     }
 
     isLocationLoading.value = false;
+  }
+
+  void stopFollowingVehicle() {
+    followVehicle.value = 0;
+  }
+
+  void followVehicleMarker(MqttVehicle vehicle) {
+    followVehicle.value = vehicle.vehicleNum;
+    _animatedMapMove(vehicle.position, mapController.camera.zoom);
+  }
+
+  void moveToFollowed() {
+    if (followVehicle.value != 0) {
+      _animatedMapMove(allVehicles[followVehicle.value]!.mqttData.position,
+          mapController.camera.zoom);
+    }
   }
 }
