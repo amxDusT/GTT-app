@@ -157,6 +157,16 @@ class Route {
       'desc': desc,
     };
   }
+
+  @override
+  int get hashCode => gtfsId.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Route && other.gtfsId == gtfsId;
+  }
 }
 
 class Pattern {

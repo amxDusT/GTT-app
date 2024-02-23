@@ -38,13 +38,16 @@ class StopWithDetails extends Stop {
 
       /*
       sometimes the query returns different patterns and stoptimes for the same route
-      so we keep the first pattern and add the stoptimes to it
+      so we keep the pattern with most stoptimes and add the stoptimes to it
       */
       routesWithDetails.update(routesWithDetails[routeId]!.gtfsId, (route) {
         RouteWithDetails r = routesWithDetails[routeId]!;
-        if (r.stoptimes.isEmpty) {
+
+        if (r.stoptimes.isEmpty ||
+            r.stoptimes.length < js['stoptimes'].length) {
           r.pattern = pattern;
         }
+
         r.stoptimes.addAll((js['stoptimes'] as List)
             .map((stoptimeJs) => Stoptime.fromJson(stoptimeJs))
             .toList());

@@ -1,9 +1,11 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:flutter_gtt/widgets/passage_time.dart';
 import 'package:get/get.dart';
 
 class MapInfoWidget extends StatelessWidget {
@@ -38,7 +40,9 @@ class MapInfoWidget extends StatelessWidget {
               }
               RouteWithDetails route = _mapInfoController.fermata.value.vehicles
                   .elementAt(index) as RouteWithDetails;
+              // don't show empty routes
               if (route.stoptimes.isEmpty) return const SizedBox();
+
               return Row(
                 children: [
                   Expanded(
@@ -47,26 +51,26 @@ class MapInfoWidget extends StatelessWidget {
                       child: Text(
                         route.shortName,
                         style: const TextStyle(
-                            fontSize: 14, fontWeight: FontWeight.bold),
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                   ...route.stoptimes
                       .getRange(
-                          0,
-                          maxHoursMap >= route.stoptimes.length
-                              ? route.stoptimes.length
-                              : maxHoursMap)
+                        0,
+                        min(maxHoursMap, route.stoptimes.length),
+                      )
                       .map(
-                        (e) => Expanded(
-                          child: Text(
-                            Utils.dateToHourString(e.realtimeDeparture, false),
-                            style: TextStyle(
-                              color: e.realtime ? Colors.green : null,
-                              overflow: TextOverflow.ellipsis,
-                              fontSize: 14,
-                            ),
-                          ),
+                        (stoptime) => Expanded(
+                          child: PassageTime(
+                              stoptime: stoptime,
+                              style: TextStyle(
+                                color: stoptime.realtime ? Colors.green : null,
+                                overflow: TextOverflow.ellipsis,
+                                fontSize: 14,
+                              )),
                         ),
                       )
                 ],

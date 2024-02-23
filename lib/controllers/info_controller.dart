@@ -3,7 +3,8 @@ import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
-import 'package:flutter_gtt/resources/api.dart';
+import 'package:flutter_gtt/resources/api/gtt_api.dart';
+import 'package:flutter_gtt/resources/api/api_exception.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
@@ -87,39 +88,45 @@ class InfoController extends GetxController {
   Future<void> getFermata() async {
     isLoading.value = true;
     try {
-      final StopWithDetails newFermata = await Api.getStop(fermata.value.code);
+      final StopWithDetails newFermata =
+          await GttApi.getStop(fermata.value.code);
       lastUpdate.value = DateTime.now();
       fermata = newFermata.obs;
       fermataName.value = fermata.value.name;
     } on ApiException catch (e) {
       Utils.showSnackBar(e.message, title: "Errore ${e.statusCode}");
     } on Error {
-      Get.defaultDialog(
-        title: "Errore",
-        content: const Align(
-          alignment: Alignment.topLeft,
-          child: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text("Ooops... Problema nel risolvere la richiesta."),
-                Text(
-                    "Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni."),
-              ],
-            ),
-          ),
-        ),
-        textConfirm: "Aggiorna",
-        onConfirm: () {
-          Get.back();
-          Get.put(SettingsController()).resetData();
-        },
-        textCancel: "Annulla",
-      );
+      // probably related to GTT data not updated
+      showErrorPopup();
     } finally {
       isLoading.value = false;
       update();
     }
+  }
+
+  void showErrorPopup() async {
+    await Get.defaultDialog(
+      title: "Errore",
+      content: const Align(
+        alignment: Alignment.topLeft,
+        child: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("Ooops... Problema nel risolvere la richiesta."),
+              Text(
+                  "Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni."),
+            ],
+          ),
+        ),
+      ),
+      textConfirm: "Aggiorna",
+      onConfirm: () {
+        Get.back();
+        Get.put(SettingsController()).resetData();
+      },
+      textCancel: "Annulla",
+    );
   }
 }

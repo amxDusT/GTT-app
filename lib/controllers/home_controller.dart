@@ -39,7 +39,7 @@ class HomeController extends GetxController {
   }
 
   void getStops() async {
-    fermate = await DatabaseCommands.getFermate();
+    fermate = await DatabaseCommands.favorites;
     update();
   }
 

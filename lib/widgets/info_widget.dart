@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
@@ -6,18 +8,19 @@ import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:flutter_gtt/widgets/passage_time.dart';
 import 'package:get/get.dart';
 
 class InfoWidget extends StatelessWidget {
   final RouteWithDetails vehicle;
   final Stop stop;
   final InfoController _infoController;
-  InfoWidget(
-      {super.key,
-      required this.stop,
-      required this.vehicle,
-      String? infoControllerKey})
-      : _infoController = Get.find<InfoController>(tag: infoControllerKey);
+  InfoWidget({
+    super.key,
+    required this.stop,
+    required this.vehicle,
+    String? infoControllerKey,
+  }) : _infoController = Get.find<InfoController>(tag: infoControllerKey);
 
   void _openAlerts() {
     if (vehicle.alerts.isEmpty) {
@@ -41,15 +44,11 @@ class InfoWidget extends StatelessWidget {
               ]
             : vehicle.stoptimes
                 .getRange(
-                    0,
-                    vehicle.stoptimes.length < maxHours
-                        ? vehicle.stoptimes.length
-                        : maxHours)
+                  0,
+                  min(vehicle.stoptimes.length, maxHours),
+                )
                 .map(
-                  (e) => Text(
-                    Utils.dateToHourString(e.realtimeDeparture, false),
-                    style: TextStyle(color: e.realtime ? Colors.green : null),
-                  ),
+                  (stoptime) => PassageTime(stoptime: stoptime),
                 )
       ],
     );

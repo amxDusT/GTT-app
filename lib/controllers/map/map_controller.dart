@@ -8,7 +8,7 @@ import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
-import 'package:flutter_gtt/resources/api.dart';
+import 'package:flutter_gtt/resources/api/mqtt_controller.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
@@ -337,20 +337,15 @@ class MapPageController extends GetxController
                     colors[
                         (routeIndex[payload.shortName] ?? 0) % colors.length],
                     30),
-            internalColor:
-                routes[payload.shortName]?.type == 0 && !_isTram(payload)
-                    ? Colors.white
-                    : null,
+            internalColor: routes[payload.shortName]?.type == 0 &&
+                    !Utils.isTram(payload.vehicleNum)
+                ? Colors.white
+                : null,
           ),
         );
       }
       //}
     });
-  }
-
-  bool _isTram(MqttVehicle vehicle) {
-    return RegExp(r'^[28|50|60|80]\d{3}$')
-        .hasMatch(vehicle.vehicleNum.toString());
   }
 
   void zoomIn() => _zoomAnimation(true);
