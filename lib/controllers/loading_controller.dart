@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
+import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
-import 'package:flutter_gtt/resources/api.dart';
+import 'package:flutter_gtt/resources/api/api_exception.dart';
+import 'package:flutter_gtt/resources/api/github_api.dart';
+import 'package:flutter_gtt/resources/api/gtt_api.dart';
+import 'package:flutter_gtt/resources/apk_install.dart';
+import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class LoadingController extends GetxController {
@@ -15,91 +22,133 @@ class LoadingController extends GetxController {
   }
 
   Future<void> checkVersion() async {
-    bool isDifferent = await Api.checkVersion();
+    bool isDifferent = await GithubApi.checkVersion();
 
     if (isDifferent) {
-      final Map<String, dynamic> infoApp = await Api.getAppInfo();
-      RxBool isDownloading = false.obs;
-      //bool isDownloading = false;
-      await Get.defaultDialog(
-        barrierDismissible: false,
-        title: 'Nuova versione disponibile (${infoApp['version']})',
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('È disponibile una nuova versione dell\'app'),
-            const SizedBox(height: 10),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                '  Novità:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(
-              height: 150,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Text(infoApp['update']),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Obx(
-              () => Visibility(
-                visible: isDownloading.value,
-                child: const LinearProgressIndicator(),
-              ),
-            ),
-          ],
-        ),
-        middleText: 'Scarica la nuova versione',
-        textConfirm: 'Scarica',
-        cancel: TextButton(
-          style: TextButton.styleFrom(
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: Get.theme.colorScheme.secondary,
-                width: 2,
-                style: BorderStyle.solid,
-              ),
-              borderRadius: BorderRadius.circular(100),
-            ),
-          ),
-          onPressed: () {
-            if (isDownloading.value) return;
-            Get.back();
-          },
-          child: Text(
-            'Annulla',
-            style: TextStyle(color: Get.theme.colorScheme.secondary),
-          ),
-        ),
-        onConfirm: () async {
-          if (isDownloading.value) return;
-          isDownloading.value = true;
-          await Api.downloadNewVersion();
-          Get.back();
-        },
-      );
+      await installVersionPopup();
     }
   }
 
+  Future<void> installVersionPopup() async {
+    final Map<String, dynamic> infoApp = await GithubApi.getAppInfo();
+    RxBool isDownloading = false.obs;
+    await Get.defaultDialog(
+      barrierDismissible: false,
+      title: 'Nuova versione disponibile (${infoApp['version']})',
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('È disponibile una nuova versione dell\'app'),
+          const SizedBox(height: 10),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '  Novità:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          SizedBox(
+            height: 150,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Text(infoApp['update']),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Obx(
+            () => Visibility(
+              visible: isDownloading.value,
+              child: const LinearProgressIndicator(),
+            ),
+          ),
+        ],
+      ),
+      middleText: 'Scarica la nuova versione',
+      textConfirm: 'Scarica',
+      cancel: TextButton(
+        style: TextButton.styleFrom(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          shape: RoundedRectangleBorder(
+            side: BorderSide(
+              color: Get.theme.colorScheme.secondary,
+              width: 2,
+              style: BorderStyle.solid,
+            ),
+            borderRadius: BorderRadius.circular(100),
+          ),
+        ),
+        onPressed: () {
+          if (isDownloading.value) return;
+          Get.back();
+        },
+        child: Text(
+          'Annulla',
+          style: TextStyle(color: Get.theme.colorScheme.secondary),
+        ),
+      ),
+      onConfirm: () async {
+        if (isDownloading.value) return;
+        isDownloading.value = true;
+        await ApkInstall.downloadNewVersion();
+        Get.back();
+      },
+    );
+  }
+
+  /*
+    check if hasnt been updated in the last 30 days
+    and if the database is empty (by checking the agencies table)
+  */
+  Future<bool> needToLoad() async {
+    return Storage.lastUpdate
+            .isBefore(DateTime.now().subtract(const Duration(days: 30))) &&
+        (await DatabaseCommands.agencies).isEmpty;
+  }
+
+  Future<void> loadFromApi() async {
+    isShowingMessage.value = true;
+    Storage.setParam(
+        StorageParam.lastUpdate, Utils.dateToString(DateTime.now()));
+    try {
+      List<gtt.Agency> agencyList = await GttApi.getAgencies();
+      DatabaseCommands.transaction(agencyList);
+      //getAgencies(agencyList);
+      List<gtt.Route> routeValues;
+      List<gtt.Pattern> patternValues;
+      List<Stop> stopValues;
+      List<gtt.PatternStop> patternStopValues;
+      (routeValues, patternValues, stopValues, patternStopValues) =
+          await GttApi.routesByFeed();
+
+      await DatabaseCommands.transaction(routeValues);
+      await DatabaseCommands.transaction(patternValues);
+      await DatabaseCommands.transaction(stopValues);
+      await DatabaseCommands.transaction(patternStopValues);
+    } on ApiException catch (e) {
+      Utils.showSnackBar(e.message, title: 'Error ${e.statusCode}');
+    } finally {
+      isShowingMessage.value = false;
+    }
+  }
+
+  void resetData() async {
+    await DatabaseCommands.clearTables();
+    await loadFromApi();
+    moveToHome(const Duration(milliseconds: 1));
+  }
+
   void checkAndLoad() async {
-    final RouteListController routeListController;
-    routeListController = isFirstTime
-        ? Get.put(RouteListController())
-        : Get.find<RouteListController>();
-    await routeListController.getAgencies();
     Duration duration = const Duration(milliseconds: 1000);
-    if (routeListController.agencies.isEmpty) {
-      isShowingMessage.value = true;
-      await routeListController.loadFromApi();
+    if (await needToLoad()) {
+      await loadFromApi();
       duration = const Duration(milliseconds: 1);
     }
+    moveToHome(duration);
+  }
+
+  void moveToHome(Duration duration) async {
     await Future.delayed(duration);
     Get.off(() => HomePage());
-    //Get.off(() => Testing());
   }
 }

@@ -44,11 +44,8 @@ class SettingsController extends GetxController {
   }
 
   void resetData() async {
-    await DatabaseCommands.clearTables();
-
     Get.offAll(() => LoadingPage(), arguments: {'first-time': false});
-    Get.find<LoadingController>().checkAndLoad();
-    //await _routeListController.loadFromApi();
+    Get.find<LoadingController>().resetData();
     _restoreFavorites();
   }
 
