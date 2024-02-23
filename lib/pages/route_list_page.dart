@@ -1,37 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/pages/map/map_page.dart';
+import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
+import 'package:flutter_gtt/widgets/route_list_tile_widget.dart';
 import 'package:get/get.dart';
 
 class RouteListPage extends StatelessWidget {
   RouteListPage({super.key});
   final _routeListController = Get.find<RouteListController>();
 
-  Icon _setIcon(int type) {
-    IconData iconData;
-    switch (type) {
-      case 0:
-        iconData = Icons.tram;
-        break;
-      case 1:
-        iconData = Icons.subway;
-        break;
-      case 2:
-        iconData = Icons.train;
-        break;
-
-      case 4:
-        iconData = Icons.directions_ferry;
-        break;
-      default:
-        iconData = Icons.directions_bus;
-    }
-    return Icon(iconData);
-  }
-
   @override
   Widget build(BuildContext context) {
     _routeListController.getRoutes();
+    _routeListController.getFavorites();
     return Hero(
       tag: 'RouteListPage',
       child: Scaffold(
@@ -42,6 +22,19 @@ class RouteListPage extends StatelessWidget {
           builder: (controller) => ListView(
             shrinkWrap: true,
             children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ...controller.favorites.map((route) => RouteListFavorite(
+                        route: route, controller: controller)),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
               ...controller.agencies.map(
                 (agency) => ExpansionTile(
                   initiallyExpanded: agency.gtfsId == 'gtt:U',
@@ -59,26 +52,8 @@ class RouteListPage extends StatelessWidget {
                           final route =
                               controller.routesMap[agency.gtfsId]![index];
 
-                          return ListTile(
-                            leading: _setIcon(route.type),
-                            title: Text(
-                              route.shortName,
-                              //overflow: TextOverflow.ellipsis,
-                            ),
-                            subtitle: Text(
-                              route.longName,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            onTap: () {
-                              Get.to(
-                                  () => MapPage(
-                                        key: UniqueKey(),
-                                      ),
-                                  arguments: {
-                                    'vehicles': [route]
-                                  });
-                            },
-                          );
+                          return RouteListTile(
+                              route: route, controller: controller);
                         },
                       ),
                     ),

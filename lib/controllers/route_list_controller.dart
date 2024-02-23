@@ -1,13 +1,35 @@
 import 'package:flutter_gtt/models/gtt_models.dart';
-import 'package:flutter_gtt/models/gtt_stop.dart';
-import 'package:flutter_gtt/resources/api.dart';
 import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class RouteListController extends GetxController {
   List<Agency> agencies = [];
   Map<String, List<Route>> routesMap = {};
+  List<Route> favorites = [];
+  Future<void> getFavorites() async {
+    favorites.clear();
+    favorites.addAll(await DatabaseCommands.favoriteRoutes);
+    update();
+  }
+
+  @override
+  void onInit() {
+    getAgencies();
+    getRoutes();
+    getFavorites();
+    super.onInit();
+  }
+
+  void toggleFavorite(Route route) async {
+    if (favorites.contains(route)) {
+      favorites.remove(route);
+      DatabaseCommands.removeFavoriteRoute(route);
+    } else {
+      favorites.add(route);
+      DatabaseCommands.addFavoriteRoute(route);
+    }
+    update();
+  }
 
   Future<void> getAgencies([List<Agency>? agencyValues]) async {
     agencies = agencyValues ?? await DatabaseCommands.agencies;
@@ -22,8 +44,6 @@ class RouteListController extends GetxController {
       routesMap.putIfAbsent(route.agencyId, () => []).add(route);
     }
     _sortResult();
-    //_sortRoutesMap();
-    //print(routesMap.length);
     update();
   }
 
@@ -78,27 +98,6 @@ class RouteListController extends GetxController {
           return startWithNumberOrM(a.shortName) ? -1 : 1;
         }
       });
-    }
-  }
-
-  Future<void> loadFromApi() async {
-    try {
-      List<Agency> agencyList = await Api.getAgencies();
-      DatabaseCommands.transaction(agencyList);
-      getAgencies(agencyList);
-      List<Route> routeValues;
-      List<Pattern> patternValues;
-      List<Stop> stopValues;
-      List<PatternStop> patternStopValues;
-      (routeValues, patternValues, stopValues, patternStopValues) =
-          await Api.routesByFeed();
-      getRoutes(routeValues);
-      await DatabaseCommands.transaction(routeValues);
-      await DatabaseCommands.transaction(patternValues);
-      await DatabaseCommands.transaction(stopValues);
-      await DatabaseCommands.transaction(patternStopValues);
-    } on ApiException catch (e) {
-      Utils.showSnackBar(e.message, title: 'Error ${e.statusCode}');
     }
   }
 }

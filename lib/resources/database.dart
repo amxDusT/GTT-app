@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:path/path.dart';
@@ -13,17 +14,21 @@ class DatabaseCommands {
   static const _patternsTable = "patterns";
   static const _stopsTable = "stops";
   static const _patternStopsTable = "pattern_stops";
+  static const _favoritesVehiclesTable = "favorites_vehicles";
 
   static Future<Database> get instance => database ?? init();
 
   static Future<Database> init() async {
-    print(join(await getDatabasesPath(), '$_databaseName.db'));
+    //print(join(await getDatabasesPath(), '$_databaseName.db'));
     database = openDatabase(
       join(await getDatabasesPath(), '$_databaseName.db'),
       onCreate: (db, version) {
         return createTable(db: db);
       },
-      version: 5,
+      version: 9,
+      onUpgrade: (db, oldVersion, newVersion) async {
+        createTable(db: db);
+      },
     );
     return database!;
   }
@@ -106,6 +111,16 @@ class DatabaseCommands {
         FOREIGN KEY (stopId) REFERENCES $_stopsTable(gtfsId)
       )''',
     );
+    // favorite vehicles from route list
+    batch.execute(
+      '''
+      CREATE TABLE IF NOT EXISTS $_favoritesVehiclesTable(
+        routeId TEXT UNIQUE,
+        date INTEGER,
+        FOREIGN KEY (routeId) REFERENCES $_routesTable(gtfsId)
+      )
+      ''',
+    );
     await batch.commit();
   }
 
@@ -140,22 +155,6 @@ class DatabaseCommands {
     ''', [stop.gtfsId]);
   }
 
-  static Future<List<FavStop>> getFermate() async {
-    Database db = await instance;
-    final List<Map<String, dynamic>> result = await db.rawQuery(
-      '''
-      SELECT $_stopsTable.*, $_favoritesTable.*
-      FROM $_stopsTable
-      JOIN $_favoritesTable ON $_stopsTable.gtfsId = $_favoritesTable.stopId
-      ORDER BY $_favoritesTable.date ASC;
-      ''',
-    );
-
-    return List.generate(result.length, (i) {
-      return FavStop.fromJson(result[i]);
-    });
-  }
-
   static Future<bool> hasStop(Stop fermata) async {
     Database db = await instance;
 
@@ -177,9 +176,66 @@ class DatabaseCommands {
     );
   }
 
+  static Future<void> addFavoriteRoute(Route route) async {
+    Database db = await instance;
+    await db.insert(
+      _favoritesVehiclesTable,
+      {
+        'routeId': route.gtfsId,
+        'date': DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      },
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+  }
+
+  static Future<void> removeFavoriteRoute(Route route) async {
+    Database db = await instance;
+    await db.delete(
+      _favoritesVehiclesTable,
+      where: 'routeId = ?',
+      whereArgs: [route.gtfsId],
+    );
+  }
+
+  static Future<void> removeAllFromFavorites() async {
+    Database db = await instance;
+    await db.delete(_favoritesVehiclesTable);
+  }
   /*
     ------------------------------------------------------------------------
   */
+
+  static Future<List<Route>> get favoriteRoutes async {
+    Database db = await instance;
+    final List<Map<String, dynamic>> result = await db.rawQuery(
+      '''
+      SELECT $_routesTable.*, $_favoritesVehiclesTable.date
+      FROM $_routesTable
+      JOIN $_favoritesVehiclesTable ON $_routesTable.gtfsId = $_favoritesVehiclesTable.routeId
+      ORDER BY $_favoritesVehiclesTable.date ASC;
+      ''',
+    );
+
+    return List.generate(result.length, (i) {
+      return Route.fromJson(result[i]);
+    });
+  }
+
+  static Future<List<FavStop>> get favorites async {
+    Database db = await instance;
+    final List<Map<String, dynamic>> result = await db.rawQuery(
+      '''
+      SELECT $_stopsTable.*, $_favoritesTable.*
+      FROM $_stopsTable
+      JOIN $_favoritesTable ON $_stopsTable.gtfsId = $_favoritesTable.stopId
+      ORDER BY $_favoritesTable.date ASC;
+      ''',
+    );
+
+    return List.generate(result.length, (i) {
+      return FavStop.fromJson(result[i]);
+    });
+  }
 
   static Future<List<Agency>> get agencies async {
     final db = await instance;
@@ -264,7 +320,7 @@ class DatabaseCommands {
         );
       }
       await batch.commit();
-      print("finished $table");
+      if (kDebugMode) print("finished $table");
     });
   }
 
@@ -278,7 +334,7 @@ class DatabaseCommands {
     if (result.isNotEmpty) {
       return Stop.fromJson(result.first);
     }
-    print('oh no');
+    if (kDebugMode) print('oh no');
     return null;
   }
 
@@ -368,9 +424,3 @@ class DatabaseCommands {
     });
   }
 }
-
-
-/*
-
-
-*/
