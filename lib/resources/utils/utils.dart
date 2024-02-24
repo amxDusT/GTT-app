@@ -57,10 +57,14 @@ class Utils {
         c.blue + ((255 - c.blue) * p).round());
   }
 
-  static void showSnackBar(String message,
-      {String? title,
-      bool? closePrevious,
-      SnackPosition? snackPosition}) async {
+  static void showSnackBar(
+    String message, {
+    String? title,
+    Duration? duration,
+    bool? closePrevious,
+    SnackPosition? snackPosition,
+    Widget? mainButton,
+  }) async {
     if (closePrevious ?? false) {
       await Get.closeCurrentSnackbar();
     }
@@ -68,16 +72,17 @@ class Utils {
       GetSnackBar(
         title: title,
         message: message,
-        duration: const Duration(seconds: 2),
+        duration: duration ?? const Duration(seconds: 2),
         animationDuration: const Duration(milliseconds: 300),
         snackPosition: snackPosition ?? SnackPosition.BOTTOM,
         snackStyle: SnackStyle.GROUNDED,
-        mainButton: TextButton(
-          onPressed: () async {
-            await Get.closeCurrentSnackbar();
-          },
-          child: const Text("Chiudi"),
-        ),
+        mainButton: mainButton ??
+            TextButton(
+              onPressed: () async {
+                await Get.closeCurrentSnackbar();
+              },
+              child: const Text("Chiudi"),
+            ),
       ),
     );
   }

@@ -1,12 +1,13 @@
 import 'dart:async';
 
+import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:location/location.dart';
+import 'package:geolocator/geolocator.dart';
 
 class MapLocation extends GetxController {
-  LatLng? _userLocation;
-  StreamSubscription<LocationData>? _locationSubscription;
+  late LatLng _userLocation;
+  StreamSubscription<Position>? _geolocatorSubscription;
   late final Rx<LatLng> userLocationMarker;
   final RxBool isLocationInitialized = false.obs;
   final RxBool isLocationShowing = false.obs;
@@ -30,53 +31,52 @@ class MapLocation extends GetxController {
   }
 
   FutureOr<LatLng> get userLocation async {
-    if (_locationSubscription == null) {
-      Location location = Location();
-      bool serviceEnabled = await location.serviceEnabled();
+    if (_geolocatorSubscription == null) {
+      bool serviceEnabled;
+      LocationPermission permission;
+
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        serviceEnabled = await location.requestService();
-        if (!serviceEnabled) {
-          throw 'Service not enabled';
-        }
+        throw MapLocationException('Servizio disabilitato');
       }
 
-      PermissionStatus permissionGranted = await location.hasPermission();
-      if (permissionGranted == PermissionStatus.denied) {
-        permissionGranted = await location.requestPermission();
-        if (permissionGranted != PermissionStatus.granted) {
-          throw 'Permission denied';
+      permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+
+        if (permission == LocationPermission.denied) {
+          throw MapLocationException('Permesso negato',
+              locationPermission: permission);
+        } else if (permission == LocationPermission.deniedForever) {
+          throw MapLocationException(
+              'Permesso negato. Abilita la posizione nelle impostazioni del dispositivo',
+              locationPermission: permission);
         }
       }
-      LocationData locationData = await location.getLocation();
-      _listenLocation(location);
-      return LatLng(locationData.latitude!, locationData.longitude!);
-    } else if (_userLocation == null) {
-      LocationData locationData = await Location().getLocation();
-      return LatLng(locationData.latitude!, locationData.longitude!);
+      Position position = await Geolocator.getCurrentPosition();
+      _userLocation = LatLng(position.latitude, position.longitude);
+      _listenGeoLocator();
+      return _userLocation;
     }
-
-    return _userLocation!;
+    return _userLocation;
   }
 
-  Future<void> _listenLocation(Location location) async {
-    if (_locationSubscription != null) return;
-    _locationSubscription =
-        location.onLocationChanged.handleError((dynamic err) {
-      stopLocationListen();
-    }).listen((currentLocation) {
-      _userLocation =
-          LatLng(currentLocation.latitude!, currentLocation.longitude!);
+  Future<void> _listenGeoLocator() async {
+    if (_geolocatorSubscription != null) return;
+    _geolocatorSubscription = Geolocator.getPositionStream().listen((position) {
+      _userLocation = LatLng(position.latitude, position.longitude);
       if (isLocationInitialized.isFalse) {
-        userLocationMarker = _userLocation!.obs;
+        userLocationMarker = _userLocation.obs;
         isLocationInitialized.value = true;
       } else {
-        userLocationMarker.value = _userLocation!;
+        userLocationMarker.value = _userLocation;
       }
     });
   }
 
   Future<void> stopLocationListen() async {
-    await _locationSubscription?.cancel();
-    _locationSubscription = null;
+    await _geolocatorSubscription?.cancel();
+    _geolocatorSubscription = null;
   }
 }

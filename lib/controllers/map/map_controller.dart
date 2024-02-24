@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
+import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
 import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
 import 'package:flutter_gtt/models/gtt_stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -98,10 +100,10 @@ class MapPageController extends GetxController
       element.dispose();
     }
     await _mqttController.dispose();
+    userLocation.onMapDispose();
     mapController.dispose();
     popupController.dispose();
     mapInfoController.dispose();
-    userLocation.onMapDispose();
 
     super.onClose();
   }
@@ -401,8 +403,22 @@ class MapPageController extends GetxController
       } else {
         _animatedMapMove(await userLocation.userLocation, 16);
       }
-    } catch (e) {
-      Utils.showSnackBar(e.toString(), title: "Error");
+    } on MapLocationException catch (e) {
+      bool isDeniedForever = e.locationPermission != null &&
+          e.locationPermission == LocationPermission.deniedForever;
+      Utils.showSnackBar(
+        e.message,
+        duration: isDeniedForever ? const Duration(seconds: 4) : null,
+        mainButton: isDeniedForever
+            ? TextButton(
+                onPressed: () async {
+                  await Geolocator.openAppSettings();
+                },
+                child: const Text("Impostazioni"),
+              )
+            : null,
+      );
+      userLocation.switchLocationShowing();
     }
 
     isLocationLoading.value = false;

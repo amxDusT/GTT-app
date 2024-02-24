@@ -8,11 +8,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 import 'package:latlong2/latlong.dart';
 
-class Test {
-  //final Marker mark;
-  //Test({int marker}) : mark = Marker(point: point, child: child);
-}
-
 @immutable
 class VehicleMarker extends Marker {
   final MqttVehicle mqttData;
@@ -26,17 +21,14 @@ class VehicleMarker extends Marker {
             child: Stack(
               alignment: Alignment.center,
               children: [
-                Positioned(
-                  //top: 5,
-                  child: Container(
-                    height: 15,
-                    width: 15,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: internalColor ??
-                          Utils.lighten(color ?? Colors.blue)
-                              .withOpacity(0.9), //color ?? Colors.blue,
-                    ),
+                Container(
+                  height: 15,
+                  width: 15,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: internalColor ??
+                        Utils.lighten(color ?? Colors.blue)
+                            .withOpacity(0.9), //color ?? Colors.blue,
                   ),
                 ),
                 DecoratedIcon(
@@ -105,6 +97,7 @@ class FermataMarker extends Marker {
     );
   }
 
+  // get size based on zoom
   static double getSize(
       {required double? zoom,
       required double minSize,

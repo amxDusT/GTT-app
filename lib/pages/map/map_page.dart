@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/controllers/search_controller.dart';
 import 'package:flutter_gtt/models/gtt_models.dart';
 import 'package:flutter_gtt/models/marker.dart';
@@ -22,6 +23,18 @@ class MapPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Map'),
+        actions: [
+          GetBuilder<RouteListController>(
+              builder: (controller) => Obx(() => IconButton(
+                    icon: _flutterMapController.isPatternInitialized.isTrue &&
+                            controller.favorites.contains(
+                                _flutterMapController.routes.values.first)
+                        ? const Icon(Icons.star)
+                        : const Icon(Icons.star_border),
+                    onPressed: () => controller.toggleFavorite(
+                        _flutterMapController.routes.values.first),
+                  ))),
+        ],
       ),
       body: Column(
         mainAxisSize: MainAxisSize.min,
