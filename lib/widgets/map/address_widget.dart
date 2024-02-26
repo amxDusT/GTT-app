@@ -18,9 +18,9 @@ class AddressWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('Address'),
-            Obx(
+            /* Obx(
               () => Text(controller.lastAddress.value),
-            ),
+            ), */
           ],
         ),
       ),

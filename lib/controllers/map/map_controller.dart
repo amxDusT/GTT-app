@@ -427,18 +427,18 @@ class MapPageController extends GetxController
     }
   }
 
-  RxList<Marker> markerSelected = <Marker>[].obs;
+  /* RxList<Marker> markerSelected = <Marker>[].obs;
   RxString lastAddress = ''.obs;
-  RxBool isLoadingAddress = false.obs;
+  RxBool isLoadingAddress = false.obs; */
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
-    markerSelected.value = [
+    /*  markerSelected.value = [
       MapUtils.addressMarker(location),
     ];
     getAddress(markerSelected.first);
-    popupController.showPopupsOnlyFor(markerSelected);
+    popupController.showPopupsOnlyFor(markerSelected); */
   }
 
-  void addressReset() {
+  /* void addressReset() {
     markerSelected.clear();
   }
 
@@ -451,5 +451,5 @@ class MapPageController extends GetxController
     print(jsonResult['features'][0]);
     ;
     isLoadingAddress.value = false;
-  }
+  } */
 }
