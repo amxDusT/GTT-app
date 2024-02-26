@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/controllers/search_controller.dart';
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_gtt/widgets/map_info_widget.dart';
+import 'package:flutter_gtt/widgets/map/address_widget.dart';
+import 'package:flutter_gtt/widgets/map/card_map_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -55,8 +55,13 @@ class MapPage extends StatelessWidget {
                 maxZoom: MapPageController.maxZoom,
                 minZoom: MapPageController.minZoom,
                 initialZoom: 15,
+                onLongPress: _flutterMapController.onMapLongPress,
                 onMapReady: _flutterMapController.onMapReady,
                 onMapEvent: _flutterMapController.onMapEvent,
+                onTap: (tapPosition, point) {
+                  _flutterMapController.popupController.hideAllPopups();
+                  _flutterMapController.addressReset();
+                },
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
                 ),
@@ -109,59 +114,49 @@ class MapPage extends StatelessWidget {
                 Obx(
                   () => PopupMarkerLayer(
                     options: PopupMarkerLayerOptions(
+                      markerTapBehavior:
+                          MarkerTapBehavior.togglePopupAndHideRest(),
                       markerCenterAnimation: const MarkerCenterAnimation(),
                       popupController: _flutterMapController.popupController,
                       markers: [
                         ..._flutterMapController.isPatternInitialized.isTrue
                             ? _flutterMapController.allStops
                             : [],
-                        // ..._flutterMapController.allVehiclesInDirection.map(
-                        //   (data) => _buildVehicle(data)),
                         ..._flutterMapController.allVehiclesInDirection,
+                        ..._flutterMapController.markerSelected,
                       ],
                       popupDisplayOptions: PopupDisplayOptions(
                         builder: (BuildContext context, Marker marker) {
-                          if (_flutterMapController.lastOpenedMarker !=
-                                  marker &&
-                              marker is FermataMarker) {
-                            _flutterMapController.mapInfoController
-                                .getFermata(marker.fermata.code);
+                          //_flutterMapController.lastOpenedMarker = marker;
+                          if (marker is! VehicleMarker &&
+                              marker is! FermataMarker) {
+                            return AddressWidget(
+                                marker: marker,
+                                controller: _flutterMapController);
                           }
-                          _flutterMapController.lastOpenedMarker = marker;
-                          return Card(
-                            color: Colors.yellow.withOpacity(0.9),
-                            child: SizedBox(
-                              //height: 70,
-                              width: 150,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    alignment: Alignment.topRight,
-                                    padding: const EdgeInsets.all(5),
-                                    child: IconButton(
-                                      icon: const Icon(Icons.close),
-                                      onPressed: () {
-                                        _flutterMapController.popupController
-                                            .hidePopupsOnlyFor([marker]);
-                                        _flutterMapController.lastOpenedMarker =
-                                            null;
-                                      },
-                                    ),
-                                  ),
-                                  if (marker is FermataMarker)
-                                    _containerFermata(marker),
-                                  if (marker is VehicleMarker)
-                                    _containerVehicle(marker),
-                                ],
-                              ),
-                            ),
-                          );
+                          return CardMapWidget(
+                              marker: marker,
+                              controller: _flutterMapController);
                         },
                       ),
                     ),
                   ),
                 ),
+                /* Obx(
+                  () => PopupMarkerLayer(
+                      options: PopupMarkerLayerOptions(
+                    markers: _flutterMapController
+                        .geolocatorController.markerSelected,
+                    popupController: _flutterMapController
+                        .geolocatorController.popupController,
+                    popupDisplayOptions:
+                        PopupDisplayOptions(builder: (context, marker) {
+                      return AddressWidget(
+                        marker: marker,
+                      );
+                    }),
+                  )),
+                ), */
                 Obx(
                   () => Opacity(
                     opacity: _flutterMapController.routes.length > 1 ? 0.8 : 0,
@@ -403,55 +398,6 @@ class MapPage extends StatelessWidget {
         const SizedBox(
           height: 5,
         )
-      ],
-    );
-  }
-
-  Widget _containerFermata(FermataMarker marker) {
-    return InkWell(
-      onTap: () async {
-        Get.find<SearchStopsController>().openInfoPage(marker.fermata);
-      },
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            '${marker.fermata.code} - ${marker.fermata.name}',
-          ),
-          MapInfoWidget(stop: marker.fermata),
-        ],
-      ),
-    );
-  }
-
-  Widget _containerVehicle(VehicleMarker marker) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          '${Utils.isTram(marker.mqttData.vehicleNum) ? 'Tram' : 'Bus'} ${marker.mqttData.shortName} - ${marker.mqttData.vehicleNum}',
-        ),
-        Text(
-          'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
-          style: Get.textTheme.bodySmall,
-        ),
-        TextButton(
-          onPressed: () => _flutterMapController.followVehicle.value ==
-                  marker.mqttData.vehicleNum
-              ? _flutterMapController.stopFollowingVehicle()
-              : _flutterMapController.followVehicleMarker(marker.mqttData),
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-          ),
-          child: Obx(
-            () => Text(
-              _flutterMapController.followVehicle.value ==
-                      marker.mqttData.vehicleNum
-                  ? 'Smetti di seguire'
-                  : 'Segui',
-            ),
-          ),
-        ),
       ],
     );
   }

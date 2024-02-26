@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -56,5 +58,30 @@ class MapUtils {
     return initialPolyline
         .map((point) => LatLng(point.latitude + offset, point.longitude))
         .toList();
+  }
+
+  /*
+    Check if vehicle is bus or tram.
+    Trams have vehicle number:
+    - 28xx : old trams, yellow/orange
+    - 50xx : "TPR", grey trams
+    - 60xx : "Cityway" trams, quadrati
+    - 80xx : "Hitachirail" trams, new ones, blue.
+    rest is bus
+  */
+  static bool isTram(int vehicleNum) {
+    return RegExp(r'^(28|50|60|80)\d{2}$').hasMatch(vehicleNum.toString());
+  }
+
+  static Marker addressMarker(LatLng point) {
+    return Marker(
+      point: point,
+      width: 10,
+      height: 10,
+      child: const Icon(
+        Icons.circle,
+        color: Colors.grey,
+      ),
+    );
   }
 }

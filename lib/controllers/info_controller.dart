@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/resources/api/api_exception.dart';
 import 'package:flutter_gtt/resources/database.dart';

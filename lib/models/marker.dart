@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';

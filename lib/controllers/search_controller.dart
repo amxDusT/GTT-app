@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';

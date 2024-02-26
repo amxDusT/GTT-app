@@ -86,17 +86,4 @@ class Utils {
       ),
     );
   }
-
-  /*
-    Check if vehicle is bus or tram.
-    Trams have vehicle number:
-    - 28xx : old trams, yellow/orange
-    - 50xx : "TPR", grey trams
-    - 60xx : "Cityway" trams, quadrati
-    - 80xx : "Hitachirail" trams, new ones, blue.
-    rest is bus
-  */
-  static bool isTram(int vehicleNum) {
-    return RegExp(r'^(28|50|60|80)\d{2}$').hasMatch(vehicleNum.toString());
-  }
 }

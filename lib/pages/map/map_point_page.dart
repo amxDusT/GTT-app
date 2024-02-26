@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_point_controller.dart';
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_map/flutter_map.dart';

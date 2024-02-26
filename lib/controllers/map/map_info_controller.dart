@@ -1,4 +1,4 @@
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:get/get.dart';
 
@@ -19,7 +19,7 @@ class MapInfoController extends GetxController {
     super.onInit();
   }
 
-  void getFermata(int fermataNum) async {
+  Future<void> getFermata(int fermataNum) async {
     isLoading.value = true;
     fermata = (await GttApi.getStop(fermataNum)).obs;
     isLoading.value = false;

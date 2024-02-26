@@ -1,6 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/agency.dart';
+import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
 import 'package:flutter_gtt/resources/api/api_exception.dart';
 import 'package:flutter_gtt/resources/api/github_api.dart';
@@ -13,11 +16,10 @@ import 'package:get/get.dart';
 
 class LoadingController extends GetxController {
   RxBool isShowingMessage = false.obs;
-  final bool isFirstTime = Get.arguments?['first-time'] ?? true;
   @override
   void onInit() async {
     super.onInit();
-    await checkVersion();
+    if (!kDebugMode) await checkVersion();
     checkAndLoad();
   }
 
@@ -65,7 +67,8 @@ class LoadingController extends GetxController {
       ),
       middleText: 'Scarica la nuova versione',
       textConfirm: 'Scarica',
-      cancel: TextButton(
+      textCancel: 'Annulla',
+      /*cancel: TextButton(
         style: TextButton.styleFrom(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -86,7 +89,7 @@ class LoadingController extends GetxController {
           'Annulla',
           style: TextStyle(color: Get.theme.colorScheme.secondary),
         ),
-      ),
+      ),*/
       onConfirm: () async {
         if (isDownloading.value) return;
         isDownloading.value = true;
@@ -111,7 +114,7 @@ class LoadingController extends GetxController {
     Storage.setParam(
         StorageParam.lastUpdate, Utils.dateToString(DateTime.now()));
     try {
-      List<gtt.Agency> agencyList = await GttApi.getAgencies();
+      List<Agency> agencyList = await GttApi.getAgencies();
       DatabaseCommands.transaction(agencyList);
       //getAgencies(agencyList);
       List<gtt.Route> routeValues;

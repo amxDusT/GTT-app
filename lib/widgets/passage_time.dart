@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt/stoptime.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 
 class PassageTime extends StatelessWidget {
