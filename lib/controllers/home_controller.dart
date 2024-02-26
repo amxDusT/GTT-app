@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:get/get.dart';
 

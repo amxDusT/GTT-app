@@ -4,19 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
-import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
-import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
+import 'package:flutter_gtt/resources/api/geocoder_api.dart';
 import 'package:flutter_gtt/resources/api/mqtt_controller.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -100,10 +101,10 @@ class MapPageController extends GetxController
       element.dispose();
     }
     await _mqttController.dispose();
-    userLocation.onMapDispose();
     mapController.dispose();
     popupController.dispose();
     mapInfoController.dispose();
+    userLocation.onMapDispose();
 
     super.onClose();
   }
@@ -340,7 +341,7 @@ class MapPageController extends GetxController
                         (routeIndex[payload.shortName] ?? 0) % colors.length],
                     30),
             internalColor: routes[payload.shortName]?.type == 0 &&
-                    !Utils.isTram(payload.vehicleNum)
+                    !MapUtils.isTram(payload.vehicleNum)
                 ? Colors.white
                 : null,
           ),
@@ -403,22 +404,8 @@ class MapPageController extends GetxController
       } else {
         _animatedMapMove(await userLocation.userLocation, 16);
       }
-    } on MapLocationException catch (e) {
-      bool isDeniedForever = e.locationPermission != null &&
-          e.locationPermission == LocationPermission.deniedForever;
-      Utils.showSnackBar(
-        e.message,
-        duration: isDeniedForever ? const Duration(seconds: 4) : null,
-        mainButton: isDeniedForever
-            ? TextButton(
-                onPressed: () async {
-                  await Geolocator.openAppSettings();
-                },
-                child: const Text("Impostazioni"),
-              )
-            : null,
-      );
-      userLocation.switchLocationShowing();
+    } catch (e) {
+      Utils.showSnackBar(e.toString(), title: "Error");
     }
 
     isLocationLoading.value = false;
@@ -439,4 +426,30 @@ class MapPageController extends GetxController
           mapController.camera.zoom);
     }
   }
+
+  /* RxList<Marker> markerSelected = <Marker>[].obs;
+  RxString lastAddress = ''.obs;
+  RxBool isLoadingAddress = false.obs; */
+  void onMapLongPress(TapPosition tapPosition, LatLng location) {
+    /*  markerSelected.value = [
+      MapUtils.addressMarker(location),
+    ];
+    getAddress(markerSelected.first);
+    popupController.showPopupsOnlyFor(markerSelected); */
+  }
+
+  /* void addressReset() {
+    markerSelected.clear();
+  }
+
+  void getAddress(Marker marker) async {
+    isLoadingAddress.value = true;
+    var jsonResult = await GeocoderApi.getAddress(
+        marker.point.latitude, marker.point.longitude);
+    lastAddress.value =
+        '${jsonResult['features'][0]['properties']?['name'] ?? 'Indirizzo non trovato'},${jsonResult['features'][0]['properties']?['postalcode'] ?? ''}';
+    print(jsonResult['features'][0]);
+    ;
+    isLoadingAddress.value = false;
+  } */
 }

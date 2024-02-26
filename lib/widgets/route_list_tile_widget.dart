@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/models/gtt_models.dart' as gtt;
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:get/get.dart';
 

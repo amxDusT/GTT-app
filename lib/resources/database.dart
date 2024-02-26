@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_gtt/models/gtt_models.dart';
-import 'package:flutter_gtt/models/gtt_stop.dart';
+import 'package:flutter_gtt/models/gtt/agency.dart';
+import 'package:flutter_gtt/models/gtt/route.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
+import 'package:flutter_gtt/models/gtt/pattern.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

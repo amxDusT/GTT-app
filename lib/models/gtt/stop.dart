@@ -1,6 +1,8 @@
 import 'dart:ui';
 
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt/stoptime.dart';
+import 'package:flutter_gtt/models/gtt/route.dart';
+import 'package:flutter_gtt/models/gtt/pattern.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 

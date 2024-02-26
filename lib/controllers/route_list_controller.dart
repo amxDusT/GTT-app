@@ -1,4 +1,5 @@
-import 'package:flutter_gtt/models/gtt_models.dart';
+import 'package:flutter_gtt/models/gtt/agency.dart';
+import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:get/get.dart';
 
