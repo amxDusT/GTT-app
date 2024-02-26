@@ -60,7 +60,7 @@ class MapPage extends StatelessWidget {
                 onMapEvent: _flutterMapController.onMapEvent,
                 onTap: (tapPosition, point) {
                   _flutterMapController.popupController.hideAllPopups();
-                  //_flutterMapController.addressReset();
+                  _flutterMapController.addressReset();
                 },
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
@@ -123,7 +123,7 @@ class MapPage extends StatelessWidget {
                             ? _flutterMapController.allStops
                             : [],
                         ..._flutterMapController.allVehiclesInDirection,
-                        //..._flutterMapController.markerSelected,
+                        ..._flutterMapController.markerSelected,
                       ],
                       popupDisplayOptions: PopupDisplayOptions(
                         builder: (BuildContext context, Marker marker) {

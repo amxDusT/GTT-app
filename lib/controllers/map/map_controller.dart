@@ -5,10 +5,10 @@ import 'package:flutter/physics.dart';
 import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/resources/api/geocoder_api.dart';
 import 'package:flutter_gtt/resources/api/mqtt_controller.dart';
 import 'package:flutter_gtt/resources/database.dart';
@@ -427,18 +427,18 @@ class MapPageController extends GetxController
     }
   }
 
-  /* RxList<Marker> markerSelected = <Marker>[].obs;
+  RxList<Marker> markerSelected = <Marker>[].obs;
   RxString lastAddress = ''.obs;
-  RxBool isLoadingAddress = false.obs; */
+  RxBool isLoadingAddress = false.obs;
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
-    /*  markerSelected.value = [
+    markerSelected.value = [
       MapUtils.addressMarker(location),
     ];
     getAddress(markerSelected.first);
-    popupController.showPopupsOnlyFor(markerSelected); */
+    popupController.showPopupsOnlyFor(markerSelected);
   }
 
-  /* void addressReset() {
+  void addressReset() {
     markerSelected.clear();
   }
 
@@ -451,5 +451,5 @@ class MapPageController extends GetxController
     print(jsonResult['features'][0]);
     ;
     isLoadingAddress.value = false;
-  } */
+  }
 }
