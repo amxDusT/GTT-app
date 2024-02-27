@@ -37,40 +37,42 @@ class HomePage extends StatelessWidget {
                   children: [
                     if (_settingsController.isFavoritesRoutesShowing.value)
                       GetBuilder<RouteListController>(
-                          builder: (controller) => Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Divider(
-                                    indent: 10,
-                                    endIndent: 10,
-                                  ),
-                                  SingleChildScrollView(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4.0),
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        ...controller.favorites
-                                            .map((route) => RouteListFavorite(
-                                                  route: route,
-                                                  controller: controller,
-                                                  hasRemoveIcon: false,
-                                                )),
-                                      ],
+                          builder: (controller) => controller.favorites.isEmpty
+                              ? Container()
+                              : Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Divider(
+                                      indent: 10,
+                                      endIndent: 10,
                                     ),
-                                  ),
-                                  const Divider(
-                                    indent: 10,
-                                    endIndent: 10,
-                                  ),
-                                ],
-                              )),
+                                    SingleChildScrollView(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0),
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          ...controller.favorites
+                                              .map((route) => RouteListFavorite(
+                                                    route: route,
+                                                    controller: controller,
+                                                    hasRemoveIcon: false,
+                                                  )),
+                                        ],
+                                      ),
+                                    ),
+                                    const Divider(
+                                      indent: 10,
+                                      endIndent: 10,
+                                    ),
+                                  ],
+                                )),
                     GetBuilder<HomeController>(
                       builder: (controller) {
                         return GridView.count(
