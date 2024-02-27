@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 
 class Utils {
   static int getBytesFromPage(Uint8List page, int offset, int bytesnum) {
@@ -85,5 +86,48 @@ class Utils {
             ),
       ),
     );
+  }
+
+  static void sort(List<gtt.Route> routes) {
+    routes.sort((a, b) {
+      // compare by type
+      int compareWithType = a.type.compareTo(b.type);
+      if (compareWithType != 0) {
+        return compareWithType;
+        // compare by number
+      } else if (_startWithNumberOrM(a.shortName) &&
+          _startWithNumberOrM(b.shortName)) {
+        return _compareWithNumbers(a, b);
+        // compare by name
+      } else if (!_startWithNumberOrM(a.shortName) &&
+          !_startWithNumberOrM(b.shortName)) {
+        return a.shortName.compareTo(b.shortName);
+      } else {
+        return _startWithNumberOrM(a.shortName) ? -1 : 1;
+      }
+    });
+  }
+
+  static int _extractNumericPart(String str) {
+    RegExpMatch? match = RegExp(r'\d+').firstMatch(str);
+    if (match != null) {
+      return int.parse(match.group(0)!);
+    } else {
+      return 0;
+    }
+  }
+
+  static bool _startWithNumberOrM(String s) {
+    return RegExp(r'^[0-9M]').hasMatch(s);
+  }
+
+  static int _compareWithNumbers(gtt.Route a, gtt.Route b) {
+    int numA = _extractNumericPart(a.shortName);
+    int numB = _extractNumericPart(b.shortName);
+    int compare = numA.compareTo(numB);
+    if (compare == 0) {
+      return a.shortName.compareTo(b.shortName);
+    }
+    return compare;
   }
 }

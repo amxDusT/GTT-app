@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 class SettingsPage extends StatelessWidget {
   SettingsPage({super.key});
-  final _settingsController = Get.put(SettingsController());
+  final _settingsController = Get.find<SettingsController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +18,16 @@ class SettingsPage extends StatelessWidget {
             child: ListView(
               shrinkWrap: true,
               children: [
+                ListTile(
+                  title: const Text(
+                      'Mostra linee preferite nella pagina iniziale'),
+                  trailing: Obx(() => Switch(
+                        value:
+                            _settingsController.isFavoritesRoutesShowing.value,
+                        onChanged: (value) =>
+                            _settingsController.switchFavoritesRoutesShowing(),
+                      )),
+                ),
                 ListTile(
                   title:
                       const Text('Mostra secondi dall\'ultimo aggiornamento'),

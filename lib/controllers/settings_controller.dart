@@ -16,6 +16,8 @@ class SettingsController extends GetxController {
   final RxBool isRouteWithoutPassagesShowing =
       Storage.isRouteWithoutPassagesShowing.obs;
 
+  final RxBool isFavoritesRoutesShowing = Storage.isFavoritesRoutesShowing.obs;
+
   final RxString version = ''.obs;
 
   @override
@@ -26,21 +28,27 @@ class SettingsController extends GetxController {
   }
 
   void switchFermataShowing() {
-    isFermataShowing.value = !isFermataShowing.value;
+    isFermataShowing.toggle();
     Storage.setParam(
         StorageParam.fermataMap, isFermataShowing.value.toString());
   }
 
   void switchRouteWithoutPassagesShowing() {
-    isRouteWithoutPassagesShowing.value = !isRouteWithoutPassagesShowing.value;
+    isRouteWithoutPassagesShowing.toggle();
     Storage.setParam(StorageParam.routeWithoutPassagesMap,
         isRouteWithoutPassagesShowing.value.toString());
   }
 
   void switchShowSecondsInUpdates() {
-    showSecondsInUpdates.value = !showSecondsInUpdates.value;
+    showSecondsInUpdates.toggle();
     Storage.setParam(StorageParam.showSecondsInUpdates,
         showSecondsInUpdates.value.toString());
+  }
+
+  void switchFavoritesRoutesShowing() {
+    isFavoritesRoutesShowing.toggle();
+    Storage.setParam(StorageParam.isFavoritesRoutesShowing,
+        isFavoritesRoutesShowing.value.toString());
   }
 
   void resetData() async {

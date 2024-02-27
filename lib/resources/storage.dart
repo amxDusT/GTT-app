@@ -9,6 +9,7 @@ enum StorageParam {
   routeWithoutPassagesMap,
   showSecondsInUpdates,
   lastUpdate,
+  isFavoritesRoutesShowing,
 }
 
 class Storage {
@@ -18,6 +19,7 @@ class Storage {
   static bool showSecondsInUpdates = false;
   static DateTime lastUpdate = DateTime.now();
   static const _storage = FlutterSecureStorage();
+  static bool isFavoritesRoutesShowing = false;
 
   static void loadSettings() async {
     chosenColor =
@@ -35,6 +37,10 @@ class Storage {
     //very ugly
     lastUpdate = Utils.stringToDate(await getParam(StorageParam.lastUpdate) ??
         Utils.dateToString(DateTime.now()));
+
+    isFavoritesRoutesShowing = bool.parse(
+      await getParam(StorageParam.isFavoritesRoutesShowing) ?? 'false',
+    );
   }
 
   static String colorToString(Color color) =>

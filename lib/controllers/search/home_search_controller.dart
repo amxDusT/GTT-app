@@ -20,11 +20,16 @@ class SearchStopsController extends GetxController {
   }
 
   void setTextController(TextEditingController controller) {
-    _searchController ??= controller;
+    _searchController = controller;
   }
 
   void setFocusNode(FocusNode node) {
-    _focusNode ??= node;
+    _focusNode = node;
+    node.addListener(() {
+      if (!node.hasFocus) {
+        _searchController?.clear();
+      }
+    });
   }
 
   void onSubmitted([String? value]) async {

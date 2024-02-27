@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/search_controller.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
+import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
 import 'package:flutter_gtt/pages/route_list_page.dart';
-import 'package:flutter_gtt/pages/search_page.dart';
+import 'package:flutter_gtt/pages/search/home_search_page.dart';
 import 'package:flutter_gtt/pages/settings_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
   final _homeController = Get.put(HomeController());
   final _searchController = Get.put(SearchStopsController());
+  final _settingsController = Get.put(SettingsController());
 
   void _showContextMenu(FavStop fermata) {
     showMenu(
@@ -249,84 +253,119 @@ class HomePage extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Gtt Fermate"),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SearchPage(),
-          Expanded(
-            child: GetBuilder<HomeController>(
-              builder: (controller) {
-                return GridView.count(
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  padding: const EdgeInsets.all(20),
-                  crossAxisCount: 2,
-                  children: [
-                    ...controller.fermate.map((fermata) => Column(
-                          children: [
-                            Hero(
-                              tag: 'HeroTagFermata${fermata.code}',
-                              flightShuttleBuilder: ((flightContext,
-                                      animation,
-                                      flightDirection,
-                                      fromHeroContext,
-                                      toHeroContext) =>
-                                  Material(
-                                    type: MaterialType.transparency,
-                                    child: toHeroContext.widget,
-                                  )),
-                              child: InkWell(
-                                onTapDown: _homeController.getPosition,
-                                onLongPress: () => _showContextMenu(fermata),
-                                onTap: () => Get.to(
-                                  () => InfoPage(),
-                                  arguments: {'fermata': fermata},
+      body: Obx(
+        () => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SearchPage(),
+            if (_settingsController.isFavoritesRoutesShowing.value)
+              GetBuilder<RouteListController>(
+                  builder: (controller) => Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Divider(
+                            indent: 10,
+                            endIndent: 10,
+                          ),
+                          SingleChildScrollView(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ...controller.favorites
+                                    .map((route) => RouteListFavorite(
+                                          route: route,
+                                          controller: controller,
+                                          hasRemoveIcon: false,
+                                        )),
+                              ],
+                            ),
+                          ),
+                          const Divider(
+                            indent: 10,
+                            endIndent: 10,
+                          ),
+                        ],
+                      )),
+            Expanded(
+              child: GetBuilder<HomeController>(
+                builder: (controller) {
+                  return GridView.count(
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    padding: const EdgeInsets.all(20),
+                    crossAxisCount: 2,
+                    children: [
+                      ...controller.fermate.map((fermata) => Column(
+                            children: [
+                              Hero(
+                                tag: 'HeroTagFermata${fermata.code}',
+                                flightShuttleBuilder: ((flightContext,
+                                        animation,
+                                        flightDirection,
+                                        fromHeroContext,
+                                        toHeroContext) =>
+                                    Material(
+                                      type: MaterialType.transparency,
+                                      child: toHeroContext.widget,
+                                    )),
+                                child: InkWell(
+                                  onTapDown: _homeController.getPosition,
+                                  onLongPress: () => _showContextMenu(fermata),
+                                  onTap: () => Get.to(
+                                    () => InfoPage(),
+                                    arguments: {'fermata': fermata},
+                                  ),
+                                  child: Ink(
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(12),
+                                      ),
+                                      color: Utils.lighten(fermata.color),
+                                    ),
+                                    height: 115,
+                                    padding: const EdgeInsets.all(8),
+                                    //color: Utils.lighten(e.color),
+                                    child: Column(
+                                      children: [
+                                        Text(fermata.toString()),
+                                        const Divider(),
+                                        Text(fermata.descrizione ?? ''),
+                                      ],
+                                    ),
+                                  ),
                                 ),
+                              ),
+                              InkWell(
+                                onTap: () => Get.to(() => MapPointPage(),
+                                    arguments: {'fermata': fermata}),
+                                //MapUtils.openMap(e.latitude, e.longitude),
                                 child: Ink(
+                                  width: double.maxFinite,
+                                  padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
                                     borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(12),
+                                      bottom: Radius.circular(12),
                                     ),
-                                    color: Utils.lighten(fermata.color),
+                                    color: Utils.lighten(fermata.color, 70),
                                   ),
-                                  height: 115,
-                                  padding: const EdgeInsets.all(8),
-                                  //color: Utils.lighten(e.color),
-                                  child: Column(
-                                    children: [
-                                      Text(fermata.toString()),
-                                      const Divider(),
-                                      Text(fermata.descrizione ?? ''),
-                                    ],
-                                  ),
+                                  child: const Center(child: Text('Posizione')),
                                 ),
                               ),
-                            ),
-                            InkWell(
-                              onTap: () => Get.to(() => MapPointPage(),
-                                  arguments: {'fermata': fermata}),
-                              //MapUtils.openMap(e.latitude, e.longitude),
-                              child: Ink(
-                                width: double.maxFinite,
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.vertical(
-                                    bottom: Radius.circular(12),
-                                  ),
-                                  color: Utils.lighten(fermata.color, 70),
-                                ),
-                                child: const Center(child: Text('Posizione')),
-                              ),
-                            ),
-                          ],
-                        )),
-                  ],
-                );
-              },
+                            ],
+                          )),
+                    ],
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: SafeArea(
         child: Column(
