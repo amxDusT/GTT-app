@@ -198,4 +198,14 @@ class Stop {
   String toString() {
     return '$code - $name';
   }
+
+  @override
+  int get hashCode => code.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Stop && other.code == code;
+  }
 }

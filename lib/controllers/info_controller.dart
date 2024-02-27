@@ -76,13 +76,8 @@ class InfoController extends GetxController {
   }
 
   void switchAddDeleteFermata() async {
-    if (isSaved.isTrue) {
-      DatabaseCommands.deleteStop(fermata.value);
-    } else {
-      DatabaseCommands.insertStop(fermata.value);
-    }
-    _homeController.getStops();
-    isSaved.value = !isSaved.value;
+    _homeController.switchAddDeleteFermata(fermata.value);
+    isSaved.toggle();
   }
 
   Future<void> getFermata() async {

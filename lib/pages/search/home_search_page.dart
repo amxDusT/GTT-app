@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -18,10 +19,18 @@ class SearchPage extends StatelessWidget {
           TypeAheadField<Stop>(
             animationDuration: const Duration(milliseconds: 100),
             itemBuilder: (context, stop) {
-              return ListTile(
-                title: Text(stop.name),
-                subtitle: Text(stop.code.toString()),
-              );
+              return GetBuilder<HomeController>(
+                  builder: (controller) => ListTile(
+                        title: Text(stop.name),
+                        subtitle: Text(stop.code.toString()),
+                        trailing: IconButton(
+                          onPressed: () =>
+                              controller.switchAddDeleteFermata(stop),
+                          icon: controller.fermate.contains(stop)
+                              ? const Icon(Icons.star)
+                              : const Icon(Icons.star_border),
+                        ),
+                      ));
             },
             builder: (context, controller, focusNode) {
               _searchController.setTextController(controller);
