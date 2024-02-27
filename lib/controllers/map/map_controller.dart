@@ -431,11 +431,13 @@ class MapPageController extends GetxController
   RxString lastAddress = ''.obs;
   RxBool isLoadingAddress = false.obs;
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
-    markerSelected.value = [
-      MapUtils.addressMarker(location),
-    ];
-    getAddress(markerSelected.first);
-    popupController.showPopupsOnlyFor(markerSelected);
+    if (kDebugMode) {
+      markerSelected.value = [
+        MapUtils.addressMarker(location),
+      ];
+      getAddress(markerSelected.first);
+      popupController.showPopupsOnlyFor(markerSelected);
+    }
   }
 
   void addressReset() {
@@ -443,13 +445,15 @@ class MapPageController extends GetxController
   }
 
   void getAddress(Marker marker) async {
-    isLoadingAddress.value = true;
-    var jsonResult = await GeocoderApi.getAddress(
-        marker.point.latitude, marker.point.longitude);
-    lastAddress.value =
-        '${jsonResult['features'][0]['properties']?['name'] ?? 'Indirizzo non trovato'},${jsonResult['features'][0]['properties']?['postalcode'] ?? ''}';
-    print(jsonResult['features'][0]);
-    ;
-    isLoadingAddress.value = false;
+    if (kDebugMode) {
+      isLoadingAddress.value = true;
+      var jsonResult = await GeocoderApi.getAddress(
+          marker.point.latitude, marker.point.longitude);
+      lastAddress.value =
+          '${jsonResult['features'][0]['properties']?['name'] ?? 'Indirizzo non trovato'},${jsonResult['features'][0]['properties']?['postalcode'] ?? ''}';
+      print(jsonResult['features'][0]);
+
+      isLoadingAddress.value = false;
+    }
   }
 }
