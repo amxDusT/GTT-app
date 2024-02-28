@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const double mapMaxZoom = 18;
+const double mapMinZoom = 12;
 const double markerMinSize = 10;
 const double fermataMarkerMinSize = 12;
 const double markerMaxSize = 60;

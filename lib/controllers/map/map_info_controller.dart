@@ -21,6 +21,7 @@ class MapInfoController extends GetxController {
 
   Future<void> getFermata(int fermataNum) async {
     isLoading.value = true;
+    await Future.delayed(const Duration(seconds: 10));
     fermata = (await GttApi.getStop(fermataNum)).obs;
     isLoading.value = false;
   }

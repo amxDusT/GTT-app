@@ -55,12 +55,12 @@ class MapPage extends StatelessWidget {
                 maxZoom: MapPageController.maxZoom,
                 minZoom: MapPageController.minZoom,
                 initialZoom: 15,
-                onLongPress: _flutterMapController.onMapLongPress,
+                onLongPress: _flutterMapController.mapAddress.onMapLongPress,
                 onMapReady: _flutterMapController.onMapReady,
                 onMapEvent: _flutterMapController.onMapEvent,
                 onTap: (tapPosition, point) {
                   _flutterMapController.popupController.hideAllPopups();
-                  _flutterMapController.addressReset();
+                  _flutterMapController.mapAddress.addressReset();
                 },
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
@@ -123,7 +123,7 @@ class MapPage extends StatelessWidget {
                             ? _flutterMapController.allStops
                             : [],
                         ..._flutterMapController.allVehiclesInDirection,
-                        ..._flutterMapController.markerSelected,
+                        ..._flutterMapController.mapAddress.markerSelected,
                       ],
                       popupDisplayOptions: PopupDisplayOptions(
                         builder: (BuildContext context, Marker marker) {
@@ -132,7 +132,7 @@ class MapPage extends StatelessWidget {
                               marker is! FermataMarker) {
                             return AddressWidget(
                                 marker: marker,
-                                controller: _flutterMapController);
+                                controller: _flutterMapController.mapAddress);
                           }
                           return CardMapWidget(
                               marker: marker,

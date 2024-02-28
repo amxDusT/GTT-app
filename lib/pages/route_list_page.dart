@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/controllers/search/list_search_controller.dart';
-import 'package:flutter_gtt/pages/search/list_search_page.dart';
+import 'package:flutter_gtt/widgets/search/list_search_page.dart';
 import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
 import 'package:flutter_gtt/widgets/route_list_tile_widget.dart';
 import 'package:get/get.dart';

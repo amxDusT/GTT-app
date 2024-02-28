@@ -14,12 +14,24 @@ class CardMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
+      alignment: Alignment.bottomCenter,
       children: [
+        Positioned(
+          bottom: 1,
+          child: ClipPath(
+            clipper: TriangleClipper(),
+            child: Container(
+              color: Colors.yellow.withOpacity(0.9),
+              //color: Colors.red,
+              height: 10,
+              width: 20,
+            ),
+          ),
+        ),
         Card(
           elevation: 0,
-          margin: const EdgeInsets.all(0),
+          margin: const EdgeInsets.all(10),
           color: Colors.yellow.withOpacity(0.9),
           child: SizedBox(
             //height: 70,
@@ -47,17 +59,11 @@ class CardMapWidget extends StatelessWidget {
                     marker: marker as VehicleMarker,
                     controller: controller,
                   ),
+                const SizedBox(
+                  height: 10,
+                ),
               ],
             ),
-          ),
-        ),
-        ClipPath(
-          clipper: TriangleClipper(),
-          child: Container(
-            color: Colors.yellow.withOpacity(0.9),
-            //color: Colors.red,
-            height: 10,
-            width: 20,
           ),
         ),
       ],

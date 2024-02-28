@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_controller.dart';
+import 'package:flutter_gtt/controllers/map/map_address.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 
 class AddressWidget extends StatelessWidget {
   final Marker marker;
-  final MapPageController controller;
+  final MapAddressController controller;
   const AddressWidget(
       {super.key, required this.marker, required this.controller});
 
@@ -13,15 +13,18 @@ class AddressWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Address'),
-            Obx(
-              () => Text(controller.lastAddress.value),
-            ),
-          ],
+        padding: const EdgeInsets.all(8.0),
+        child: Obx(
+          () => Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Address'),
+              controller.isLoadingAddress.isTrue
+                  ? const CircularProgressIndicator()
+                  : Text(controller.lastAddress.first
+                      .toDetailedString(showHouseNumber: true)),
+            ],
+          ),
         ),
       ),
     );
