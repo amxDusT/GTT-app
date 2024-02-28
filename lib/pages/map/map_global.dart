@@ -18,10 +18,16 @@ class MapGlobal extends StatelessWidget {
         onPopInvoked: (didPop) {
           if (_mapController.searchController.focusNode?.hasFocus ?? false) {
             _mapController.searchController.focusNode?.unfocus();
+            print('unfocus');
           } else if (_mapController
-              .searchController.suggestionsController.isOpen) {
+                  .searchController.suggestionsController.isOpen &&
+              (_mapController.searchController.suggestionsController.suggestions
+                      ?.isNotEmpty ??
+                  false)) {
             _mapController.searchController.suggestionsController.close();
+            print('close');
           } else {
+            print('back');
             Future.delayed(Duration.zero, () {
               if (!didPop) Get.back(closeOverlays: true);
             });

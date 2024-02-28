@@ -18,8 +18,8 @@ class MapAddressController {
 
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
     if (kDebugMode) {
-      setMarker(location);
       getAddress(location);
+      setMarker(location);
       print(location);
     }
   }
@@ -47,17 +47,26 @@ class MapAddressController {
     lastAddress.clear();
   }
 
-  void getAddress(LatLng position) async {
+  Future<void> getAddress(LatLng position) async {
     if (kDebugMode) {
       isLoadingAddress.value = true;
       var jsonResult = await GeocoderApi.getAddressFromPosition(
           position.latitude, position.longitude);
-      Address address = Address.fromJson(jsonResult['features'][0]);
+      print(jsonResult);
+      Address address = Address.empty();
+      if (jsonResult['features'] != null && jsonResult['features'].isNotEmpty) {
+        address = Address.fromJson(jsonResult['features'][0]);
+      }
 
       if (address.isValid) {
         lastAddress.value = [address];
       } else {
         lastAddress.value = [Address.empty()];
+        if (markerSelected.isNotEmpty &&
+            markerSelected.first.point == position) {
+          popupController.hideAllPopups();
+          markerSelected.clear();
+        }
         Utils.showSnackBar('Indirizzo non valido');
       }
       //print(jsonResult['features'][0]);

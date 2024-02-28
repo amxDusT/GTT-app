@@ -19,7 +19,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _homeController.scaffoldKey,
-      endDrawer: const HomeDrawer(),
+      endDrawer: HomeDrawer(),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Gtt Fermate"),

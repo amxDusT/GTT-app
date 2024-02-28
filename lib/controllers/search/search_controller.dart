@@ -67,7 +67,7 @@ class MapSearchController {
       if (address.isValid) suggestions.add(address);
     }
 
-    return suggestions.toList(growable: false);
+    return suggestions.toList();
   }
 
   void dispose() {

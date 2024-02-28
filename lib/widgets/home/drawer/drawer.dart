@@ -7,7 +7,14 @@ import 'package:flutter_gtt/widgets/home/drawer/drawer_tile.dart';
 import 'package:get/get.dart';
 
 class HomeDrawer extends StatelessWidget {
-  const HomeDrawer({super.key});
+  final Map<String, dynamic> elements = {
+    'Mappa Default': () => Get.to(() => MapGlobal()),
+    'Leggi Biglietto/Carta': () => Get.to(() => NfcPage()),
+    'Mappa Bus/Tram': () => Get.to(() => RouteListPage()),
+    'Impostazioni': () => Get.to(() => SettingsPage()),
+  };
+
+  HomeDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,29 +30,16 @@ class HomeDrawer extends StatelessWidget {
                 shrinkWrap: true,
                 children: [
                   SizedBox(
-                    height: context.height * 0.5,
+                    height: context.height * (0.65 - 0.05 * elements.length),
                   ),
-                  DrawerTile(
-                    title: 'Mappa Default',
-                    onTap: () => Get.to(() => MapGlobal()),
-                    //heroTag: 'NFCPage',
-                  ),
-                  DrawerTile(
-                      title: 'Leggi Biglietto/Carta',
-                      onTap: () => Get.to(() => NfcPage()),
-                      heroTag: 'NFCPage'),
-                  const Divider(),
-                  DrawerTile(
-                    title: 'Mappa Bus/Tram',
-                    onTap: () => Get.to(() => RouteListPage()),
-                    heroTag: 'RouteListPage',
-                  ),
-                  const Divider(),
-                  DrawerTile(
-                    title: 'Impostazioni',
-                    onTap: () => Get.to(
-                      () => SettingsPage(),
-                    ),
+                  ...elements.entries.expand(
+                    (e) => [
+                      DrawerTile(
+                        title: e.key,
+                        onTap: e.value,
+                      ),
+                      if (e.key != elements.keys.last) const Divider(),
+                    ],
                   ),
                 ],
               ),
