@@ -11,7 +11,7 @@ class SearchAddress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
+      margin: EdgeInsets.only(left: 8.0, right: 8.0, top: context.width * 0.12),
       width: double.infinity,
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, bottom: 10.0),
       child: Column(
@@ -27,7 +27,7 @@ class SearchAddress extends StatelessWidget {
             suggestionsController: searchController.suggestionsController,
             hideOnUnfocus: false,
             hideWithKeyboard: false,
-            animationDuration: Duration.zero,
+            animationDuration: Durations.short1,
             hideOnEmpty: true,
             debounceDuration: const Duration(milliseconds: 300),
             onSelected: searchController.onSelected,
@@ -68,9 +68,7 @@ class SearchAddress extends StatelessWidget {
                   ),
                 ),
                 trailing: GestureDetector(
-                    onTap: () {
-                      searchController.addToText(address);
-                    },
+                    onTap: () => searchController.addToText(address),
                     child: const SizedBox(
                       width: 40,
                       height: 40,
@@ -79,23 +77,43 @@ class SearchAddress extends StatelessWidget {
               );
             },
             builder: (context, controller, focusNode) {
-              searchController.listenUnfocus(focusNode);
+              searchController.listenFocus(focusNode);
               return TextField(
-                autofocus: true,
+                autofocus: false,
                 controller: controller,
                 focusNode: focusNode,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderSide: Divider.createBorderSide(context)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   filled: true,
+                  fillColor: Theme.of(context)
+                          .inputDecorationTheme
+                          .fillColor
+                          ?.withOpacity(0.7) ??
+                      Get.theme.colorScheme.surfaceVariant.withOpacity(0.9),
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(40.0),
+                      borderSide: Divider.createBorderSide(context)),
+                  contentPadding: const EdgeInsets.only(left: 20, right: 20),
                   labelText: 'Cerca indirizzo...',
+                  prefixIcon: Obx(
+                    () => IconButton(
+                        onPressed: () {
+                          if (focusNode.hasFocus) {
+                            controller.clear();
+                            searchController.suggestionsController.close();
+                          } else {
+                            focusNode.requestFocus();
+                          }
+                        },
+                        icon: Icon(searchController.isSearching.isTrue
+                            ? Icons.arrow_back
+                            : Icons.search)),
+                  ),
                   suffixIcon: IconButton(
                     onPressed: () {
                       controller.clear();
+
                       searchController.suggestionsController
                           .close(retainFocus: true);
-                      //searchController.suggestionsController.refresh();
                     },
                     icon: const Icon(Icons.clear),
                   ),

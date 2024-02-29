@@ -49,6 +49,7 @@ class SearchStopsController extends GetxController {
   void openInfoPage(Stop stop) {
     Get.to(
       () => InfoPage(
+        stopCode: stop.code,
         key: UniqueKey(),
       ),
       arguments: {'fermata': stop},

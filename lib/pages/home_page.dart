@@ -3,7 +3,7 @@ import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/widgets/search/home_search_page.dart';
+import 'package:flutter_gtt/widgets/search/home_search_widget.dart';
 import 'package:flutter_gtt/widgets/home/drawer/drawer.dart';
 import 'package:flutter_gtt/widgets/home/favorite_card.dart';
 import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
@@ -28,7 +28,7 @@ class HomePage extends StatelessWidget {
         () => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SearchPage(),
+            SearchStop(),
             Expanded(
               child: SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),

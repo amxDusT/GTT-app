@@ -1,5 +1,6 @@
 import 'package:flutter_gtt/controllers/map/map_address.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
+import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -14,9 +15,12 @@ class MapGlobalController extends GetxController
   late final MapAddressController mapAddress;
   late final MapAnimation _mapAnimation;
   late final MapSearchController searchController;
+  final MapLocation mapLocation = Get.put(MapLocation(), permanent: true);
   @override
   void onInit() {
     super.onInit();
+
+    mapLocation.switchLocationShowing();
     _mapAnimation = MapAnimation(controller: mapController, vsync: this);
     mapAddress = MapAddressController(popupController: popupController);
     searchController = MapSearchController(
@@ -33,6 +37,8 @@ class MapGlobalController extends GetxController
     popupController.hideAllPopups();
     mapAddress.addressReset();
     searchController.focusNode?.unfocus();
+    searchController.isSearching.value = false;
+    //searchController.isSearching.toggle();
   }
 
   void onMapReady() {

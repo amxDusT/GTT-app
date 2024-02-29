@@ -25,10 +25,10 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
   }
 
   void updateWidget() async {
-    print('test');
     await _mapInfoController.getFermata(widget.stop.code);
+
     //HACKY: force rebuild
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override

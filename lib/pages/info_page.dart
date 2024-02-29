@@ -9,11 +9,10 @@ import 'package:get/get.dart';
 
 class InfoPage extends StatelessWidget {
   final InfoController _infoController;
-
-  InfoPage({super.key})
-      : _infoController = Get.put(InfoController(), tag: key?.toString());
-
+  final int stopCode;
   final now = DateTime.now();
+  InfoPage({super.key, required this.stopCode})
+      : _infoController = Get.put(InfoController(), tag: key?.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,7 @@ class InfoPage extends StatelessWidget {
         }
       },
       child: Hero(
-        tag: 'HeroTagFermata${_infoController.fermata.value.code}',
+        tag: 'HeroTagFermata$stopCode',
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,

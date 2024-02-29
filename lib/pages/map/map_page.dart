@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
@@ -108,27 +109,30 @@ class MapPage extends StatelessWidget {
                   ]),
                 ),
                 // TODO: add gesture Detector to block flutter_map from handling taps on markers
-                Obx(
-                  () => PopupMarkerLayer(
-                    options: PopupMarkerLayerOptions(
-                      markerTapBehavior:
-                          MarkerTapBehavior.togglePopupAndHideRest(),
-                      markerCenterAnimation: const MarkerCenterAnimation(),
-                      popupController: _flutterMapController.popupController,
-                      markers: [
-                        ..._flutterMapController.isPatternInitialized.isTrue
-                            ? _flutterMapController.allStops
-                            : [],
-                        ..._flutterMapController.allVehiclesInDirection,
-                      ],
-                      popupDisplayOptions: PopupDisplayOptions(
-                        builder: (BuildContext context, Marker marker) {
-                          //_flutterMapController.lastOpenedMarker = marker;
+                GestureDetector(
+                  onTap: () {},
+                  child: Obx(
+                    () => PopupMarkerLayer(
+                      options: PopupMarkerLayerOptions(
+                        markerTapBehavior:
+                            MarkerTapBehavior.togglePopupAndHideRest(),
+                        markerCenterAnimation: const MarkerCenterAnimation(),
+                        popupController: _flutterMapController.popupController,
+                        markers: [
+                          ..._flutterMapController.isPatternInitialized.isTrue
+                              ? _flutterMapController.allStops
+                              : [],
+                          ..._flutterMapController.allVehiclesInDirection,
+                        ],
+                        popupDisplayOptions: PopupDisplayOptions(
+                          builder: (BuildContext context, Marker marker) {
+                            //_flutterMapController.lastOpenedMarker = marker;
 
-                          return CardMapWidget(
-                              marker: marker,
-                              controller: _flutterMapController);
-                        },
+                            return CardMapWidget(
+                                marker: marker,
+                                controller: _flutterMapController);
+                          },
+                        ),
                       ),
                     ),
                   ),

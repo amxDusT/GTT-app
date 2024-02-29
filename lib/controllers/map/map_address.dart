@@ -13,6 +13,7 @@ class MapAddressController {
   RxList<Address> lastAddress = <Address>[].obs;
   RxBool isLoadingAddress = false.obs;
   final PopupController popupController;
+
   MapAddressController({required this.popupController});
 
   void onMapLongPress(TapPosition tapPosition, LatLng location) {

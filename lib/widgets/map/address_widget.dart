@@ -38,14 +38,28 @@ class AddressWidget extends StatelessWidget {
                     ),
                     child: controller.isLoadingAddress.isTrue
                         ? const CircularProgressIndicator()
-                        : Text(
-                            controller.lastAddress.first.toDetailedString(
-                              showHouseNumber: true,
-                            ),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        : Column(
+                            children: [
+                              Text(
+                                controller.lastAddress.first.toDetailedString(
+                                  showHouseNumber: true,
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                controller.lastAddress.first.toDetailedString(
+                                  showStreet: false,
+                                  showPostalCode: true,
+                                  showCity: true,
+                                  showProvince: true,
+                                ),
+                                style: Get.textTheme.bodyMedium!
+                                    .copyWith(fontSize: 14),
+                              )
+                            ],
                           ),
                   ),
                   Row(
@@ -55,24 +69,19 @@ class AddressWidget extends StatelessWidget {
                       TextButton(
                         onPressed: () {},
                         style: TextButton.styleFrom(
+                          fixedSize: const Size(110, 40),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
+                            borderRadius: BorderRadius.circular(0.0),
                           ),
                         ),
                         child: const Text('Indicazioni'),
                       ),
-                      const VerticalDivider(
-                        width: 20,
-                        thickness: 3,
-                        indent: 20,
-                        endIndent: 2,
-                        color: Colors.red,
-                      ),
                       TextButton(
                         onPressed: () {},
                         style: TextButton.styleFrom(
+                          fixedSize: const Size(110, 40),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
+                            borderRadius: BorderRadius.circular(0.0),
                           ),
                         ),
                         child: const Text('Fermate vicine'),

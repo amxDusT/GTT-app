@@ -11,7 +11,6 @@ import 'package:get/get.dart';
 class HomeController extends GetxController {
   List<FavStop> fermate = [];
   late final Rx<TextEditingController> descriptionController;
-  final key = GlobalKey<FormState>();
   late Offset tapPosition;
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

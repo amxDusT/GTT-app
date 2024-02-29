@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_address.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
+import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/resources/api/geocoder_api.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -17,6 +18,7 @@ class MapSearchController {
   final MapAnimation mapAnimation;
   final SuggestionsController<Address> suggestionsController =
       SuggestionsController();
+  final MapLocation mapLocation = Get.find();
   MapSearchController({required this.mapAddress, required this.mapAnimation});
 
   void onSearchIconClicked() {
@@ -27,8 +29,15 @@ class MapSearchController {
     controller.clear();
   }
 
-  void listenUnfocus(FocusNode node) {
+  void listenFocus(FocusNode node) {
     focusNode = node;
+    node.addListener(() {
+      if (node.hasFocus) {
+        isSearching.value = true;
+      } else {
+        isSearching.value = false;
+      }
+    });
   }
 
   void addToText(Address address) {
@@ -62,7 +71,15 @@ class MapSearchController {
     if (value.isEmpty) {
       return null;
     }
-    var jsonResult = await GeocoderApi.getAddressFromString(value);
+    double? lat, lon;
+
+    if (mapLocation.isLocationAvailable.isTrue) {
+      lat = mapLocation.userLocationMarker.value.latitude;
+      lon = mapLocation.userLocationMarker.value.longitude;
+      print('using custom location');
+    }
+    var jsonResult =
+        await GeocoderApi.getAddressFromString(value, lat: lat, lon: lon);
     Set<Address> suggestions = {};
     Address address;
     for (var json in jsonResult['features']) {

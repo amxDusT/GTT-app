@@ -27,33 +27,41 @@ class MapLocation extends GetxController {
 
   void switchLocationShowing() {
     isLocationShowing.value = !isLocationShowing.value;
-    isLocationShowing.isTrue ? userLocation : stopLocationListen();
+    isLocationShowing.isTrue ? listen() : stopLocationListen();
+  }
+
+  Future<void> checkLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw MapLocationException('Servizio disabilitato');
+    }
+
+    permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+
+      if (permission == LocationPermission.denied) {
+        throw MapLocationException('Permesso negato',
+            locationPermission: permission);
+      } else if (permission == LocationPermission.deniedForever) {
+        throw MapLocationException(
+            'Permesso negato. Abilita la posizione nelle impostazioni del dispositivo',
+            locationPermission: permission);
+      }
+    }
+  }
+
+  void listen() async {
+    await checkLocationPermission();
+    _listenGeoLocator();
   }
 
   FutureOr<LatLng> get userLocation async {
     if (_geolocatorSubscription == null) {
-      bool serviceEnabled;
-      LocationPermission permission;
-
-      serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw MapLocationException('Servizio disabilitato');
-      }
-
-      permission = await Geolocator.checkPermission();
-
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-
-        if (permission == LocationPermission.denied) {
-          throw MapLocationException('Permesso negato',
-              locationPermission: permission);
-        } else if (permission == LocationPermission.deniedForever) {
-          throw MapLocationException(
-              'Permesso negato. Abilita la posizione nelle impostazioni del dispositivo',
-              locationPermission: permission);
-        }
-      }
+      await checkLocationPermission();
       Position position = await Geolocator.getCurrentPosition();
       _userLocation = LatLng(position.latitude, position.longitude);
       _listenGeoLocator();

@@ -5,10 +5,10 @@ import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/widgets/route_list_tile_widget.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-class ListSearchPage extends StatelessWidget {
+class SearchRoute extends StatelessWidget {
   final RouteListController controller;
   final ListSearchController searchController;
-  const ListSearchPage({
+  const SearchRoute({
     super.key,
     required this.controller,
     required this.searchController,

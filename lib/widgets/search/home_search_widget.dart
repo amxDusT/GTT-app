@@ -5,8 +5,8 @@ import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 
-class SearchPage extends StatelessWidget {
-  SearchPage({super.key});
+class SearchStop extends StatelessWidget {
+  SearchStop({super.key});
   final _searchController = Get.find<SearchStopsController>();
   @override
   Widget build(BuildContext context) {

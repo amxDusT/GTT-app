@@ -18,6 +18,8 @@ class HomeFavCard extends StatelessWidget {
       children: [
         Hero(
           tag: 'HeroTagFermata${fermata.code}',
+          //placeholderBuilder: (context, size, widget) => widget,
+
           flightShuttleBuilder: ((flightContext, animation, flightDirection,
                   fromHeroContext, toHeroContext) =>
               Material(
@@ -28,7 +30,7 @@ class HomeFavCard extends StatelessWidget {
             onTapDown: controller.getPosition,
             onLongPress: () => controller.showContextMenu(fermata),
             onTap: () => Get.to(
-              () => InfoPage(),
+              () => InfoPage(stopCode: fermata.code),
               arguments: {'fermata': fermata},
             ),
             borderRadius: const BorderRadius.vertical(
