@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'package:flutter_gtt/controllers/map/map_address.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
 import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
@@ -38,8 +37,7 @@ class MapPageController extends GetxController
   MapController mapController = MapController();
   PopupController popupController = PopupController();
   late MapAnimation _mapAnimation;
-  // address related
-  late MapAddressController mapAddress;
+
   // used for deleting animations that are not finished yet when closing the page
   final List<AnimationController> _activeAnimations = [];
 
@@ -105,7 +103,6 @@ class MapPageController extends GetxController
     }
     await _mqttController.dispose();
     _mapAnimation.dispose();
-    mapAddress.dispose();
     mapController.dispose();
     popupController.dispose();
     mapInfoController.dispose();
@@ -151,7 +148,6 @@ class MapPageController extends GetxController
   void onInit() {
     super.onInit();
     _mapAnimation = MapAnimation(controller: mapController, vsync: this);
-    mapAddress = MapAddressController(popupController: popupController);
     mapInfoController = Get.put(MapInfoController());
   }
 
@@ -232,11 +228,11 @@ class MapPageController extends GetxController
             mapController.camera.center.latitude, 0.0001) &&
         nearEqual(constrained.center.longitude,
             mapController.camera.center.longitude, 0.0001)) {
-      _mapAnimation.animate(lastView.center, lastView.zoom);
+      _mapAnimation.animate(lastView.center, zoom: lastView.zoom);
     } else {
       lastView = mapController.camera;
 
-      _mapAnimation.animate(constrained.center, constrained.zoom);
+      _mapAnimation.animate(constrained.center, zoom: constrained.zoom);
     }
   }
 
@@ -302,7 +298,7 @@ class MapPageController extends GetxController
       lastOpenedMarker = VehicleMarker(mqttData: payload);
     }
     if (followVehicle.value == payload.vehicleNum) {
-      _mapAnimation.animate(payload.position, mapController.camera.zoom);
+      _mapAnimation.animate(payload.position, zoom: mapController.camera.zoom);
     }
     controller.forward();
   }
@@ -354,9 +350,9 @@ class MapPageController extends GetxController
     isLocationLoading.value = true;
     try {
       if (userLocation.isLocationInitialized.isTrue) {
-        _mapAnimation.animate(userLocation.userLocationMarker.value, 16);
+        _mapAnimation.animate(userLocation.userLocationMarker.value, zoom: 16);
       } else {
-        _mapAnimation.animate(await userLocation.userLocation, 16);
+        _mapAnimation.animate(await userLocation.userLocation, zoom: 16);
       }
     } catch (e) {
       Utils.showSnackBar(e.toString(), title: "Error");
@@ -371,13 +367,13 @@ class MapPageController extends GetxController
 
   void followVehicleMarker(MqttVehicle vehicle) {
     followVehicle.value = vehicle.vehicleNum;
-    _mapAnimation.animate(vehicle.position, mapController.camera.zoom);
+    _mapAnimation.animate(vehicle.position);
   }
 
   void moveToFollowed() {
     if (followVehicle.value != 0) {
-      _mapAnimation.animate(allVehicles[followVehicle.value]!.mqttData.position,
-          mapController.camera.zoom);
+      _mapAnimation
+          .animate(allVehicles[followVehicle.value]!.mqttData.position);
     }
   }
 }

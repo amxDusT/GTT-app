@@ -31,10 +31,13 @@ class MapSearchController {
     focusNode = node;
   }
 
-  void onSelected(Address address) {
-    mapAnimation.animate(address.position, 15);
-    mapAddress.setAddress(address);
+  void addToText(Address address) {
+    controller.text = address.toDetailedString(showHouseNumber: true);
+  }
 
+  void onSelected(Address address) {
+    mapAddress.setAddress(address);
+    mapAnimation.animate(address.position, zoom: 15);
     print('selected');
   }
 

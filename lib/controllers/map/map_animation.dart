@@ -11,14 +11,18 @@ class MapAnimation {
   final TickerProvider vsync;
   MapAnimation({required this.controller, required this.vsync});
 
-  void animate(LatLng location, double zoom,
-      [Duration duration = const Duration(milliseconds: 1000)]) {
+  void animate(
+    LatLng location, {
+    double? zoom,
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
     final camera = controller.camera;
     final latTween =
         Tween<double>(begin: camera.center.latitude, end: location.latitude);
     final lngTween =
         Tween<double>(begin: camera.center.longitude, end: location.longitude);
-    final zoomTween = Tween<double>(begin: camera.zoom, end: zoom);
+    Tween<double> zoomTween;
+    zoomTween = Tween<double>(begin: camera.zoom, end: zoom ?? camera.zoom);
 
     final animationController =
         AnimationController(duration: duration, vsync: vsync);
@@ -29,7 +33,7 @@ class MapAnimation {
     animationController.addListener(() {
       controller.move(
         LatLng(latTween.evaluate(animation), lngTween.evaluate(animation)),
-        zoomTween.evaluate(animation),
+        zoom == null ? camera.zoom : zoomTween.evaluate(animation),
       );
     });
 

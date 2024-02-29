@@ -57,7 +57,7 @@ class MapGlobal extends StatelessWidget {
               initialZoom: 14,
               onMapReady: _mapController.onMapReady,
               onTap: _mapController.onTap,
-              onLongPress: _mapController.mapAddress.onMapLongPress,
+              onLongPress: _mapController.onMapLongPress,
               interactionOptions: const InteractionOptions(
                 flags: ~InteractiveFlag.rotate,
               ),
@@ -68,19 +68,67 @@ class MapGlobal extends StatelessWidget {
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 //userAgentPackageName: 'com.example.app',
               ),
-              PopupMarkerLayer(
-                options: PopupMarkerLayerOptions(
-                  markers: [],
-                  markerCenterAnimation: const MarkerCenterAnimation(),
-                  popupController: _mapController.popupController,
-                  popupDisplayOptions: PopupDisplayOptions(
-                    builder: (BuildContext context, Marker marker) {
-                      return AddressWidget(
-                        marker: marker,
-                        controller: _mapController.mapAddress,
-                      );
-                    },
+              GestureDetector(
+                // block flutter_map from handling taps on markers
+                onTap: () {},
+                onLongPress: () {},
+                child: PopupMarkerLayer(
+                  options: PopupMarkerLayerOptions(
+                    markers: [],
+                    markerCenterAnimation: const MarkerCenterAnimation(),
+                    popupController: _mapController.popupController,
+                    popupDisplayOptions: PopupDisplayOptions(
+                      builder: (BuildContext context, Marker marker) {
+                        return AddressWidget(
+                          marker: marker,
+                          controller: _mapController.mapAddress,
+                        );
+                      },
+                    ),
                   ),
+                ),
+              ),
+              Container(
+                alignment: Alignment.bottomRight,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 15,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Row(
+                      //crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Get
+                              .theme.colorScheme.primaryContainer
+                              .withOpacity(0.8),
+                          child: IconButton(
+                            tooltip: 'Zoom out',
+                            onPressed: () => _mapController.zoomOut,
+                            icon: const Icon(Icons.remove),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Get
+                              .theme.colorScheme.primaryContainer
+                              .withOpacity(0.8),
+                          child: IconButton(
+                            tooltip: 'Zoom in',
+                            onPressed: () => _mapController.zoomIn,
+                            icon: const Icon(Icons.add),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ],

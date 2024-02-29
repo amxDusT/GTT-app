@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/loading_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:get/get.dart';
 
@@ -70,6 +72,13 @@ class SettingsPage extends StatelessWidget {
                     _settingsController.infoApp();
                   },
                 ),
+                if (kDebugMode)
+                  ListTile(
+                    title: const Text('Download release'),
+                    onTap: () async {
+                      await Get.find<LoadingController>().checkVersion();
+                    },
+                  ),
               ],
             ),
           ),

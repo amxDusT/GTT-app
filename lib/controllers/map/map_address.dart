@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/resources/api/geocoder_api.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
@@ -17,11 +16,9 @@ class MapAddressController {
   MapAddressController({required this.popupController});
 
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
-    if (kDebugMode) {
-      getAddress(location);
-      setMarker(location);
-      print(location);
-    }
+    getAddress(location);
+    setMarker(location);
+    print(location);
   }
 
   void setAddress(Address address) {
@@ -43,36 +40,33 @@ class MapAddressController {
   }
 
   void addressReset() {
+    popupController.hideAllPopups();
     markerSelected.clear();
     lastAddress.clear();
   }
 
   Future<void> getAddress(LatLng position) async {
-    if (kDebugMode) {
-      isLoadingAddress.value = true;
-      var jsonResult = await GeocoderApi.getAddressFromPosition(
-          position.latitude, position.longitude);
-      print(jsonResult);
-      Address address = Address.empty();
-      if (jsonResult['features'] != null && jsonResult['features'].isNotEmpty) {
-        address = Address.fromJson(jsonResult['features'][0]);
-      }
-
-      if (address.isValid) {
-        lastAddress.value = [address];
-      } else {
-        lastAddress.value = [Address.empty()];
-        if (markerSelected.isNotEmpty &&
-            markerSelected.first.point == position) {
-          popupController.hideAllPopups();
-          markerSelected.clear();
-        }
-        Utils.showSnackBar('Indirizzo non valido');
-      }
-      //print(jsonResult['features'][0]);
-
-      isLoadingAddress.value = false;
+    isLoadingAddress.value = true;
+    var jsonResult = await GeocoderApi.getAddressFromPosition(
+        position.latitude, position.longitude);
+    print(jsonResult);
+    Address address = Address.empty();
+    if (jsonResult['features'] != null && jsonResult['features'].isNotEmpty) {
+      address = Address.fromJson(jsonResult['features'][0]);
     }
+
+    if (address.isValid) {
+      lastAddress.value = [address];
+    } else {
+      if (markerSelected.isNotEmpty && markerSelected.first.point == position) {
+        addressReset();
+      }
+      lastAddress.value = [Address.empty()];
+      Utils.showSnackBar('Indirizzo non valido');
+    }
+    //print(jsonResult['features'][0]);
+
+    isLoadingAddress.value = false;
   }
 
   void dispose() {

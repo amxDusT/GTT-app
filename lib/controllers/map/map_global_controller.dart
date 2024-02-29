@@ -23,7 +23,13 @@ class MapGlobalController extends GetxController
         mapAddress: mapAddress, mapAnimation: _mapAnimation);
   }
 
+  void onMapLongPress(TapPosition tapPosition, LatLng location) {
+    _mapAnimation.animate(location);
+    mapAddress.onMapLongPress(tapPosition, location);
+  }
+
   void onTap(TapPosition tapPosition, LatLng position) {
+    print('here');
     popupController.hideAllPopups();
     mapAddress.addressReset();
     searchController.focusNode?.unfocus();
@@ -43,4 +49,7 @@ class MapGlobalController extends GetxController
     mapController.dispose();
     popupController.dispose();
   }
+
+  void get zoomIn => _mapAnimation.animateZoom(isZoomIn: true);
+  void get zoomOut => _mapAnimation.animateZoom(isZoomIn: false);
 }

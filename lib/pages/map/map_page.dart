@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_gtt/widgets/map/address_widget.dart';
 import 'package:flutter_gtt/widgets/map/card_map_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -55,12 +53,10 @@ class MapPage extends StatelessWidget {
                 maxZoom: MapPageController.maxZoom,
                 minZoom: MapPageController.minZoom,
                 initialZoom: 15,
-                onLongPress: _flutterMapController.mapAddress.onMapLongPress,
                 onMapReady: _flutterMapController.onMapReady,
                 onMapEvent: _flutterMapController.onMapEvent,
                 onTap: (tapPosition, point) {
                   _flutterMapController.popupController.hideAllPopups();
-                  _flutterMapController.mapAddress.addressReset();
                 },
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
@@ -123,17 +119,11 @@ class MapPage extends StatelessWidget {
                             ? _flutterMapController.allStops
                             : [],
                         ..._flutterMapController.allVehiclesInDirection,
-                        ..._flutterMapController.mapAddress.markerSelected,
                       ],
                       popupDisplayOptions: PopupDisplayOptions(
                         builder: (BuildContext context, Marker marker) {
                           //_flutterMapController.lastOpenedMarker = marker;
-                          if (marker is! VehicleMarker &&
-                              marker is! FermataMarker) {
-                            return AddressWidget(
-                                marker: marker,
-                                controller: _flutterMapController.mapAddress);
-                          }
+
                           return CardMapWidget(
                               marker: marker,
                               controller: _flutterMapController);

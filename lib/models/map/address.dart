@@ -8,6 +8,8 @@ class Address {
   final String houseNumber;
   final LatLng position;
   final String label;
+  final String province;
+  final double distanceInKm;
   Address({
     required this.street,
     required this.city,
@@ -16,11 +18,19 @@ class Address {
     required this.houseNumber,
     required this.position,
     required this.label,
+    required this.province,
+    required this.distanceInKm,
   });
 
-  bool get isValid => street.isNotEmpty && city.isNotEmpty && state.isNotEmpty;
+  bool get isValid =>
+      street.isNotEmpty &&
+      city.isNotEmpty &&
+      state.isNotEmpty &&
+      province.isNotEmpty;
   factory Address.empty() {
     return Address(
+      distanceInKm: 0.0,
+      province: '',
       label: '',
       street: '',
       city: '',
@@ -31,6 +41,8 @@ class Address {
     );
   }
   factory Address.fromJson(Map<String, dynamic> json) {
+    print(json['properties']['distance']);
+
     return Address(
       position: LatLng(
         json['geometry']['coordinates'][1] ?? '',
@@ -44,7 +56,16 @@ class Address {
       state: json['properties']['country'] ?? '',
       postalCode: json['properties']['postalcode'] ?? '',
       label: json['properties']['label'] ?? '',
+      province: json['properties']['region_a'] ?? '',
+      distanceInKm: json['properties']['distance']?.toDouble() ?? 0.0,
     );
+  }
+
+  String get distanceString {
+    if (distanceInKm < 1.0) {
+      return '${(distanceInKm * 1000).toStringAsFixed(0)} m';
+    }
+    return '${distanceInKm.toStringAsFixed(1)} km';
   }
 
   @override
@@ -52,12 +73,36 @@ class Address {
     return '$street $houseNumber, $city, $state, $postalCode';
   }
 
-  String toDetailedString(
-      {bool showCity = false,
-      showState = false,
-      showPostalCode = false,
-      showHouseNumber = false}) {
-    return '$street${showHouseNumber && houseNumber.isNotEmpty ? ' $houseNumber' : ''}${showCity ? ', $city' : ''}${showState ? ', $state' : ''}${showPostalCode && postalCode.isNotEmpty ? ', $postalCode' : ''}';
+  String toDetailedString({
+    bool showStreet = true,
+    bool showCity = false,
+    bool showState = false,
+    bool showPostalCode = false,
+    bool showHouseNumber = false,
+    bool showProvince = false,
+  }) {
+    String result = '';
+    if (showStreet) {
+      result = street;
+    }
+    if (showHouseNumber) {
+      result +=
+          '${result.isNotEmpty ? ' ' : ''}${houseNumber.isNotEmpty ? houseNumber : ''}';
+    }
+    if (showPostalCode) {
+      result +=
+          '${result.isNotEmpty ? ', ' : ''}${postalCode.isNotEmpty ? postalCode : ''}';
+    }
+    if (showCity) {
+      result += '${result.isNotEmpty ? ', ' : ''}$city';
+    }
+    if (showProvince) {
+      result += '${result.isNotEmpty ? ', ' : ''}$province';
+    }
+    if (showState) {
+      result += '${result.isNotEmpty ? ', ' : ''}$state';
+    }
+    return result;
   }
 
   @override

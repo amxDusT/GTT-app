@@ -23,7 +23,6 @@ class HomeController extends GetxController {
         Get.size.height - tapPosition.dy,
       );
 
-  // ↓ get the tap position Offset
   void getPosition(TapDownDetails detail) {
     tapPosition = detail.globalPosition;
   }
