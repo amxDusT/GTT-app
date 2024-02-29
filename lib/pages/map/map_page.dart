@@ -107,6 +107,7 @@ class MapPage extends StatelessWidget {
                         : <Polyline>[],
                   ]),
                 ),
+                // TODO: add gesture Detector to block flutter_map from handling taps on markers
                 Obx(
                   () => PopupMarkerLayer(
                     options: PopupMarkerLayerOptions(
