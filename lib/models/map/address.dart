@@ -9,7 +9,7 @@ class Address {
   final LatLng position;
   final String label;
   final String province;
-  final double distanceInKm;
+  double distanceInKm;
   Address({
     required this.street,
     required this.city,
@@ -41,8 +41,6 @@ class Address {
     );
   }
   factory Address.fromJson(Map<String, dynamic> json) {
-    print(json['properties']['distance']);
-
     return Address(
       position: LatLng(
         json['geometry']['coordinates'][1] ?? '',

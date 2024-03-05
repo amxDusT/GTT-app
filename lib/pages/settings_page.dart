@@ -79,6 +79,18 @@ class SettingsPage extends StatelessWidget {
                       await Get.find<LoadingController>().checkVersion();
                     },
                   ),
+                ListTile(
+                  title: const Text('Esporta preferiti'),
+                  onTap: () {
+                    _settingsController.exportFavorites();
+                  },
+                ),
+                ListTile(
+                  title: const Text('importa preferiti'),
+                  onTap: () {
+                    _settingsController.importFavorites();
+                  },
+                ),
               ],
             ),
           ),

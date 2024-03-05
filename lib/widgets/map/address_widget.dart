@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_address.dart';
+import 'package:flutter_gtt/widgets/map/distance_icon.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 
@@ -49,21 +50,38 @@ class AddressWidget extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(
-                                controller.lastAddress.first.toDetailedString(
-                                  showStreet: false,
-                                  showPostalCode: true,
-                                  showCity: true,
-                                  showProvince: true,
-                                ),
-                                style: Get.textTheme.bodyMedium!
-                                    .copyWith(fontSize: 14),
-                              )
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    controller.lastAddress.first
+                                        .toDetailedString(
+                                      showStreet: false,
+                                      showPostalCode: true,
+                                      showCity: true,
+                                      showProvince: true,
+                                    ),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                  Container(
+                                    padding: const EdgeInsets.only(left: 4.0),
+                                    alignment: Alignment.center,
+                                    width: 10.0,
+                                    child: const Text("\u2022"),
+                                  ),
+                                  DistanceWidget(
+                                    width: 50,
+                                    address: controller.lastAddress.first,
+                                    showIcon: false,
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                   ),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextButton(

@@ -3,6 +3,7 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/testing/testing_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
@@ -29,6 +30,8 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+      initialRoute: '/',
+      getPages: Utils.getPages(),
       supportedLocales: const [
         Locale('it', 'IT'),
         Locale('en', 'US'),

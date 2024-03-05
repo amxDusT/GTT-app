@@ -15,7 +15,7 @@ class InfoController extends GetxController {
   late final Rx<DateTime> lastUpdate;
   final RxBool isLoading = false.obs;
   late Rx<StopWithDetails> fermata;
-  final HomeController _homeController = Get.find<HomeController>();
+  final HomeController _homeController = Get.find();
   final RxBool isSaved = false.obs;
 
   @override

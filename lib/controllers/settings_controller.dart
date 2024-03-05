@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/loading_controller.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -61,6 +67,41 @@ class SettingsController extends GetxController {
     for (var fermata in _homeController.fermate) {
       DatabaseCommands.insertStop(fermata);
     }
+  }
+
+  Future<void> exportFavorites() async {
+    List<FavStop> favorites = _homeController.fermate;
+    String jsonResult =
+        favorites.map((fav) => fav.toDbMap()).toList().toString();
+
+    jsonResult = '{fermate: $jsonResult}';
+
+    Directory downloadsDirectory = Directory('/storage/emulated/0/Download');
+    File file = File('${downloadsDirectory.path}/gtt_favorite.json');
+    await file.writeAsString(jsonResult, mode: FileMode.writeOnly, flush: true);
+
+    Utils.showSnackBar(
+      'Salvato in ${file.path}',
+    );
+  }
+
+  Future<void> importFavorites() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      dialogTitle: 'Seleziona il file da importare',
+      initialDirectory: '/storage/emulated/0/Download',
+      allowCompression: false,
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+    if (result == null) {
+      //Utils.showSnackBar('Nessun file selezionato');
+      return;
+    }
+
+    File file = File(result.files.single.path!);
+    String jsonResult = await file.readAsString();
+    Map<String, dynamic> jsonMap = json.decode(jsonResult);
+    print(jsonMap);
   }
 
   void infoApp() {

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
+import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/widgets/map/address_widget.dart';
+import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
+import 'package:flutter_gtt/widgets/map/circle_button.dart';
 import 'package:flutter_gtt/widgets/search/map_search_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -15,6 +18,7 @@ class MapGlobal extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
+        print('didPop: $didPop');
         if (_mapController.searchController.focusNode?.hasFocus ?? false) {
           _mapController.searchController.focusNode?.unfocus();
           //print('unfocus');
@@ -64,9 +68,15 @@ class MapGlobal extends StatelessWidget {
           ),
           children: [
             TileLayer(
+              retinaMode: true,
+              maxNativeZoom: 22,
+              urlTemplate:
+                  'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}{r}?access_token=$api_key',
+            ),
+            /* TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               //userAgentPackageName: 'com.example.app',
-            ),
+            ), */
             SearchAddress(searchController: _mapController.searchController),
             GestureDetector(
               // block flutter_map from handling taps on markers
@@ -88,47 +98,23 @@ class MapGlobal extends StatelessWidget {
                 ),
               ),
             ),
-            Container(
-              alignment: Alignment.bottomRight,
-              padding: const EdgeInsets.symmetric(
-                vertical: 20,
-                horizontal: 15,
+            BottomButtons(children: [
+              CircleButton(
+                tooltip: 'Location',
+                icon: const Icon(Icons.location_on),
+                onPressed: () => _mapController.zoomOut,
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    //crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: Get.theme.colorScheme.primaryContainer
-                            .withOpacity(0.8),
-                        child: IconButton(
-                          tooltip: 'Zoom out',
-                          onPressed: () => _mapController.zoomOut,
-                          icon: const Icon(Icons.remove),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundColor: Get.theme.colorScheme.primaryContainer
-                            .withOpacity(0.8),
-                        child: IconButton(
-                          tooltip: 'Zoom in',
-                          onPressed: () => _mapController.zoomIn,
-                          icon: const Icon(Icons.add),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              CircleButton(
+                tooltip: 'Zoom out',
+                icon: const Icon(Icons.remove),
+                onPressed: () => _mapController.zoomOut,
               ),
-            ),
+              CircleButton(
+                tooltip: 'Zoom in',
+                icon: const Icon(Icons.add),
+                onPressed: () => _mapController.zoomIn,
+              ),
+            ])
           ],
         ),
       ),

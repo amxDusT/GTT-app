@@ -29,10 +29,13 @@ class HomeFavCard extends StatelessWidget {
           child: InkWell(
             onTapDown: controller.getPosition,
             onLongPress: () => controller.showContextMenu(fermata),
-            onTap: () => Get.to(
-              () => InfoPage(stopCode: fermata.code),
+            onTap: () => Get.toNamed('/info', arguments: {'fermata': fermata}),
+            /* onTap: () => Get.to(
+              () => InfoPage(
+                  //stopCode: fermata.code,
+                  ),
               arguments: {'fermata': fermata},
-            ),
+            ), */
             borderRadius: const BorderRadius.vertical(
               top: Radius.circular(12),
             ),

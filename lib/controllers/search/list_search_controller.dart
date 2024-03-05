@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
-import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
@@ -38,13 +37,9 @@ class ListSearchController extends GetxController {
     List<gtt.Route>? suggestions = await getSuggestions(value);
     clearText();
     if (suggestions != null && suggestions.isNotEmpty) {
-      Get.to(
-          () => MapPage(
-                key: UniqueKey(),
-              ),
-          arguments: {
-            'vehicles': [suggestions.first]
-          });
+      Get.toNamed('/mapBus', arguments: {
+        'vehicles': [suggestions.first]
+      });
     } else {
       Utils.showSnackBar(
         'Nessun veicolo trovato',

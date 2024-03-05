@@ -47,7 +47,7 @@ class RouteListTile extends StatelessWidget {
             ? Icons.star
             : Icons.star_outline),
         onPressed: () {
-          print(controller.favorites.contains(route));
+          //print(controller.favorites.contains(route));
           controller.toggleFavorite(route);
         },
       ),

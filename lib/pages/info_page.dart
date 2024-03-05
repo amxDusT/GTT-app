@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/pages/map/map_page.dart';
+import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
@@ -9,10 +9,11 @@ import 'package:get/get.dart';
 
 class InfoPage extends StatelessWidget {
   final InfoController _infoController;
-  final int stopCode;
+  final int stopCode = (Get.arguments['fermata'] as Stop).code;
   final now = DateTime.now();
-  InfoPage({super.key, required this.stopCode})
-      : _infoController = Get.put(InfoController(), tag: key?.toString());
+  InfoPage({super.key})
+      : _infoController =
+            Get.find(tag: (Get.arguments['fermata'] as Stop).code.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +111,6 @@ class InfoPage extends StatelessWidget {
                                     stop: _infoController.fermata.value,
                                     vehicle: (_infoController.fermata.value
                                         .vehicles[index] as RouteWithDetails),
-                                    infoControllerKey: key?.toString(),
                                   );
                                 },
                               ),
@@ -142,20 +142,13 @@ class InfoPage extends StatelessWidget {
                                 return;
                               }
 
-                              Get.to(
-                                  () => MapPage(
-                                        key: UniqueKey(),
-                                        infoKey: key?.toString(),
-                                      ),
-                                  arguments: {
-                                    'vehicles':
-                                        _infoController.isSelecting.isTrue
-                                            ? _infoController.selectedRoutes
-                                            : _infoController
-                                                .fermata.value.vehicles,
-                                    'multiple-patterns': true,
-                                    'fermata': _infoController.fermata.value,
-                                  });
+                              Get.toNamed('/mapBus', arguments: {
+                                'vehicles': _infoController.isSelecting.isTrue
+                                    ? _infoController.selectedRoutes
+                                    : _infoController.fermata.value.vehicles,
+                                'multiple-patterns': true,
+                                'fermata': _infoController.fermata.value,
+                              });
                             },
                             child: const Text('Guarda sulla mappa'),
                           ),

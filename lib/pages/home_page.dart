@@ -11,9 +11,9 @@ import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
-  final _homeController = Get.put(HomeController());
-  final _searchController = Get.put(SearchStopsController());
-  final _settingsController = Get.put(SettingsController());
+  final _homeController = Get.find<HomeController>();
+  final _searchController = Get.find<SearchStopsController>();
+  final _settingsController = Get.find<SettingsController>();
 
   @override
   Widget build(BuildContext context) {

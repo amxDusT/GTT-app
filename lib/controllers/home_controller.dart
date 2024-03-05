@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
@@ -35,7 +34,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    Get.put(RouteListController());
+    //Get.put(RouteListController());
     descriptionController = TextEditingController().obs;
     getStops();
   }

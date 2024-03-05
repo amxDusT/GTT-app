@@ -1,7 +1,8 @@
-# mine
+# customized
 /lib/models/edisu.dart
 /z-ignored/
 /lib/testing
+ignored.dart
 
 # Miscellaneous
 *.class

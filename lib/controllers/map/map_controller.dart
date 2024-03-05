@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
-import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
@@ -33,7 +32,6 @@ class MapPageController extends GetxController
     Colors.tealAccent,
     Colors.deepOrange,
   ];
-  late MapInfoController mapInfoController;
   MapController mapController = MapController();
   PopupController popupController = PopupController();
   late MapAnimation _mapAnimation;
@@ -56,7 +54,7 @@ class MapPageController extends GetxController
 
   Marker? lastOpenedMarker;
 
-  final MapLocation userLocation = Get.put(MapLocation(), permanent: true);
+  final MapLocation userLocation = Get.find();
   final RxBool isLocationLoading = false.obs;
 
   final RxBool isPatternInitialized = false.obs;
@@ -105,9 +103,7 @@ class MapPageController extends GetxController
     _mapAnimation.dispose();
     mapController.dispose();
     popupController.dispose();
-    mapInfoController.dispose();
     userLocation.onMapDispose();
-
     super.onClose();
   }
 
@@ -148,7 +144,6 @@ class MapPageController extends GetxController
   void onInit() {
     super.onInit();
     _mapAnimation = MapAnimation(controller: mapController, vsync: this);
-    mapInfoController = Get.put(MapInfoController());
   }
 
   void onMapReady() async {

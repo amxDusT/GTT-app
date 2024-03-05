@@ -137,6 +137,15 @@ class DatabaseCommands {
     );
   }
 
+  static Future<void> insertStopRaw(Map<String, dynamic> json) async {
+    Database db = await instance;
+    await db.insert(
+      _favoritesTable,
+      json,
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+  }
+
   static Future<void> updateStop(FavStop fermata) async {
     Database db = await instance;
 

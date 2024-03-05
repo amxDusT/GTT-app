@@ -22,9 +22,13 @@ class MapGlobalController extends GetxController
 
     mapLocation.switchLocationShowing();
     _mapAnimation = MapAnimation(controller: mapController, vsync: this);
-    mapAddress = MapAddressController(popupController: popupController);
+    mapAddress = MapAddressController(
+      popupController: popupController,
+      mapAnimation: _mapAnimation,
+    );
     searchController = MapSearchController(
-        mapAddress: mapAddress, mapAnimation: _mapAnimation);
+      mapAddress: mapAddress,
+    );
   }
 
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
@@ -54,6 +58,7 @@ class MapGlobalController extends GetxController
     _mapAnimation.dispose();
     mapController.dispose();
     popupController.dispose();
+    mapLocation.onMapDispose();
   }
 
   void get zoomIn => _mapAnimation.animateZoom(isZoomIn: true);

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
@@ -47,13 +46,7 @@ class SearchStopsController extends GetxController {
   }
 
   void openInfoPage(Stop stop) {
-    Get.to(
-      () => InfoPage(
-        stopCode: stop.code,
-        key: UniqueKey(),
-      ),
-      arguments: {'fermata': stop},
-    );
+    Get.toNamed('/info', arguments: {'fermata': stop});
   }
 
   void searchButton() {

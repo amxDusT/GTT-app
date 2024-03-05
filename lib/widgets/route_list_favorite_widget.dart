@@ -22,13 +22,9 @@ class RouteListFavorite extends StatelessWidget {
       fit: StackFit.loose,
       children: [
         GestureDetector(
-          onTap: () => Get.to(
-              () => MapPage(
-                    key: UniqueKey(),
-                  ),
-              arguments: {
-                'vehicles': [route]
-              }),
+          onTap: () => Get.toNamed('/mapBus', arguments: {
+            'vehicles': [route]
+          }),
           child: Container(
             alignment: Alignment.center,
             margin: EdgeInsets.symmetric(

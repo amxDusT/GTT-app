@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
 import 'package:flutter_gtt/models/map/address.dart';
+import 'package:flutter_gtt/widgets/map/distance_icon.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 
@@ -30,8 +31,9 @@ class SearchAddress extends StatelessWidget {
             animationDuration: Durations.short1,
             hideOnEmpty: true,
             debounceDuration: const Duration(milliseconds: 300),
-            onSelected: searchController.onSelected,
-            suggestionsCallback: (val) => searchController.getSuggestions(val),
+            onSelected: searchController.mapAddress.onSelected,
+            suggestionsCallback: (val) =>
+                searchController.mapAddress.getSuggestions(val),
             loadingBuilder: (context) => const Center(
               child: CircularProgressIndicator(),
             ),
@@ -54,19 +56,7 @@ class SearchAddress extends StatelessWidget {
                   showCity: true,
                   showProvince: true,
                 )),
-                leading: SizedBox(
-                  width: 40,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.location_on),
-                      Text(
-                        address.distanceString,
-                        style: const TextStyle(letterSpacing: -0.5),
-                      ),
-                    ],
-                  ),
-                ),
+                leading: DistanceWidget(address: address),
                 trailing: GestureDetector(
                     onTap: () => searchController.addToText(address),
                     child: const SizedBox(
@@ -94,20 +84,11 @@ class SearchAddress extends StatelessWidget {
                       borderSide: Divider.createBorderSide(context)),
                   contentPadding: const EdgeInsets.only(left: 20, right: 20),
                   labelText: 'Cerca indirizzo...',
-                  prefixIcon: Obx(
-                    () => IconButton(
-                        onPressed: () {
-                          if (focusNode.hasFocus) {
-                            controller.clear();
-                            searchController.suggestionsController.close();
-                          } else {
-                            focusNode.requestFocus();
-                          }
-                        },
-                        icon: Icon(searchController.isSearching.isTrue
-                            ? Icons.arrow_back
-                            : Icons.search)),
-                  ),
+                  prefixIcon: IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      icon: const Icon(Icons.arrow_back)),
                   suffixIcon: IconButton(
                     onPressed: () {
                       controller.clear();
@@ -119,7 +100,7 @@ class SearchAddress extends StatelessWidget {
                   ),
                 ),
                 keyboardType: TextInputType.text,
-                onSubmitted: searchController.onSearch,
+                onSubmitted: searchController.mapAddress.onSearch,
               );
             },
           ),

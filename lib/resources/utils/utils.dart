@@ -1,6 +1,17 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/bindings/home_bindings.dart';
+import 'package:flutter_gtt/bindings/info_bindings.dart';
+import 'package:flutter_gtt/bindings/map_page_bindings.dart';
+import 'package:flutter_gtt/pages/home_page.dart';
+import 'package:flutter_gtt/pages/info_page.dart';
+import 'package:flutter_gtt/pages/loading_page.dart';
+import 'package:flutter_gtt/pages/map/map_global.dart';
+import 'package:flutter_gtt/pages/map/map_page.dart';
+import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
+import 'package:flutter_gtt/pages/route_list_page.dart';
+import 'package:flutter_gtt/pages/settings_page.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -129,5 +140,45 @@ class Utils {
       return a.shortName.compareTo(b.shortName);
     }
     return compare;
+  }
+
+  static List<GetPage> getPages() {
+    return [
+      GetPage(
+        name: '/',
+        page: () => LoadingPage(),
+      ),
+      GetPage(
+        name: '/home',
+        page: () => HomePage(),
+        binding: HomeBindings(),
+      ),
+      GetPage(
+        name: '/map',
+        page: () => MapGlobal(),
+      ),
+      GetPage(
+        name: '/routelist',
+        page: () => RouteListPage(),
+      ),
+      GetPage(
+        name: '/settings',
+        page: () => SettingsPage(),
+      ),
+      GetPage(
+        name: '/nfc',
+        page: () => NfcPage(),
+      ),
+      GetPage(
+        name: '/info',
+        page: () => InfoPage(),
+        binding: InfoBindings(),
+      ),
+      GetPage(
+        name: '/mapBus',
+        page: () => MapPage(),
+        binding: MapPageBindings(),
+      ),
+    ];
   }
 }

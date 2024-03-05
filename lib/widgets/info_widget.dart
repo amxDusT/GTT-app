@@ -19,8 +19,7 @@ class InfoWidget extends StatelessWidget {
     super.key,
     required this.stop,
     required this.vehicle,
-    String? infoControllerKey,
-  }) : _infoController = Get.find<InfoController>(tag: infoControllerKey);
+  }) : _infoController = Get.find<InfoController>(tag: stop.code.toString());
 
   void _openAlerts() {
     if (vehicle.alerts.isEmpty) {
@@ -72,14 +71,10 @@ class InfoWidget extends StatelessWidget {
 
               return;
             }
-            Get.to(
-                () => MapPage(
-                      key: UniqueKey(),
-                    ),
-                arguments: {
-                  'vehicles': [vehicle],
-                  'fermata': stop
-                });
+            Get.toNamed('/mapBus', arguments: {
+              'vehicles': [vehicle],
+              'fermata': stop
+            });
           },
           onLongPress: () {
             _infoController.onLongPress(vehicle);
