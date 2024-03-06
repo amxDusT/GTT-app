@@ -84,7 +84,7 @@ class SettingsController extends GetxController {
     String jsonResult = await DatabaseCommands.exportFavorites;
 
     Directory downloadsDirectory = Directory('/storage/emulated/0/Download');
-    File file = File('${downloadsDirectory.path}/gtt_favorites6.json');
+    File file = File('${downloadsDirectory.path}/gtt_favorites.json');
     await file.writeAsString(jsonResult, mode: FileMode.writeOnly, flush: true);
     Utils.showSnackBar(
       'Salvato in ${file.path}',
