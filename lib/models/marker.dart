@@ -76,7 +76,16 @@ class VehicleMarker extends Marker {
     Color? internalColor,
   }) {
     return VehicleMarker(
-        mqttData: mqttData ?? this.mqttData,
+        mqttData: this.mqttData.copyWith(
+              position: mqttData?.position,
+              rotation: mqttData?.rotation,
+              speed: mqttData?.speed,
+              tripId: mqttData?.tripId,
+              direction: mqttData?.direction,
+              isFull: mqttData?.isFull,
+              nextStop: mqttData?.nextStop,
+              lastUpdate: mqttData?.lastUpdate,
+            ),
         color: color ?? this.color,
         internalColor: internalColor ?? this.internalColor);
   }

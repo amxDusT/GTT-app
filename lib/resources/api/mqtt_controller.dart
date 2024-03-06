@@ -31,7 +31,7 @@ class MqttController {
   void addSubscription(String gtfsId) {
     String shortName = Utils.getBusIdentifier(gtfsId);
 
-    print(shortName);
+    //print(shortName);
     _shortNames.add(shortName);
     _client.clientIdentifier = '${_client.clientIdentifier}$shortName';
   }

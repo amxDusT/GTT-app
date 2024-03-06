@@ -57,8 +57,8 @@ class MqttVehicle {
       speed: list[3] as int?,
       tripId: list[4],
       direction: list[5] as int? ?? 2,
-      isFull: list.length > 7 ? list[7] : null,
       nextStop: list[6] as int?,
+      isFull: list.length > 7 ? list[7] : null,
       lastUpdate: DateTime.now(),
     );
   }

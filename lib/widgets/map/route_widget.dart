@@ -23,6 +23,8 @@ class RouteWidget extends StatelessWidget {
           'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
           style: Get.textTheme.bodySmall,
         ),
+        /* Text(
+            'next stop: ${controller.stopsMap[marker.mqttData.nextStop]?.name ?? 'UNKOWN'}'), */
         TextButton(
           onPressed: () =>
               controller.followVehicle.value == marker.mqttData.vehicleNum

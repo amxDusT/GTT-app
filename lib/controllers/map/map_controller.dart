@@ -42,9 +42,11 @@ class MapPageController extends GetxController
   final List<AnimationController> _activeAnimations = [];
 
   late RxList<FermataMarker> allStops;
+  RxMap<int, Stop> stopsMap = <int, Stop>{}.obs;
   final RxMap<int, VehicleMarker> allVehicles = <int, VehicleMarker>{}.obs;
   final RxMap<String, gtt.RouteWithDetails> routes =
       <String, gtt.RouteWithDetails>{}.obs;
+
   final Map<String, int> routeIndex = {};
   final RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
 
@@ -137,6 +139,7 @@ class MapPageController extends GetxController
       List<FermataMarker> list = allStops
           .map((marker) => marker.copyWith(zoom: mapEvent.camera.zoom))
           .toList();
+      // TODO: allStops = list.obs; might not notify the listener to rebuild
       allStops.clear();
       allStops.addAll(list);
     }
@@ -203,6 +206,7 @@ class MapPageController extends GetxController
 
       if (++routeCount >= maxRoutesInMap) break;
     }
+    stopsMap = {for (var stop in stops) stop.code: stop}.obs;
     allStops = stops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
     /*allStops =
         uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
@@ -301,8 +305,6 @@ class MapPageController extends GetxController
 
   void _listenData() async {
     _mqttController.payloadStream.listen((MqttVehicle payload) {
-      print(payload.vehicleNum);
-
       if (allVehicles.containsKey(payload.vehicleNum)) {
         _animatedMarkerMove(payload);
       } else {
@@ -334,7 +336,7 @@ class MapPageController extends GetxController
     allStops.clear();
     List<Stop> stopTemp =
         await DatabaseCommands.getStopsFromPattern(newPattern);
-
+    stopsMap = {for (var stop in stopTemp) stop.code: stop}.obs;
     allStops.addAll(stopTemp.map((stop) => FermataMarker(fermata: stop)));
     routes.update(routes.keys.first,
         (value) => routes.values.first.copyWith(pattern: newPattern));
