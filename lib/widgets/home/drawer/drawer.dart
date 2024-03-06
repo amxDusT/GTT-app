@@ -12,6 +12,11 @@ class HomeDrawer extends StatelessWidget {
     'Mappa Bus/Tram': () => Get.toNamed('/routelist'),
     'Impostazioni': () => Get.toNamed('/settings'),
   };
+  final _divider = const Divider(
+    height: 8,
+    indent: 5,
+    endIndent: 5,
+  );
   final _settingsController = Get.find<SettingsController>();
   HomeDrawer({super.key});
 
@@ -46,7 +51,7 @@ class HomeDrawer extends StatelessWidget {
                             title: e.key,
                             onTap: e.value,
                           ),
-                          const Divider(),
+                          _divider,
                         ],
                       ),
                     ...elements.entries.expand(
@@ -55,7 +60,7 @@ class HomeDrawer extends StatelessWidget {
                           title: e.key,
                           onTap: e.value,
                         ),
-                        if (e.key != elements.keys.last) const Divider(),
+                        if (e.key != elements.keys.last) _divider,
                       ],
                     ),
                   ],

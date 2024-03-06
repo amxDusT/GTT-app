@@ -18,7 +18,6 @@ class MapGlobal extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) {
-        print('didPop: $didPop');
         if (_mapController.searchController.focusNode?.hasFocus ?? false) {
           _mapController.searchController.focusNode?.unfocus();
           //print('unfocus');

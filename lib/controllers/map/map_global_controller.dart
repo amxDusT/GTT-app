@@ -37,7 +37,6 @@ class MapGlobalController extends GetxController
   }
 
   void onTap(TapPosition tapPosition, LatLng position) {
-    print('here');
     popupController.hideAllPopups();
     mapAddress.addressReset();
     searchController.focusNode?.unfocus();

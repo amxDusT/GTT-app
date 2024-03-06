@@ -14,6 +14,12 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsController extends GetxController {
+  final String betaFeatures = '''
+  - mappa default senza tratte
+  - importa preferiti da backup locale
+  - map api da mapbox invece di openstreetmap
+  - colori personalizzati per le fermate preferite
+  ''';
   final _homeController = Get.find<HomeController>();
   final RxBool showBetaFeatures = Storage.showBetaFeatures.obs;
   final RxBool showSecondsInUpdates = Storage.showSecondsInUpdates.obs;
@@ -80,7 +86,6 @@ class SettingsController extends GetxController {
     Directory downloadsDirectory = Directory('/storage/emulated/0/Download');
     File file = File('${downloadsDirectory.path}/gtt_favorites6.json');
     await file.writeAsString(jsonResult, mode: FileMode.writeOnly, flush: true);
-    print(jsonResult);
     Utils.showSnackBar(
       'Salvato in ${file.path}',
     );
@@ -102,15 +107,14 @@ class SettingsController extends GetxController {
     File file = File(result.files.single.path!);
     String jsonResult = await file.readAsString();
     List<dynamic> jsonMap = json.decode(jsonResult);
-    print(jsonMap);
     await DatabaseCommands.importFavorites(jsonMap);
     _homeController.getStops();
-    print('finished');
   }
 
   void infoApp() {
     Get.defaultDialog(
       title: 'Informazioni app',
+      textCancel: 'Chiudi',
       content: Column(
         children: [
           Text('Versione: $version'),
@@ -139,6 +143,29 @@ class SettingsController extends GetxController {
               ),
             ],
           ),
+        ],
+      ),
+    );
+  }
+
+  void betaFeaturesInfo() {
+    Get.defaultDialog(
+      title: 'Beta features',
+      textCancel: 'Chiudi',
+      content: Column(
+        children: [
+          const Text('Funzionalità in fase di test:',
+              style: TextStyle(fontWeight: FontWeight.bold)),
+          SizedBox(
+            height: 150,
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Text(betaFeatures),
+            ),
+          ),
+          const Text(
+              'ATTENZIONE! Queste funzionalità non sono ancora completamente testate e potrebbero non funzionare correttamente.',
+              style: TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );

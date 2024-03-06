@@ -28,7 +28,6 @@ class MapAddressController {
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
     getAddress(location);
     setMarker(location);
-    print(location);
   }
 
   void setAddress(Address address) {
@@ -117,7 +116,7 @@ class MapAddressController {
       Address address = suggestions.first;
 
       onSelected(address);
-      print(address);
+      //print(address);
     } else {
       Utils.showSnackBar(
         'Nessun indirizzo trovato',

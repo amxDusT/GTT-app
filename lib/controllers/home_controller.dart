@@ -35,14 +35,12 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    //Get.put(RouteListController());
     descriptionController = TextEditingController().obs;
     getStops();
   }
 
   void getStops() async {
     fermate = await DatabaseCommands.favorites;
-    print(fermate);
     update();
   }
 
@@ -202,7 +200,6 @@ class HomeController extends GetxController {
 
           updateStop(
               fermata.copyWith(descrizione: descriptionController.value.text));
-          //print(_homeController.descriptionController.value.text);
         });
   }
 }

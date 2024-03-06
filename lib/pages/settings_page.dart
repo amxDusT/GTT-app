@@ -61,26 +61,9 @@ class SettingsPage extends StatelessWidget {
                       )),
                 ),
                 ListTile(
-                  title: const Text('Aggiorna dati GTT'),
-                  onTap: () {
-                    _settingsController.resetData();
-                  },
-                ),
-                ListTile(
-                  title: const Text('Informazioni app'),
-                  onTap: () {
-                    _settingsController.infoApp();
-                  },
-                ),
-                if (kDebugMode)
-                  ListTile(
-                    title: const Text('Download release'),
-                    onTap: () async {
-                      await Get.find<LoadingController>().checkVersion();
-                    },
-                  ),
-                ListTile(
                   title: const Text('Beta features'),
+                  subtitle: const Text('Clicca per informazioni'),
+                  onTap: () => _settingsController.betaFeaturesInfo(),
                   trailing: Obx(() => Switch(
                         value: _settingsController.showBetaFeatures.value,
                         onChanged: (value) =>
@@ -88,19 +71,29 @@ class SettingsPage extends StatelessWidget {
                       )),
                 ),
                 ListTile(
+                  title: const Text('Aggiorna dati GTT'),
+                  onTap: () => _settingsController.resetData(),
+                ),
+                if (kDebugMode)
+                  ListTile(
+                    title: const Text('Download release'),
+                    onTap: () async =>
+                        await Get.find<LoadingController>().checkVersion(),
+                  ),
+                ListTile(
                   title: const Text('Backup locale preferiti'),
-                  onTap: () {
-                    _settingsController.exportFavorites();
-                  },
+                  onTap: () => _settingsController.exportFavorites(),
                 ),
                 Obx(() => _settingsController.showBetaFeatures.isTrue
                     ? ListTile(
                         title: const Text('Ripristina preferiti'),
-                        onTap: () {
-                          _settingsController.importFavorites();
-                        },
+                        onTap: () => _settingsController.importFavorites(),
                       )
                     : const SizedBox()),
+                ListTile(
+                  title: const Text('Informazioni app'),
+                  onTap: () => _settingsController.infoApp(),
+                ),
               ],
             ),
           ),
