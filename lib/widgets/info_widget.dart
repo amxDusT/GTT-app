@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -19,8 +18,7 @@ class InfoWidget extends StatelessWidget {
     super.key,
     required this.stop,
     required this.vehicle,
-    String? infoControllerKey,
-  }) : _infoController = Get.find<InfoController>(tag: infoControllerKey);
+  }) : _infoController = Get.find<InfoController>(tag: stop.code.toString());
 
   void _openAlerts() {
     if (vehicle.alerts.isEmpty) {
@@ -72,14 +70,10 @@ class InfoWidget extends StatelessWidget {
 
               return;
             }
-            Get.to(
-                () => MapPage(
-                      key: UniqueKey(),
-                    ),
-                arguments: {
-                  'vehicles': [vehicle],
-                  'fermata': stop
-                });
+            Get.toNamed('/mapBus', arguments: {
+              'vehicles': [vehicle],
+              'fermata': stop
+            });
           },
           onLongPress: () {
             _infoController.onLongPress(vehicle);

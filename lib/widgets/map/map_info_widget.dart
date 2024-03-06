@@ -10,14 +10,16 @@ import 'package:get/get.dart';
 
 class MapInfoWidget extends StatefulWidget {
   final Stop stop;
-  const MapInfoWidget({super.key, required this.stop});
+  final MapInfoController _mapInfoController;
+  MapInfoWidget({super.key, required this.stop})
+      : _mapInfoController = Get.put<MapInfoController>(MapInfoController(),
+            tag: stop.code.toString());
 
   @override
   State<MapInfoWidget> createState() => _MapInfoWidgetState();
 }
 
 class _MapInfoWidgetState extends State<MapInfoWidget> {
-  final _mapInfoController = Get.find<MapInfoController>();
   @override
   void initState() {
     super.initState();
@@ -25,10 +27,10 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
   }
 
   void updateWidget() async {
-    print('test');
-    await _mapInfoController.getFermata(widget.stop.code);
+    await widget._mapInfoController.getFermata(widget.stop.code);
+
     //HACKY: force rebuild
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   @override
@@ -39,26 +41,28 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
         const SizedBox(height: 8),
         // Parent widget has Obx already so we don't need to wrap this in Obx
 
-        _mapInfoController.isLoading.isTrue
+        widget._mapInfoController.isLoading.isTrue
             ? const CircularProgressIndicator()
             : ListView.builder(
                 shrinkWrap: true,
-                itemCount: _mapInfoController.fermata.value.vehicles.length + 1,
+                itemCount:
+                    widget._mapInfoController.fermata.value.vehicles.length + 1,
                 itemBuilder: (context, index) {
                   if (index ==
-                      _mapInfoController.fermata.value.vehicles.length) {
+                      widget._mapInfoController.fermata.value.vehicles.length) {
                     return Column(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 8),
-                        Text('(${_mapInfoController.routes.join(', ')})'),
+                        Text(
+                            '(${widget._mapInfoController.routes.join(', ')})'),
                       ],
                     );
                   }
-                  RouteWithDetails route =
-                      _mapInfoController.fermata.value.vehicles.elementAt(index)
-                          as RouteWithDetails;
+                  RouteWithDetails route = widget
+                      ._mapInfoController.fermata.value.vehicles
+                      .elementAt(index) as RouteWithDetails;
                   // don't show empty routes
                   if (route.stoptimes.isEmpty) return const SizedBox();
 

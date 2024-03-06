@@ -1,9 +1,22 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/bindings/home_bindings.dart';
+import 'package:flutter_gtt/bindings/info_bindings.dart';
+import 'package:flutter_gtt/bindings/map_global_bindings.dart';
+import 'package:flutter_gtt/bindings/map_page_bindings.dart';
+import 'package:flutter_gtt/pages/home_page.dart';
+import 'package:flutter_gtt/pages/info_page.dart';
+import 'package:flutter_gtt/pages/loading_page.dart';
+import 'package:flutter_gtt/pages/map/map_global.dart';
+import 'package:flutter_gtt/pages/map/map_page.dart';
+import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
+import 'package:flutter_gtt/pages/route_list_page.dart';
+import 'package:flutter_gtt/pages/settings_page.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 
 class Utils {
   static int getBytesFromPage(Uint8List page, int offset, int bytesnum) {
@@ -85,5 +98,89 @@ class Utils {
             ),
       ),
     );
+  }
+
+  static void sort(List<gtt.Route> routes) {
+    routes.sort((a, b) {
+      // compare by type
+      int compareWithType = a.type.compareTo(b.type);
+      if (compareWithType != 0) {
+        return compareWithType;
+        // compare by number
+      } else if (_startWithNumberOrM(a.shortName) &&
+          _startWithNumberOrM(b.shortName)) {
+        return _compareWithNumbers(a, b);
+        // compare by name
+      } else if (!_startWithNumberOrM(a.shortName) &&
+          !_startWithNumberOrM(b.shortName)) {
+        return a.shortName.compareTo(b.shortName);
+      } else {
+        return _startWithNumberOrM(a.shortName) ? -1 : 1;
+      }
+    });
+  }
+
+  static int _extractNumericPart(String str) {
+    RegExpMatch? match = RegExp(r'\d+').firstMatch(str);
+    if (match != null) {
+      return int.parse(match.group(0)!);
+    } else {
+      return 0;
+    }
+  }
+
+  static bool _startWithNumberOrM(String s) {
+    return RegExp(r'^[0-9M]').hasMatch(s);
+  }
+
+  static int _compareWithNumbers(gtt.Route a, gtt.Route b) {
+    int numA = _extractNumericPart(a.shortName);
+    int numB = _extractNumericPart(b.shortName);
+    int compare = numA.compareTo(numB);
+    if (compare == 0) {
+      return a.shortName.compareTo(b.shortName);
+    }
+    return compare;
+  }
+
+  static List<GetPage> getPages() {
+    return [
+      GetPage(
+        name: '/',
+        page: () => LoadingPage(),
+      ),
+      GetPage(
+        name: '/home',
+        page: () => HomePage(),
+        binding: HomeBindings(),
+      ),
+      GetPage(
+        name: '/map',
+        page: () => MapGlobal(),
+        binding: MapGlobalBindings(),
+      ),
+      GetPage(
+        name: '/routelist',
+        page: () => RouteListPage(),
+      ),
+      GetPage(
+        name: '/settings',
+        page: () => SettingsPage(),
+      ),
+      GetPage(
+        name: '/nfc',
+        page: () => NfcPage(),
+      ),
+      GetPage(
+        name: '/info',
+        page: () => InfoPage(),
+        binding: InfoBindings(),
+      ),
+      GetPage(
+        name: '/mapBus',
+        page: () => MapPage(),
+        binding: MapPageBindings(),
+      ),
+    ];
   }
 }

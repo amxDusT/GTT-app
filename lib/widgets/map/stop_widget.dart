@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/search_controller.dart';
+import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/widgets/map/map_info_widget.dart';
 import 'package:get/get.dart';
@@ -10,7 +10,7 @@ class StopWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    return GestureDetector(
       onTap: () async {
         Get.find<SearchStopsController>().openInfoPage(marker.fermata);
       },

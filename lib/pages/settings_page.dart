@@ -1,10 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/loading_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:get/get.dart';
 
 class SettingsPage extends StatelessWidget {
   SettingsPage({super.key});
-  final _settingsController = Get.put(SettingsController());
+  final _settingsController = Get.find<SettingsController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +20,16 @@ class SettingsPage extends StatelessWidget {
             child: ListView(
               shrinkWrap: true,
               children: [
+                ListTile(
+                  title: const Text(
+                      'Mostra linee preferite nella pagina iniziale'),
+                  trailing: Obx(() => Switch(
+                        value:
+                            _settingsController.isFavoritesRoutesShowing.value,
+                        onChanged: (value) =>
+                            _settingsController.switchFavoritesRoutesShowing(),
+                      )),
+                ),
                 ListTile(
                   title:
                       const Text('Mostra secondi dall\'ultimo aggiornamento'),
@@ -49,16 +61,38 @@ class SettingsPage extends StatelessWidget {
                       )),
                 ),
                 ListTile(
-                  title: const Text('Aggiorna dati GTT'),
-                  onTap: () {
-                    _settingsController.resetData();
-                  },
+                  title: const Text('Beta features'),
+                  subtitle: const Text('Clicca per informazioni'),
+                  onTap: () => _settingsController.betaFeaturesInfo(),
+                  trailing: Obx(() => Switch(
+                        value: _settingsController.showBetaFeatures.value,
+                        onChanged: (value) =>
+                            _settingsController.switchBetaFeatures(),
+                      )),
                 ),
                 ListTile(
+                  title: const Text('Aggiorna dati GTT'),
+                  onTap: () => _settingsController.resetData(),
+                ),
+                if (kDebugMode)
+                  ListTile(
+                    title: const Text('Download release'),
+                    onTap: () async =>
+                        await Get.find<LoadingController>().checkVersion(),
+                  ),
+                ListTile(
+                  title: const Text('Backup locale preferiti'),
+                  onTap: () => _settingsController.exportFavorites(),
+                ),
+                Obx(() => _settingsController.showBetaFeatures.isTrue
+                    ? ListTile(
+                        title: const Text('Ripristina preferiti'),
+                        onTap: () => _settingsController.importFavorites(),
+                      )
+                    : const SizedBox()),
+                ListTile(
                   title: const Text('Informazioni app'),
-                  onTap: () {
-                    _settingsController.infoApp();
-                  },
+                  onTap: () => _settingsController.infoApp(),
                 ),
               ],
             ),

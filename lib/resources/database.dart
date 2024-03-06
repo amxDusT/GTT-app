@@ -1,8 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart';
+import 'package:flutter_gtt/resources/globals.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -137,6 +142,15 @@ class DatabaseCommands {
     );
   }
 
+  static Future<void> insertStopRaw(Map<String, dynamic> json) async {
+    Database db = await instance;
+    await db.insert(
+      _favoritesTable,
+      json,
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
+  }
+
   static Future<void> updateStop(FavStop fermata) async {
     Database db = await instance;
 
@@ -237,6 +251,47 @@ class DatabaseCommands {
     return List.generate(result.length, (i) {
       return FavStop.fromJson(result[i]);
     });
+  }
+
+  static Future<String> get exportFavorites async {
+    Database db = await instance;
+
+    var result = await db.query(_favoritesTable);
+    return json.encode(result);
+  }
+
+  static Future<void> importFavorites(List<dynamic> favoritesJson) async {
+    Database db = await instance;
+
+    final batch = db.batch();
+
+    for (var fermata in favoritesJson) {
+      var result = await db.query(
+        _stopsTable,
+        where: 'gtfsId = ?',
+        whereArgs: [fermata['stopId']],
+      );
+      if (result.isEmpty) {
+        continue;
+      }
+      if (Storage.stringToColor(fermata['color']) == null) {
+        fermata['color'] = Storage.colorToString(initialColor);
+      }
+      if (fermata['date'] == null || fermata['date'] < 0) {
+        fermata['date'] = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+      }
+      if (fermata['descrizione'] != null &&
+          fermata['descrizione'].toString().length > 128) {
+        fermata['descrizione'] =
+            fermata['descrizione'].toString().substring(0, 128);
+      }
+      batch.insert(
+        _favoritesTable,
+        fermata,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await batch.commit();
   }
 
   static Future<List<Agency>> get agencies async {

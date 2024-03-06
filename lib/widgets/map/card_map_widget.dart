@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
+import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/triangle_clipper.dart';
 import 'package:flutter_gtt/widgets/map/route_widget.dart';
 import 'package:flutter_gtt/widgets/map/stop_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:get/get.dart';
 
 class CardMapWidget extends StatelessWidget {
   final MapPageController controller;
@@ -14,12 +16,24 @@ class CardMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+    return Stack(
+      alignment: Alignment.bottomCenter,
       children: [
+        Positioned(
+          bottom: 1,
+          child: ClipPath(
+            clipper: TriangleClipper(),
+            child: Container(
+              color: Colors.yellow.withOpacity(0.9),
+              //color: Colors.red,
+              height: 10,
+              width: 20,
+            ),
+          ),
+        ),
         Card(
           elevation: 0,
-          margin: const EdgeInsets.all(0),
+          margin: const EdgeInsets.all(10),
           color: Colors.yellow.withOpacity(0.9),
           child: SizedBox(
             //height: 70,
@@ -37,6 +51,12 @@ class CardMapWidget extends StatelessWidget {
 
                       controller.popupController.togglePopup(marker);
                       controller.lastOpenedMarker = null;
+                      if (marker is FermataMarker) {
+                        Get.delete<MapInfoController>(
+                          tag:
+                              (marker as FermataMarker).fermata.code.toString(),
+                        );
+                      }
                     },
                   ),
                 ),
@@ -47,17 +67,11 @@ class CardMapWidget extends StatelessWidget {
                     marker: marker as VehicleMarker,
                     controller: controller,
                   ),
+                const SizedBox(
+                  height: 10,
+                ),
               ],
             ),
-          ),
-        ),
-        ClipPath(
-          clipper: TriangleClipper(),
-          child: Container(
-            color: Colors.yellow.withOpacity(0.9),
-            //color: Colors.red,
-            height: 10,
-            width: 20,
           ),
         ),
       ],

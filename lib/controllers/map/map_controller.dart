@@ -1,15 +1,14 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'package:flutter_gtt/controllers/map/map_info_controller.dart';
+import 'package:flutter_gtt/controllers/map/map_animation.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
+import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
-import 'package:flutter_gtt/resources/api/geocoder_api.dart';
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/resources/api/mqtt_controller.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
@@ -18,6 +17,7 @@ import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -34,9 +34,10 @@ class MapPageController extends GetxController
     Colors.tealAccent,
     Colors.deepOrange,
   ];
-  late MapInfoController mapInfoController;
   MapController mapController = MapController();
   PopupController popupController = PopupController();
+  late MapAnimation _mapAnimation;
+
   // used for deleting animations that are not finished yet when closing the page
   final List<AnimationController> _activeAnimations = [];
 
@@ -55,7 +56,7 @@ class MapPageController extends GetxController
 
   Marker? lastOpenedMarker;
 
-  final MapLocation userLocation = Get.put(MapLocation(), permanent: true);
+  final MapLocation userLocation = Get.find();
   final RxBool isLocationLoading = false.obs;
 
   final RxBool isPatternInitialized = false.obs;
@@ -101,11 +102,10 @@ class MapPageController extends GetxController
       element.dispose();
     }
     await _mqttController.dispose();
+    _mapAnimation.dispose();
     mapController.dispose();
     popupController.dispose();
-    mapInfoController.dispose();
     userLocation.onMapDispose();
-
     super.onClose();
   }
 
@@ -142,6 +142,12 @@ class MapPageController extends GetxController
     }
   }
 
+  @override
+  void onInit() {
+    super.onInit();
+    _mapAnimation = MapAnimation(controller: mapController, vsync: this);
+  }
+
   void onMapReady() async {
     Timer.periodic(const Duration(minutes: 1), (timer) {
       _removeOldVehicles();
@@ -149,7 +155,7 @@ class MapPageController extends GetxController
     _mqttController = MqttController();
     List<gtt.Route> routeValues = Get.arguments['vehicles'];
     final Stop? initialStop = Get.arguments['fermata'];
-    mapInfoController = Get.put(MapInfoController());
+
     final bool showMultiplePatterns =
         Get.arguments['multiple-patterns'] ?? false;
 
@@ -219,10 +225,11 @@ class MapPageController extends GetxController
             mapController.camera.center.latitude, 0.0001) &&
         nearEqual(constrained.center.longitude,
             mapController.camera.center.longitude, 0.0001)) {
-      _animatedMapMove(lastView.center, lastView.zoom);
+      _mapAnimation.animate(lastView.center, zoom: lastView.zoom);
     } else {
       lastView = mapController.camera;
-      _animatedMapMove(constrained.center, constrained.zoom);
+
+      _mapAnimation.animate(constrained.center, zoom: constrained.zoom);
     }
   }
 
@@ -231,38 +238,6 @@ class MapPageController extends GetxController
       coordinates: (routes.values.first).pattern.polylinePoints,
       padding: const EdgeInsets.all(20.0),
     ).fit(mapController.camera);
-  }
-
-  void _animatedMapMove(LatLng destLocation, double destZoom) {
-    final camera = mapController.camera;
-    final latTween = Tween<double>(
-        begin: camera.center.latitude, end: destLocation.latitude);
-    final lngTween = Tween<double>(
-        begin: camera.center.longitude, end: destLocation.longitude);
-    final zoomTween = Tween<double>(begin: camera.zoom, end: destZoom);
-
-    final controller = AnimationController(
-        duration: const Duration(milliseconds: 1000), vsync: this);
-    _activeAnimations.add(controller);
-    final Animation<double> animation =
-        CurvedAnimation(parent: controller, curve: Curves.fastOutSlowIn);
-
-    controller.addListener(() {
-      mapController.move(
-        LatLng(latTween.evaluate(animation), lngTween.evaluate(animation)),
-        zoomTween.evaluate(animation),
-      );
-    });
-
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed ||
-          status == AnimationStatus.dismissed) {
-        _activeAnimations.remove(controller);
-        controller.dispose();
-      }
-    });
-
-    controller.forward();
   }
 
   void _animatedMarkerMove(MqttVehicle payload) {
@@ -320,7 +295,7 @@ class MapPageController extends GetxController
       lastOpenedMarker = VehicleMarker(mqttData: payload);
     }
     if (followVehicle.value == payload.vehicleNum) {
-      _animatedMapMove(payload.position, mapController.camera.zoom);
+      _mapAnimation.animate(payload.position, zoom: mapController.camera.zoom);
     }
     controller.forward();
   }
@@ -351,37 +326,9 @@ class MapPageController extends GetxController
     });
   }
 
-  void zoomIn() => _zoomAnimation(true);
+  void zoomIn() => _mapAnimation.animateZoom(isZoomIn: true);
 
-  void zoomOut() => _zoomAnimation(false);
-
-  Future<void> _zoomAnimation(bool isZoomIn) async {
-    final animController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _activeAnimations.add(animController);
-    final currentZoom = mapController.camera.zoom;
-    double destZoom =
-        clampDouble(currentZoom + (isZoomIn ? 1 : (-1)), minZoom, maxZoom);
-    final zoomTween = Tween<double>(begin: currentZoom, end: destZoom);
-    final Animation<double> animation =
-        CurvedAnimation(parent: animController, curve: Curves.fastOutSlowIn);
-    animController.addListener(() {
-      mapController.move(
-        mapController.camera.center,
-        zoomTween.evaluate(animation),
-      );
-    });
-    animation.addStatusListener((status) {
-      if (status == AnimationStatus.completed ||
-          status == AnimationStatus.dismissed) {
-        _activeAnimations.remove(animController);
-        animController.dispose();
-      }
-    });
-    animController.forward();
-  }
+  void zoomOut() => _mapAnimation.animateZoom(isZoomIn: false);
 
   void setCurrentPattern(gtt.Pattern newPattern) async {
     allStops.clear();
@@ -396,16 +343,38 @@ class MapPageController extends GetxController
     //mqttData.clear();
   }
 
-  void goToUserLocation() async {
+  void centerUser() async {
     isLocationLoading.value = true;
     try {
       if (userLocation.isLocationInitialized.isTrue) {
-        _animatedMapMove(userLocation.userLocationMarker.value, 16);
+        _mapAnimation.animate(
+            MapLocation.getLatLngFromPosition(userLocation.userPosition.first),
+            zoom: 16);
       } else {
-        _animatedMapMove(await userLocation.userLocation, 16);
+        _mapAnimation.animate(
+            MapLocation.getLatLngFromPosition(await userLocation.userLocation),
+            zoom: 16);
       }
-    } catch (e) {
-      Utils.showSnackBar(e.toString(), title: "Error");
+    } on MapLocationException catch (e) {
+      userLocation.locationShowing = false;
+      if (e.locationPermission != null &&
+          e.locationPermission == LocationPermission.deniedForever) {
+        Utils.showSnackBar(e.message,
+            closePrevious: true,
+            duration: const Duration(seconds: 5),
+            mainButton: TextButton(
+              onPressed: () async {
+                await Geolocator.openAppSettings();
+              },
+              child: const Text("Impostazioni"),
+            ));
+      } else {
+        Utils.showSnackBar(
+          e.message,
+          closePrevious: true,
+          duration: const Duration(seconds: 5),
+        );
+      }
     }
 
     isLocationLoading.value = false;
@@ -417,39 +386,13 @@ class MapPageController extends GetxController
 
   void followVehicleMarker(MqttVehicle vehicle) {
     followVehicle.value = vehicle.vehicleNum;
-    _animatedMapMove(vehicle.position, mapController.camera.zoom);
+    _mapAnimation.animate(vehicle.position);
   }
 
   void moveToFollowed() {
     if (followVehicle.value != 0) {
-      _animatedMapMove(allVehicles[followVehicle.value]!.mqttData.position,
-          mapController.camera.zoom);
+      _mapAnimation
+          .animate(allVehicles[followVehicle.value]!.mqttData.position);
     }
   }
-
-  /* RxList<Marker> markerSelected = <Marker>[].obs;
-  RxString lastAddress = ''.obs;
-  RxBool isLoadingAddress = false.obs; */
-  void onMapLongPress(TapPosition tapPosition, LatLng location) {
-    /*  markerSelected.value = [
-      MapUtils.addressMarker(location),
-    ];
-    getAddress(markerSelected.first);
-    popupController.showPopupsOnlyFor(markerSelected); */
-  }
-
-  /* void addressReset() {
-    markerSelected.clear();
-  }
-
-  void getAddress(Marker marker) async {
-    isLoadingAddress.value = true;
-    var jsonResult = await GeocoderApi.getAddress(
-        marker.point.latitude, marker.point.longitude);
-    lastAddress.value =
-        '${jsonResult['features'][0]['properties']?['name'] ?? 'Indirizzo non trovato'},${jsonResult['features'][0]['properties']?['postalcode'] ?? ''}';
-    print(jsonResult['features'][0]);
-    ;
-    isLoadingAddress.value = false;
-  } */
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
-import 'package:flutter_gtt/pages/map/map_page.dart';
 import 'package:get/get.dart';
 
 class RouteListTile extends StatelessWidget {
@@ -47,18 +46,14 @@ class RouteListTile extends StatelessWidget {
             ? Icons.star
             : Icons.star_outline),
         onPressed: () {
-          print(controller.favorites.contains(route));
+          //print(controller.favorites.contains(route));
           controller.toggleFavorite(route);
         },
       ),
       onTap: () {
-        Get.to(
-            () => MapPage(
-                  key: UniqueKey(),
-                ),
-            arguments: {
-              'vehicles': [route]
-            });
+        Get.toNamed('/mapBus', arguments: {
+          'vehicles': [route]
+        });
       },
     );
   }

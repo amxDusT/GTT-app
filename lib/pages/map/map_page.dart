@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/controllers/settings_controller.dart';
+import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_gtt/widgets/map/address_widget.dart';
+import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/card_map_widget.dart';
+import 'package:flutter_gtt/widgets/map/circle_button.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -14,26 +17,33 @@ import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatelessWidget {
   final MapPageController _flutterMapController;
-  final String? infoKey;
-  MapPage({super.key, this.infoKey})
-      : _flutterMapController =
-            Get.put(MapPageController(), tag: key?.toString());
+  final SettingsController _settingsController = Get.find();
+  MapPage({super.key})
+      : _flutterMapController = Get.find(
+          tag: Get.arguments['vehicles'].map((route) => route.gtfsId).join(),
+        );
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Map'),
+        title: Obx(() => Text(
+            'Map${_flutterMapController.routes.length == 1 ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}')),
         actions: [
           GetBuilder<RouteListController>(
-              builder: (controller) => Obx(() => IconButton(
-                    icon: _flutterMapController.isPatternInitialized.isTrue &&
-                            controller.favorites.contains(
-                                _flutterMapController.routes.values.first)
-                        ? const Icon(Icons.star)
-                        : const Icon(Icons.star_border),
-                    onPressed: () => controller.toggleFavorite(
-                        _flutterMapController.routes.values.first),
-                  ))),
+            builder: (controller) => Obx(
+              () => _flutterMapController.routes.length == 1
+                  ? IconButton(
+                      icon: _flutterMapController.isPatternInitialized.isTrue &&
+                              controller.favorites.contains(
+                                  _flutterMapController.routes.values.first)
+                          ? const Icon(Icons.star)
+                          : const Icon(Icons.star_border),
+                      onPressed: () => controller.toggleFavorite(
+                          _flutterMapController.routes.values.first),
+                    )
+                  : Container(),
+            ),
+          ),
         ],
       ),
       body: Column(
@@ -55,12 +65,10 @@ class MapPage extends StatelessWidget {
                 maxZoom: MapPageController.maxZoom,
                 minZoom: MapPageController.minZoom,
                 initialZoom: 15,
-                onLongPress: _flutterMapController.onMapLongPress,
                 onMapReady: _flutterMapController.onMapReady,
                 onMapEvent: _flutterMapController.onMapEvent,
                 onTap: (tapPosition, point) {
                   _flutterMapController.popupController.hideAllPopups();
-                  //_flutterMapController.addressReset();
                 },
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
@@ -78,9 +86,17 @@ class MapPage extends StatelessWidget {
               ),
               children: [
                 TileLayer(
+                  maxNativeZoom:
+                      _settingsController.showBetaFeatures.isTrue ? 22 : 19,
+                  urlTemplate: _settingsController.showBetaFeatures.isTrue
+                      ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey'
+                      : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                ),
+
+                /*  TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   //userAgentPackageName: 'com.example.app',
-                ),
+                ), */
                 Obx(
                   () => PolylineLayer(polylines: [
                     ..._flutterMapController.isPatternInitialized.isTrue
@@ -112,51 +128,46 @@ class MapPage extends StatelessWidget {
                   ]),
                 ),
                 Obx(
-                  () => PopupMarkerLayer(
-                    options: PopupMarkerLayerOptions(
-                      markerTapBehavior:
-                          MarkerTapBehavior.togglePopupAndHideRest(),
-                      markerCenterAnimation: const MarkerCenterAnimation(),
-                      popupController: _flutterMapController.popupController,
-                      markers: [
-                        ..._flutterMapController.isPatternInitialized.isTrue
-                            ? _flutterMapController.allStops
-                            : [],
-                        ..._flutterMapController.allVehiclesInDirection,
-                        //..._flutterMapController.markerSelected,
-                      ],
-                      popupDisplayOptions: PopupDisplayOptions(
-                        builder: (BuildContext context, Marker marker) {
-                          //_flutterMapController.lastOpenedMarker = marker;
-                          if (marker is! VehicleMarker &&
-                              marker is! FermataMarker) {
-                            return AddressWidget(
+                  () => MarkerLayer(
+                    markers: [
+                      if (_flutterMapController
+                          .userLocation.isLocationAvailable.isTrue)
+                        UserLocationMarker(
+                          position: _flutterMapController
+                              .userLocation.userPosition.first,
+                          beta: _settingsController.showBetaFeatures.isTrue,
+                        ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {},
+                  child: Obx(
+                    () => PopupMarkerLayer(
+                      options: PopupMarkerLayerOptions(
+                        markerTapBehavior:
+                            MarkerTapBehavior.togglePopupAndHideRest(),
+                        markerCenterAnimation: const MarkerCenterAnimation(),
+                        popupController: _flutterMapController.popupController,
+                        markers: [
+                          ..._flutterMapController.isPatternInitialized.isTrue
+                              ? _flutterMapController.allStops
+                              : [],
+                          ..._flutterMapController.allVehiclesInDirection,
+                        ],
+                        popupDisplayOptions: PopupDisplayOptions(
+                          builder: (BuildContext context, Marker marker) {
+                            //_flutterMapController.lastOpenedMarker = marker;
+
+                            return CardMapWidget(
                                 marker: marker,
                                 controller: _flutterMapController);
-                          }
-                          return CardMapWidget(
-                              marker: marker,
-                              controller: _flutterMapController);
-                        },
+                          },
+                        ),
                       ),
                     ),
                   ),
                 ),
-                /* Obx(
-                  () => PopupMarkerLayer(
-                      options: PopupMarkerLayerOptions(
-                    markers: _flutterMapController
-                        .geolocatorController.markerSelected,
-                    popupController: _flutterMapController
-                        .geolocatorController.popupController,
-                    popupDisplayOptions:
-                        PopupDisplayOptions(builder: (context, marker) {
-                      return AddressWidget(
-                        marker: marker,
-                      );
-                    }),
-                  )),
-                ), */
                 Obx(
                   () => Opacity(
                     opacity: _flutterMapController.routes.length > 1 ? 0.8 : 0,
@@ -244,119 +255,46 @@ class MapPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 20,
-                    horizontal: 15,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Get
-                                .theme.colorScheme.primaryContainer
-                                .withOpacity(0.8),
-                            child: IconButton(
-                              tooltip: 'Center Bounds',
-                              onPressed: () =>
-                                  _flutterMapController.centerBounds(),
-                              icon: const Icon(Icons.center_focus_strong),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Obx(
-                            () => CircleAvatar(
-                              radius: 25,
-                              backgroundColor: Get
-                                  .theme.colorScheme.primaryContainer
-                                  .withOpacity(0.8),
-                              child:
-                                  _flutterMapController.isLocationLoading.isTrue
-                                      ? const CircularProgressIndicator()
-                                      : IconButton(
-                                          tooltip: 'Location',
-                                          onPressed: () {
-                                            _flutterMapController.userLocation
-                                                .switchLocationShowing();
-                                            if (_flutterMapController
-                                                .userLocation
-                                                .isLocationShowing
-                                                .isTrue) {
-                                              _flutterMapController
-                                                  .goToUserLocation();
-                                            }
-                                          },
-                                          icon: _flutterMapController
-                                                  .userLocation
-                                                  .isLocationShowing
-                                                  .isFalse
-                                              ? const Icon(Icons.location_on)
-                                              : const Icon(Icons.location_off),
-                                        ),
-                            ),
-                          ),
-                        ],
+                BottomButtons(
+                  lines: 2,
+                  children: [
+                    CircleButton(
+                      tooltip: 'Center Bounds',
+                      onPressed: () => _flutterMapController.centerBounds(),
+                      icon: const Icon(Icons.center_focus_strong),
+                    ),
+                    Obx(
+                      () => CircleButton(
+                        tooltip: 'Location',
+                        onPressed: () {
+                          _flutterMapController.userLocation
+                              .switchLocationShowing();
+
+                          if (_flutterMapController
+                              .userLocation.isLocationShowing.isTrue) {
+                            _flutterMapController.centerUser();
+                          }
+                        },
+                        icon: _flutterMapController
+                                .userLocation.isLocationShowing.isFalse
+                            ? const Icon(Icons.location_on)
+                            : const Icon(Icons.location_off),
+                        child: _flutterMapController.isLocationLoading.isTrue
+                            ? const CircularProgressIndicator()
+                            : null,
                       ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        //crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Get
-                                .theme.colorScheme.primaryContainer
-                                .withOpacity(0.8),
-                            child: IconButton(
-                              tooltip: 'Zoom out',
-                              onPressed: () => _flutterMapController.zoomOut(),
-                              icon: const Icon(Icons.remove),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor: Get
-                                .theme.colorScheme.primaryContainer
-                                .withOpacity(0.8),
-                            child: IconButton(
-                              tooltip: 'Zoom in',
-                              onPressed: () => _flutterMapController.zoomIn(),
-                              icon: const Icon(Icons.add),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                Obx(
-                  () => MarkerLayer(
-                    markers: [
-                      if (_flutterMapController
-                          .userLocation.isLocationAvailable.isTrue)
-                        Marker(
-                          point: _flutterMapController
-                              .userLocation.userLocationMarker.value,
-                          child: const Icon(
-                            Icons.location_on,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                        ),
-                    ],
-                  ),
+                    ),
+                    CircleButton(
+                      tooltip: 'Zoom out',
+                      onPressed: () => _flutterMapController.zoomOut(),
+                      icon: const Icon(Icons.remove),
+                    ),
+                    CircleButton(
+                      tooltip: 'Zoom in',
+                      onPressed: () => _flutterMapController.zoomIn(),
+                      icon: const Icon(Icons.add),
+                    ),
+                  ],
                 ),
               ],
             ),

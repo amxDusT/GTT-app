@@ -1,6 +1,7 @@
 import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class RouteListController extends GetxController {
@@ -8,8 +9,9 @@ class RouteListController extends GetxController {
   Map<String, List<Route>> routesMap = {};
   List<Route> favorites = [];
   Future<void> getFavorites() async {
-    favorites.clear();
-    favorites.addAll(await DatabaseCommands.favoriteRoutes);
+    //favorites.clear();
+    favorites = await DatabaseCommands.favoriteRoutes;
+    //favorites.addAll(await DatabaseCommands.favoriteRoutes);
     update();
   }
 
@@ -58,47 +60,8 @@ class RouteListController extends GetxController {
     - if starts with number (or 'M', to include M1s/M1), numeric part is compared, otherwise string comparison
   */
   void _sortResult() {
-    int extractNumericPart(String str) {
-      RegExpMatch? match = RegExp(r'\d+').firstMatch(str);
-      if (match != null) {
-        return int.parse(match.group(0)!);
-      } else {
-        return 0;
-      }
-    }
-
-    bool startWithNumberOrM(String s) {
-      return RegExp(r'^[0-9M]').hasMatch(s);
-    }
-
-    int compareWithNumbers(Route a, Route b) {
-      int numA = extractNumericPart(a.shortName);
-      int numB = extractNumericPart(b.shortName);
-      int compare = numA.compareTo(numB);
-      if (compare == 0) {
-        return a.shortName.compareTo(b.shortName);
-      }
-      return compare;
-    }
-
     for (var key in routesMap.keys) {
-      routesMap[key]!.sort((a, b) {
-        // compare by type
-        int compareWithType = a.type.compareTo(b.type);
-        if (compareWithType != 0) {
-          return compareWithType;
-          // compare by number
-        } else if (startWithNumberOrM(a.shortName) &&
-            startWithNumberOrM(b.shortName)) {
-          return compareWithNumbers(a, b);
-          // compare by name
-        } else if (!startWithNumberOrM(a.shortName) &&
-            !startWithNumberOrM(b.shortName)) {
-          return a.shortName.compareTo(b.shortName);
-        } else {
-          return startWithNumberOrM(a.shortName) ? -1 : 1;
-        }
-      });
+      Utils.sort(routesMap[key]!);
     }
   }
 }

@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/search_controller.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/controllers/search/list_search_controller.dart';
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:flutter_gtt/widgets/route_list_tile_widget.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:get/get.dart';
 
-class SearchPage extends StatelessWidget {
-  SearchPage({super.key});
-  final _searchController = Get.find<SearchStopsController>();
+class SearchRoute extends StatelessWidget {
+  final RouteListController controller;
+  final ListSearchController searchController;
+  const SearchRoute({
+    super.key,
+    required this.controller,
+    required this.searchController,
+  });
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -15,18 +21,16 @@ class SearchPage extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TypeAheadField<Stop>(
+          TypeAheadField<gtt.Route>(
             animationDuration: const Duration(milliseconds: 100),
-            itemBuilder: (context, stop) {
-              return ListTile(
-                title: Text(stop.name),
-                subtitle: Text(stop.code.toString()),
-              );
+            itemBuilder: (context, route) {
+              return RouteListTile(route: route, controller: controller);
             },
             builder: (context, controller, focusNode) {
-              _searchController.setTextController(controller);
-              _searchController.setFocusNode(focusNode);
+              searchController.setSearchController(controller);
+              searchController.listenUnfocus(focusNode);
               return TextField(
+                //autofocus: true,
                 controller: controller,
                 focusNode: focusNode,
                 decoration: InputDecoration(
@@ -34,22 +38,19 @@ class SearchPage extends StatelessWidget {
                       borderSide: Divider.createBorderSide(context)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   filled: true,
-                  labelText: 'Cerca fermata...',
+                  labelText: 'Cerca veicolo...',
                 ),
                 keyboardType: TextInputType.text,
-                onSubmitted: (value) => _searchController.onSubmitted(value),
+                onSubmitted: (value) => searchController.onSearch(value),
               );
             },
             loadingBuilder: (context) => const Center(
               child: CircularProgressIndicator(),
             ),
             hideOnEmpty: true,
-            debounceDuration: const Duration(milliseconds: 400),
-            onSelected: (stop) {
-              // so it calls clear on the searchController
-              _searchController.onSubmitted(stop.code.toString());
-            },
-            suggestionsCallback: _searchController.getStopsFromValue,
+            debounceDuration: const Duration(milliseconds: 100),
+            onSelected: (route) {},
+            suggestionsCallback: (val) => searchController.getSuggestions(val),
           ),
         ],
       ),

@@ -4,7 +4,6 @@ import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/pages/home_page.dart';
 import 'package:flutter_gtt/resources/api/api_exception.dart';
 import 'package:flutter_gtt/resources/api/github_api.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
@@ -152,6 +151,6 @@ class LoadingController extends GetxController {
 
   void moveToHome(Duration duration) async {
     await Future.delayed(duration);
-    Get.off(() => HomePage());
+    Get.offNamed('/home');
   }
 }

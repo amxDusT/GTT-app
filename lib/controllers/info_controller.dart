@@ -12,13 +12,23 @@ import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class InfoController extends GetxController {
-  final RxBool isBacking = false.obs;
   late final Rx<DateTime> lastUpdate;
   final RxBool isLoading = false.obs;
   late Rx<StopWithDetails> fermata;
-  late RxString fermataName;
-  final HomeController _homeController = Get.find<HomeController>();
+  final HomeController _homeController = Get.find();
   final RxBool isSaved = false.obs;
+
+  @override
+  void onInit() async {
+    super.onInit();
+    Stop stop = Get.arguments['fermata'];
+    //print(stop);
+    lastUpdate = DateTime.now().obs;
+    fermata = StopWithDetails.fromStop(stop: stop).obs;
+
+    getFermata();
+    isSaved.value = (await DatabaseCommands.hasStop(fermata.value));
+  }
 
   // select elements to be displayed in map
   final RxList<gtt.RouteWithDetails> selectedRoutes =
@@ -62,27 +72,9 @@ class InfoController extends GetxController {
     }
   }
 
-  @override
-  void onInit() async {
-    super.onInit();
-    Stop stop = Get.arguments['fermata'];
-    //print(stop);
-    fermataName = stop.name.obs;
-    lastUpdate = DateTime.now().obs;
-    fermata = StopWithDetails.fromStop(stop: stop).obs;
-
-    getFermata();
-    isSaved.value = (await DatabaseCommands.hasStop(fermata.value));
-  }
-
   void switchAddDeleteFermata() async {
-    if (isSaved.isTrue) {
-      DatabaseCommands.deleteStop(fermata.value);
-    } else {
-      DatabaseCommands.insertStop(fermata.value);
-    }
-    _homeController.getStops();
-    isSaved.value = !isSaved.value;
+    _homeController.switchAddDeleteFermata(fermata.value);
+    isSaved.toggle();
   }
 
   Future<void> getFermata() async {
@@ -92,7 +84,6 @@ class InfoController extends GetxController {
           await GttApi.getStop(fermata.value.code);
       lastUpdate.value = DateTime.now();
       fermata = newFermata.obs;
-      fermataName.value = fermata.value.name;
     } on ApiException catch (e) {
       Utils.showSnackBar(e.message, title: "Errore ${e.statusCode}");
     } on Error {

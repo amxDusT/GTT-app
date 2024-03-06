@@ -136,6 +136,21 @@ class FavStop extends Stop {
     };
   }
 
+  static Future<FavStop?> fromDbMap(Map<String, dynamic> js) async {
+    Stop? stop =
+        await DatabaseCommands.getStop(js['stopId']?.split(':')[1] ?? 0);
+    return stop == null
+        ? null
+        : FavStop.fromStop(
+            stop: (await DatabaseCommands.getStop(
+                js['stopId']?.split(':')[1] ?? 0))!,
+            dateTime:
+                DateTime.fromMillisecondsSinceEpoch((js['date'] as int) * 1000),
+            color: Storage.stringToColor(js['color'])!,
+            descrizione: js['descrizione'],
+          );
+  }
+
   factory FavStop.fromJson(Map<String, dynamic> js) {
     return FavStop.fromStop(
       stop: Stop.fromJson(js),
@@ -197,5 +212,15 @@ class Stop {
   @override
   String toString() {
     return '$code - $name';
+  }
+
+  @override
+  int get hashCode => code.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Stop && other.code == code;
   }
 }
