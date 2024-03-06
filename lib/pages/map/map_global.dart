@@ -68,10 +68,9 @@ class MapGlobal extends StatelessWidget {
           ),
           children: [
             TileLayer(
-              retinaMode: true,
               maxNativeZoom: 22,
               urlTemplate:
-                  'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}{r}?access_token=$api_key',
+                  'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey',
             ),
             /* TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',

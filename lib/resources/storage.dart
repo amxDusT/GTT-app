@@ -10,6 +10,7 @@ enum StorageParam {
   showSecondsInUpdates,
   lastUpdate,
   isFavoritesRoutesShowing,
+  showBetaFeatures,
 }
 
 class Storage {
@@ -20,6 +21,7 @@ class Storage {
   static DateTime lastUpdate = DateTime.now();
   static const _storage = FlutterSecureStorage();
   static bool isFavoritesRoutesShowing = false;
+  static bool showBetaFeatures = false;
 
   static void loadSettings() async {
     chosenColor =
@@ -41,6 +43,9 @@ class Storage {
     isFavoritesRoutesShowing = bool.parse(
       await getParam(StorageParam.isFavoritesRoutesShowing) ?? 'false',
     );
+
+    showBetaFeatures =
+        bool.parse(await getParam(StorageParam.showBetaFeatures) ?? 'false');
   }
 
   static String colorToString(Color color) =>

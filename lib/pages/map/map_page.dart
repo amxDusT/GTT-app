@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/marker.dart';
@@ -16,6 +17,7 @@ import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatelessWidget {
   final MapPageController _flutterMapController;
+  final SettingsController _settingsController = Get.find();
   MapPage({super.key})
       : _flutterMapController = Get.find(
           tag: Get.arguments['vehicles'].map((route) => route.gtfsId).join(),
@@ -24,18 +26,24 @@ class MapPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Map'),
+        title: Obx(() => Text(
+            'Map${_flutterMapController.routes.length == 1 ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}')),
         actions: [
           GetBuilder<RouteListController>(
-              builder: (controller) => Obx(() => IconButton(
-                    icon: _flutterMapController.isPatternInitialized.isTrue &&
-                            controller.favorites.contains(
-                                _flutterMapController.routes.values.first)
-                        ? const Icon(Icons.star)
-                        : const Icon(Icons.star_border),
-                    onPressed: () => controller.toggleFavorite(
-                        _flutterMapController.routes.values.first),
-                  ))),
+            builder: (controller) => Obx(
+              () => _flutterMapController.routes.length == 1
+                  ? IconButton(
+                      icon: _flutterMapController.isPatternInitialized.isTrue &&
+                              controller.favorites.contains(
+                                  _flutterMapController.routes.values.first)
+                          ? const Icon(Icons.star)
+                          : const Icon(Icons.star_border),
+                      onPressed: () => controller.toggleFavorite(
+                          _flutterMapController.routes.values.first),
+                    )
+                  : Container(),
+            ),
+          ),
         ],
       ),
       body: Column(
@@ -78,11 +86,13 @@ class MapPage extends StatelessWidget {
               ),
               children: [
                 TileLayer(
-                  retinaMode: true,
-                  maxNativeZoom: 22,
-                  urlTemplate:
-                      'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}{r}?access_token=$api_key',
+                  maxNativeZoom:
+                      _settingsController.showBetaFeatures.isTrue ? 22 : 19,
+                  urlTemplate: _settingsController.showBetaFeatures.isTrue
+                      ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey'
+                      : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 ),
+
                 /*  TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   //userAgentPackageName: 'com.example.app',

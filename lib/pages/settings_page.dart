@@ -80,17 +80,27 @@ class SettingsPage extends StatelessWidget {
                     },
                   ),
                 ListTile(
+                  title: const Text('Beta features'),
+                  trailing: Obx(() => Switch(
+                        value: _settingsController.showBetaFeatures.value,
+                        onChanged: (value) =>
+                            _settingsController.switchBetaFeatures(),
+                      )),
+                ),
+                ListTile(
                   title: const Text('Backup locale preferiti'),
                   onTap: () {
                     _settingsController.exportFavorites();
                   },
                 ),
-                ListTile(
-                  title: const Text('Ripristina preferiti'),
-                  onTap: () {
-                    _settingsController.importFavorites();
-                  },
-                ),
+                Obx(() => _settingsController.showBetaFeatures.isTrue
+                    ? ListTile(
+                        title: const Text('Ripristina preferiti'),
+                        onTap: () {
+                          _settingsController.importFavorites();
+                        },
+                      )
+                    : const SizedBox()),
               ],
             ),
           ),

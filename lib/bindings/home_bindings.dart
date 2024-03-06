@@ -7,9 +7,9 @@ import 'package:get/get.dart';
 class HomeBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => HomeController());
-    Get.lazyPut(() => RouteListController());
-    Get.lazyPut(() => SearchStopsController());
+    Get.put(RouteListController(), permanent: true);
     Get.lazyPut(() => SettingsController());
+    Get.lazyPut(() => HomeController());
+    Get.lazyPut(() => SearchStopsController());
   }
 }

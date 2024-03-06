@@ -9,8 +9,9 @@ class RouteListController extends GetxController {
   Map<String, List<Route>> routesMap = {};
   List<Route> favorites = [];
   Future<void> getFavorites() async {
-    favorites.clear();
-    favorites.addAll(await DatabaseCommands.favoriteRoutes);
+    //favorites.clear();
+    favorites = await DatabaseCommands.favoriteRoutes;
+    //favorites.addAll(await DatabaseCommands.favoriteRoutes);
     update();
   }
 

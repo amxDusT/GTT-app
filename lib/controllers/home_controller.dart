@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
@@ -132,26 +133,27 @@ class HomeController extends GetxController {
                 mainAxisSpacing: 5,
                 children: [
                   for (Color color in colors) child(color),
-                  IconButton(
-                    onPressed: () async {
-                      await Get.defaultDialog(
-                          title: 'Choose custom color',
-                          textCancel: 'Annulla',
-                          textConfirm: 'Conferma',
-                          onConfirm: () {
-                            fermata = fermata.copyWith(color: lastColor);
-                            updateStop(fermata);
-                            Get.back(closeOverlays: true);
-                          },
-                          content: ColorPicker(
-                            pickerColor: initialColor,
-                            onColorChanged: (color) {
-                              lastColor = color;
+                  if (Get.find<SettingsController>().showBetaFeatures.isTrue)
+                    IconButton(
+                      onPressed: () async {
+                        await Get.defaultDialog(
+                            title: 'Choose custom color',
+                            textCancel: 'Annulla',
+                            textConfirm: 'Conferma',
+                            onConfirm: () {
+                              fermata = fermata.copyWith(color: lastColor);
+                              updateStop(fermata);
+                              Get.back(closeOverlays: true);
                             },
-                          ));
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
+                            content: ColorPicker(
+                              pickerColor: initialColor,
+                              onColorChanged: (color) {
+                                lastColor = color;
+                              },
+                            ));
+                      },
+                      icon: const Icon(Icons.add),
+                    ),
                 ],
               ),
             ),

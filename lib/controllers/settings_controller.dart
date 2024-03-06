@@ -15,7 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SettingsController extends GetxController {
   final _homeController = Get.find<HomeController>();
-
+  final RxBool showBetaFeatures = Storage.showBetaFeatures.obs;
   final RxBool showSecondsInUpdates = Storage.showSecondsInUpdates.obs;
   final RxBool isFermataShowing = Storage.isFermataShowing.obs;
   final RxBool isRouteWithoutPassagesShowing =
@@ -54,6 +54,12 @@ class SettingsController extends GetxController {
     isFavoritesRoutesShowing.toggle();
     Storage.setParam(StorageParam.isFavoritesRoutesShowing,
         isFavoritesRoutesShowing.value.toString());
+  }
+
+  void switchBetaFeatures() {
+    showBetaFeatures.toggle();
+    Storage.setParam(
+        StorageParam.showBetaFeatures, showBetaFeatures.value.toString());
   }
 
   void resetData() async {
