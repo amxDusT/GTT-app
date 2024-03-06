@@ -12,23 +12,23 @@ import 'package:latlong2/latlong.dart';
 @immutable
 class UserLocationMarker extends Marker {
   final Position position;
-  UserLocationMarker({required this.position})
+  UserLocationMarker({required this.position, bool beta = false})
       : super(
             point: LatLng(position.latitude, position.longitude),
             height: 30,
             width: 30,
             child: Transform.rotate(
-                angle: position.heading * pi / 180,
-                child: const Stack(
+                angle: beta ? position.heading * pi / 180 : 0,
+                child: Stack(
                   alignment: Alignment.center,
                   children: [
                     DecoratedIcon(
                       icon: Icon(
-                        Icons.navigation,
+                        beta ? Icons.navigation : Icons.location_on,
                         size: 28,
                         color: Colors.blue,
                       ),
-                      decoration: IconDecoration(border: IconBorder()),
+                      decoration: const IconDecoration(border: IconBorder()),
                     ),
                   ],
                 )));

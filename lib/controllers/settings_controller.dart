@@ -19,6 +19,7 @@ class SettingsController extends GetxController {
   - importa preferiti da backup locale
   - map api da mapbox invece di openstreetmap
   - colori personalizzati per le fermate preferite
+  - posizione utente con direzione (funziona male)
   ''';
   final _homeController = Get.find<HomeController>();
   final RxBool showBetaFeatures = Storage.showBetaFeatures.obs;

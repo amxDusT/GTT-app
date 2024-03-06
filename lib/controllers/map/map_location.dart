@@ -14,6 +14,15 @@ class MapLocation extends GetxController {
 
   RxBool get isLocationAvailable =>
       (isLocationInitialized.isTrue && isLocationShowing.isTrue).obs;
+  late LocationSettings locationSettings;
+
+  bool get isLocationListening => _geolocatorSubscription != null;
+  @override
+  void onInit() {
+    super.onInit();
+    setLocationSettings();
+  }
+
   @override
   onClose() {
     stopLocationListen();
@@ -64,6 +73,22 @@ class MapLocation extends GetxController {
     _listenGeoLocator();
   }
 
+  void setLocationSettings({
+    bool? forceLocationManager,
+    LocationAccuracy? accuracy,
+    Duration? intervalDuration,
+  }) {
+    locationSettings = AndroidSettings(
+      accuracy: accuracy ?? LocationAccuracy.bestForNavigation,
+      forceLocationManager: forceLocationManager ?? false,
+      intervalDuration: intervalDuration ?? const Duration(seconds: 4),
+    );
+    if (isLocationListening) {
+      stopLocationListen();
+      listen();
+    }
+  }
+
   FutureOr<Position> get userLocation async {
     if (_geolocatorSubscription == null) {
       await checkLocationPermission();
@@ -77,7 +102,11 @@ class MapLocation extends GetxController {
 
   Future<void> _listenGeoLocator() async {
     if (_geolocatorSubscription != null) return;
-    _geolocatorSubscription = Geolocator.getPositionStream().listen((position) {
+    _geolocatorSubscription =
+        Geolocator.getPositionStream(locationSettings: locationSettings)
+            .listen((position) {
+      //print('${position.heading} - ${position.headingAccuracy}');
+
       userPosition.value = [position];
     });
   }
