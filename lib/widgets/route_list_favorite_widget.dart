@@ -3,8 +3,6 @@ import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:get/get.dart';
 
-import '../pages/map/map_page.dart';
-
 class RouteListFavorite extends StatelessWidget {
   final gtt.Route route;
   final RouteListController controller;

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/bindings/home_bindings.dart';
 import 'package:flutter_gtt/bindings/info_bindings.dart';
+import 'package:flutter_gtt/bindings/map_global_bindings.dart';
 import 'package:flutter_gtt/bindings/map_page_bindings.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
@@ -156,6 +157,7 @@ class Utils {
       GetPage(
         name: '/map',
         page: () => MapGlobal(),
+        binding: MapGlobalBindings(),
       ),
       GetPage(
         name: '/routelist',

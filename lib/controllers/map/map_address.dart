@@ -69,8 +69,8 @@ class MapAddressController {
     if (address.isValid) {
       if (mapLocation.isLocationAvailable.isTrue) {
         address.distanceInKm = Geolocator.distanceBetween(
-              mapLocation.userLocationMarker.value.latitude,
-              mapLocation.userLocationMarker.value.longitude,
+              mapLocation.userPosition.first.latitude,
+              mapLocation.userPosition.first.longitude,
               address.position.latitude,
               address.position.longitude,
             ) /
@@ -96,8 +96,8 @@ class MapAddressController {
     double? lat, lon;
 
     if (mapLocation.isLocationAvailable.isTrue) {
-      lat = mapLocation.userLocationMarker.value.latitude;
-      lon = mapLocation.userLocationMarker.value.longitude;
+      lat = mapLocation.userPosition.first.latitude;
+      lon = mapLocation.userPosition.first.longitude;
     }
     var jsonResult =
         await GeocoderApi.getAddressFromString(value, lat: lat, lon: lon);

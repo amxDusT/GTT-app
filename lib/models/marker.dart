@@ -5,8 +5,34 @@ import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:icon_decoration/icon_decoration.dart';
 import 'package:latlong2/latlong.dart';
+
+@immutable
+class UserLocationMarker extends Marker {
+  final Position position;
+  UserLocationMarker({required this.position})
+      : super(
+            point: LatLng(position.latitude, position.longitude),
+            height: 30,
+            width: 30,
+            child: Transform.rotate(
+                angle: position.heading * pi / 180,
+                child: const Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    DecoratedIcon(
+                      icon: Icon(
+                        Icons.navigation,
+                        size: 28,
+                        color: Colors.blue,
+                      ),
+                      decoration: IconDecoration(border: IconBorder()),
+                    ),
+                  ],
+                )));
+}
 
 @immutable
 class VehicleMarker extends Marker {

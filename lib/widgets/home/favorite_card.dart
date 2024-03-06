@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/pages/info_page.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';

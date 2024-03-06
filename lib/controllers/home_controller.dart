@@ -41,6 +41,7 @@ class HomeController extends GetxController {
 
   void getStops() async {
     fermate = await DatabaseCommands.favorites;
+    print(fermate);
     update();
   }
 
@@ -101,6 +102,7 @@ class HomeController extends GetxController {
   }
 
   void _changeColor(FavStop fermata) {
+    Color lastColor = fermata.color;
     Get.defaultDialog(
       title: 'Scegli un colore',
       content: BlockPicker(
@@ -128,7 +130,29 @@ class HomeController extends GetxController {
                 crossAxisCount: 3,
                 crossAxisSpacing: 5,
                 mainAxisSpacing: 5,
-                children: [for (Color color in colors) child(color)],
+                children: [
+                  for (Color color in colors) child(color),
+                  IconButton(
+                    onPressed: () async {
+                      await Get.defaultDialog(
+                          title: 'Choose custom color',
+                          textCancel: 'Annulla',
+                          textConfirm: 'Conferma',
+                          onConfirm: () {
+                            fermata = fermata.copyWith(color: lastColor);
+                            updateStop(fermata);
+                            Get.back(closeOverlays: true);
+                          },
+                          content: ColorPicker(
+                            pickerColor: initialColor,
+                            onColorChanged: (color) {
+                              lastColor = color;
+                            },
+                          ));
+                    },
+                    icon: const Icon(Icons.add),
+                  ),
+                ],
               ),
             ),
           );

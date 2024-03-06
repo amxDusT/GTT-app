@@ -8,10 +8,10 @@ import 'package:get/get.dart';
 
 class HomeDrawer extends StatelessWidget {
   final Map<String, dynamic> elements = {
-    'Mappa Default': () => Get.to(() => MapGlobal()),
-    'Leggi Biglietto/Carta': () => Get.to(() => NfcPage()),
-    'Mappa Bus/Tram': () => Get.to(() => RouteListPage()),
-    'Impostazioni': () => Get.to(() => SettingsPage()),
+    'Mappa Default': () => Get.toNamed('/map'),
+    'Leggi Biglietto/Carta': () => Get.toNamed('/nfc'),
+    'Mappa Bus/Tram': () => Get.toNamed('/routelist'),
+    'Impostazioni': () => Get.toNamed('/settings'),
   };
 
   HomeDrawer({super.key});

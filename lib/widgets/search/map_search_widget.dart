@@ -86,7 +86,14 @@ class SearchAddress extends StatelessWidget {
                   labelText: 'Cerca indirizzo...',
                   prefixIcon: IconButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        if (focusNode.hasFocus ||
+                            searchController.suggestionsController.isOpen) {
+                          controller.clear();
+                          focusNode.unfocus();
+                          searchController.suggestionsController.close();
+                        } else {
+                          Get.back();
+                        }
                       },
                       icon: const Icon(Icons.arrow_back)),
                   suffixIcon: IconButton(

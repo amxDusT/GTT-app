@@ -80,13 +80,13 @@ class SettingsPage extends StatelessWidget {
                     },
                   ),
                 ListTile(
-                  title: const Text('Esporta preferiti'),
+                  title: const Text('Backup locale preferiti'),
                   onTap: () {
                     _settingsController.exportFavorites();
                   },
                 ),
                 ListTile(
-                  title: const Text('importa preferiti'),
+                  title: const Text('Ripristina preferiti'),
                   onTap: () {
                     _settingsController.importFavorites();
                   },

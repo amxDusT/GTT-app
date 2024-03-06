@@ -15,7 +15,7 @@ class MapGlobalController extends GetxController
   late final MapAddressController mapAddress;
   late final MapAnimation _mapAnimation;
   late final MapSearchController searchController;
-  final MapLocation mapLocation = Get.put(MapLocation(), permanent: true);
+  final MapLocation mapLocation = Get.find<MapLocation>();
   @override
   void onInit() {
     super.onInit();

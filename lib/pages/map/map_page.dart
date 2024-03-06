@@ -3,6 +3,7 @@ import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
+import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
@@ -116,7 +117,18 @@ class MapPage extends StatelessWidget {
                         : <Polyline>[],
                   ]),
                 ),
-                // TODO: add gesture Detector to block flutter_map from handling taps on markers
+                Obx(
+                  () => MarkerLayer(
+                    markers: [
+                      if (_flutterMapController
+                          .userLocation.isLocationAvailable.isTrue)
+                        UserLocationMarker(
+                          position: _flutterMapController
+                              .userLocation.userPosition.first,
+                        ),
+                    ],
+                  ),
+                ),
                 GestureDetector(
                   onTap: () {},
                   child: Obx(
@@ -145,21 +157,6 @@ class MapPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                /* Obx(
-                  () => PopupMarkerLayer(
-                      options: PopupMarkerLayerOptions(
-                    markers: _flutterMapController
-                        .geolocatorController.markerSelected,
-                    popupController: _flutterMapController
-                        .geolocatorController.popupController,
-                    popupDisplayOptions:
-                        PopupDisplayOptions(builder: (context, marker) {
-                      return AddressWidget(
-                        marker: marker,
-                      );
-                    }),
-                  )),
-                ), */
                 Obx(
                   () => Opacity(
                     opacity: _flutterMapController.routes.length > 1 ? 0.8 : 0,
@@ -261,9 +258,10 @@ class MapPage extends StatelessWidget {
                         onPressed: () {
                           _flutterMapController.userLocation
                               .switchLocationShowing();
+
                           if (_flutterMapController
                               .userLocation.isLocationShowing.isTrue) {
-                            _flutterMapController.goToUserLocation();
+                            _flutterMapController.centerUser();
                           }
                         },
                         icon: _flutterMapController
@@ -286,23 +284,6 @@ class MapPage extends StatelessWidget {
                       icon: const Icon(Icons.add),
                     ),
                   ],
-                ),
-                Obx(
-                  () => MarkerLayer(
-                    markers: [
-                      if (_flutterMapController
-                          .userLocation.isLocationAvailable.isTrue)
-                        Marker(
-                          point: _flutterMapController
-                              .userLocation.userLocationMarker.value,
-                          child: const Icon(
-                            Icons.location_on,
-                            color: Colors.blue,
-                            size: 30,
-                          ),
-                        ),
-                    ],
-                  ),
                 ),
               ],
             ),

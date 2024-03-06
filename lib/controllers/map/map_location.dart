@@ -6,11 +6,11 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MapLocation extends GetxController {
-  late LatLng _userLocation;
   StreamSubscription<Position>? _geolocatorSubscription;
-  late final Rx<LatLng> userLocationMarker;
-  final RxBool isLocationInitialized = false.obs;
+  final RxList<Position> userPosition = <Position>[].obs;
   final RxBool isLocationShowing = false.obs;
+
+  RxBool get isLocationInitialized => userPosition.isNotEmpty.obs;
 
   RxBool get isLocationAvailable =>
       (isLocationInitialized.isTrue && isLocationShowing.isTrue).obs;
@@ -26,8 +26,13 @@ class MapLocation extends GetxController {
   }
 
   void switchLocationShowing() {
-    isLocationShowing.value = !isLocationShowing.value;
-    isLocationShowing.isTrue ? listen() : stopLocationListen();
+    locationShowing = !isLocationShowing.value;
+    //isLocationShowing.value ? listen() : stopLocationListen();
+  }
+
+  set locationShowing(bool value) {
+    isLocationShowing.value = value;
+    isLocationShowing.value ? listen() : stopLocationListen();
   }
 
   Future<void> checkLocationPermission() async {
@@ -59,32 +64,30 @@ class MapLocation extends GetxController {
     _listenGeoLocator();
   }
 
-  FutureOr<LatLng> get userLocation async {
+  FutureOr<Position> get userLocation async {
     if (_geolocatorSubscription == null) {
       await checkLocationPermission();
-      Position position = await Geolocator.getCurrentPosition();
-      _userLocation = LatLng(position.latitude, position.longitude);
+      userPosition.value = [await Geolocator.getCurrentPosition()];
+
       _listenGeoLocator();
-      return _userLocation;
+      return userPosition.first;
     }
-    return _userLocation;
+    return userPosition.first;
   }
 
   Future<void> _listenGeoLocator() async {
     if (_geolocatorSubscription != null) return;
     _geolocatorSubscription = Geolocator.getPositionStream().listen((position) {
-      _userLocation = LatLng(position.latitude, position.longitude);
-      if (isLocationInitialized.isFalse) {
-        userLocationMarker = _userLocation.obs;
-        isLocationInitialized.value = true;
-      } else {
-        userLocationMarker.value = _userLocation;
-      }
+      userPosition.value = [position];
     });
   }
 
   Future<void> stopLocationListen() async {
     await _geolocatorSubscription?.cancel();
     _geolocatorSubscription = null;
+  }
+
+  static LatLng getLatLngFromPosition(Position position) {
+    return LatLng(position.latitude, position.longitude);
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
+import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
@@ -16,6 +17,7 @@ import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -341,16 +343,38 @@ class MapPageController extends GetxController
     //mqttData.clear();
   }
 
-  void goToUserLocation() async {
+  void centerUser() async {
     isLocationLoading.value = true;
     try {
       if (userLocation.isLocationInitialized.isTrue) {
-        _mapAnimation.animate(userLocation.userLocationMarker.value, zoom: 16);
+        _mapAnimation.animate(
+            MapLocation.getLatLngFromPosition(userLocation.userPosition.first),
+            zoom: 16);
       } else {
-        _mapAnimation.animate(await userLocation.userLocation, zoom: 16);
+        _mapAnimation.animate(
+            MapLocation.getLatLngFromPosition(await userLocation.userLocation),
+            zoom: 16);
       }
-    } catch (e) {
-      Utils.showSnackBar(e.toString(), title: "Error");
+    } on MapLocationException catch (e) {
+      userLocation.locationShowing = false;
+      if (e.locationPermission != null &&
+          e.locationPermission == LocationPermission.deniedForever) {
+        Utils.showSnackBar(e.message,
+            closePrevious: true,
+            duration: const Duration(seconds: 5),
+            mainButton: TextButton(
+              onPressed: () async {
+                await Geolocator.openAppSettings();
+              },
+              child: const Text("Impostazioni"),
+            ));
+      } else {
+        Utils.showSnackBar(
+          e.message,
+          closePrevious: true,
+          duration: const Duration(seconds: 5),
+        );
+      }
     }
 
     isLocationLoading.value = false;
