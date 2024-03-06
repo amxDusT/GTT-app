@@ -39,6 +39,7 @@ class StopWithDetails extends Stop {
       Pattern pattern = await DatabaseCommands.getPatternFromCode(patternCode);
 
       /*
+      TODO: check this
       sometimes the query returns different patterns and stoptimes for the same route
       so we keep the pattern with most stoptimes and add the stoptimes to it
       */
@@ -48,14 +49,14 @@ class StopWithDetails extends Stop {
         if (r.stoptimes.isEmpty ||
             r.stoptimes.length < js['stoptimes'].length) {
           r.pattern = pattern;
+          r.stoptimes.clear();
+          r.stoptimes.addAll((js['stoptimes'] as List)
+              .map((stoptimeJs) => Stoptime.fromJson(stoptimeJs))
+              .toList());
+          r.stoptimes.sort(
+              (a, b) => a.realtimeDeparture.compareTo(b.realtimeDeparture));
         }
 
-        r.stoptimes.addAll((js['stoptimes'] as List)
-            .map((stoptimeJs) => Stoptime.fromJson(stoptimeJs))
-            .toList());
-
-        r.stoptimes
-            .sort((a, b) => a.realtimeDeparture.compareTo(b.realtimeDeparture));
         return r;
       });
     }

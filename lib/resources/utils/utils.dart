@@ -143,6 +143,10 @@ class Utils {
     return compare;
   }
 
+  static String getBusIdentifier(String gtfsId) {
+    return gtfsId.split(':')[1].substring(0, gtfsId.split(':')[1].length - 1);
+  }
+
   static List<GetPage> getPages() {
     return [
       GetPage(

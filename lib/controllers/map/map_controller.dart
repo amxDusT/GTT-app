@@ -77,7 +77,7 @@ class MapPageController extends GetxController
       .where(
         (vehicle) =>
             vehicle.mqttData.direction ==
-            routes[vehicle.mqttData.shortName]?.pattern.directionId,
+            routes[vehicle.mqttData.gtfsId]?.pattern.directionId,
       )
       .toList()
       .obs;
@@ -186,8 +186,7 @@ class MapPageController extends GetxController
           !Storage.isRouteWithoutPassagesShowing &&
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
 
-      _mqttController
-          .addSubscription((route as gtt.RouteWithDetails).shortName);
+      _mqttController.addSubscription((route as gtt.RouteWithDetails).gtfsId);
       stops.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
 
       /*for (var stop in stops) {
@@ -199,9 +198,8 @@ class MapPageController extends GetxController
 
       // stopsTemp.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
 
-      routes.putIfAbsent(route.shortName.replaceAll(' ', ''), () => route);
-      routeIndex.putIfAbsent(
-          route.shortName.replaceAll(' ', ''), () => routeIndex.length);
+      routes.putIfAbsent(route.gtfsId, () => route);
+      routeIndex.putIfAbsent(route.gtfsId, () => routeIndex.length);
 
       if (++routeCount >= maxRoutesInMap) break;
     }
@@ -294,6 +292,7 @@ class MapPageController extends GetxController
       popupController.showPopupsOnlyFor([VehicleMarker(mqttData: payload)]);
       lastOpenedMarker = VehicleMarker(mqttData: payload);
     }
+    //follow vehicle
     if (followVehicle.value == payload.vehicleNum) {
       _mapAnimation.animate(payload.position, zoom: mapController.camera.zoom);
     }
@@ -302,6 +301,8 @@ class MapPageController extends GetxController
 
   void _listenData() async {
     _mqttController.payloadStream.listen((MqttVehicle payload) {
+      print(payload.vehicleNum);
+
       if (allVehicles.containsKey(payload.vehicleNum)) {
         _animatedMarkerMove(payload);
       } else {
@@ -312,10 +313,9 @@ class MapPageController extends GetxController
             color: routes.length == 1
                 ? null
                 : Utils.darken(
-                    colors[
-                        (routeIndex[payload.shortName] ?? 0) % colors.length],
+                    colors[(routeIndex[payload.gtfsId] ?? 0) % colors.length],
                     30),
-            internalColor: routes[payload.shortName]?.type == 0 &&
+            internalColor: routes[payload.gtfsId]?.type == 0 &&
                     !MapUtils.isTram(payload.vehicleNum)
                 ? Colors.white
                 : null,

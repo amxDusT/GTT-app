@@ -157,7 +157,7 @@ class MapPage extends StatelessWidget {
                         ],
                         popupDisplayOptions: PopupDisplayOptions(
                           builder: (BuildContext context, Marker marker) {
-                            //_flutterMapController.lastOpenedMarker = marker;
+                            _flutterMapController.lastOpenedMarker = marker;
 
                             return CardMapWidget(
                                 marker: marker,

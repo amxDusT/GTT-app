@@ -1,7 +1,7 @@
 import 'package:latlong2/latlong.dart';
 
 class MqttVehicle {
-  final String shortName;
+  final String gtfsId;
   final LatLng position;
   final int? rotation;
   final int? speed;
@@ -12,7 +12,7 @@ class MqttVehicle {
   final int vehicleNum;
   final DateTime lastUpdate;
   const MqttVehicle({
-    required this.shortName,
+    required this.gtfsId,
     required this.vehicleNum,
     required this.position,
     this.rotation,
@@ -33,7 +33,7 @@ class MqttVehicle {
       int? nextStop,
       DateTime? lastUpdate}) {
     return MqttVehicle(
-      shortName: shortName,
+      gtfsId: gtfsId,
       vehicleNum: vehicleNum,
       position: position ?? this.position,
       rotation: rotation ?? this.rotation,
@@ -50,7 +50,7 @@ class MqttVehicle {
     final List<String> splitTopic = topic.split('/');
 
     return MqttVehicle(
-      shortName: splitTopic[1],
+      gtfsId: 'gtt:${splitTopic[1]}U',
       vehicleNum: int.parse(splitTopic[2]),
       position: LatLng(list[0] as double, list[1] as double),
       rotation: list[2] as int?,
