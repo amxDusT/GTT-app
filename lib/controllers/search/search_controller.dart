@@ -10,7 +10,7 @@ class MapSearchController {
   FocusNode? focusNode;
   final RxBool isSearching = false.obs;
   final MapAddressController mapAddress;
-  final SuggestionsController<Address> suggestionsController =
+  final SuggestionsController<AddressWithDetails> suggestionsController =
       SuggestionsController();
   final MapLocation mapLocation = Get.find();
   MapSearchController({required this.mapAddress});
@@ -34,7 +34,7 @@ class MapSearchController {
     });
   }
 
-  void addToText(Address address) {
+  void addToText(AddressWithDetails address) {
     controller.text = address.toDetailedString(showHouseNumber: true);
   }
 

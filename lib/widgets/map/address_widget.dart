@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_address.dart';
+import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
+import 'package:flutter_gtt/models/gtt/travel.dart';
+import 'package:flutter_gtt/models/map/address.dart';
+import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/widgets/map/distance_icon.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -85,7 +89,15 @@ class AddressWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          List<Travel> travels = await GttApi.getTravels(
+                            from: SimpleAddress.fromCurrentPosition(
+                                MapGlobalController.initialCenter),
+                            to: controller.lastAddress.first,
+                            time: DateTime.now(),
+                          );
+                          print(travels);
+                        },
                         style: TextButton.styleFrom(
                           fixedSize: const Size(110, 40),
                           shape: RoundedRectangleBorder(

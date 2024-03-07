@@ -36,23 +36,6 @@ class MapGlobal extends StatelessWidget {
         }
       },
       child: Scaffold(
-        /* appBar: AppBar(
-            title: const Text('Mappa'),
-            actions: [
-              IconButton(
-                onPressed: _mapController.searchController.onSearchIconClicked,
-                icon: const Icon(Icons.search),
-              ),
-            ],
-            bottom: _mapController.searchController.isSearching.isTrue
-                ? PreferredSize(
-                    preferredSize: const Size.fromHeight(60),
-                    child: SearchAddress(
-                      searchController: _mapController.searchController,
-                    ),
-                  )
-                : null,
-          ), */
         body: FlutterMap(
           mapController: _mapController.mapController,
           options: MapOptions(

@@ -15,7 +15,7 @@ import '../../resources/utils/utils.dart';
 
 class MapAddressController {
   final RxList<Marker> markerSelected = <Marker>[].obs;
-  RxList<Address> lastAddress = <Address>[].obs;
+  RxList<AddressWithDetails> lastAddress = <AddressWithDetails>[].obs;
   RxBool isLoadingAddress = false.obs;
   final PopupController popupController;
   final mapLocation = Get.put(MapLocation(), permanent: true);
@@ -30,7 +30,7 @@ class MapAddressController {
     setMarker(location);
   }
 
-  void setAddress(Address address) {
+  void setAddress(AddressWithDetails address) {
     if (!address.isValid) {
       Utils.showSnackBar('Indirizzo non valido');
 
@@ -60,9 +60,9 @@ class MapAddressController {
         position.latitude, position.longitude);
 
     print(jsonResult);
-    Address address = Address.empty();
+    AddressWithDetails address = AddressWithDetails.empty();
     if (jsonResult['features'] != null && jsonResult['features'].isNotEmpty) {
-      address = Address.fromJson(jsonResult['features'][0]);
+      address = AddressWithDetails.fromJson(jsonResult['features'][0]);
     }
 
     if (address.isValid) {
@@ -80,7 +80,7 @@ class MapAddressController {
       if (markerSelected.isNotEmpty && markerSelected.first.point == position) {
         addressReset();
       }
-      lastAddress.value = [Address.empty()];
+      lastAddress.value = [AddressWithDetails.empty()];
       Utils.showSnackBar('Indirizzo non valido');
     }
     //print(jsonResult['features'][0]);
@@ -88,7 +88,7 @@ class MapAddressController {
     isLoadingAddress.value = false;
   }
 
-  FutureOr<List<Address>?> getSuggestions(String value) async {
+  FutureOr<List<AddressWithDetails>?> getSuggestions(String value) async {
     if (value.isEmpty) {
       return null;
     }
@@ -100,10 +100,10 @@ class MapAddressController {
     }
     var jsonResult =
         await GeocoderApi.getAddressFromString(value, lat: lat, lon: lon);
-    Set<Address> suggestions = {};
-    Address address;
+    Set<AddressWithDetails> suggestions = {};
+    AddressWithDetails address;
     for (var json in jsonResult['features']) {
-      address = Address.fromJson(json);
+      address = AddressWithDetails.fromJson(json);
       if (address.isValid) suggestions.add(address);
     }
 
@@ -111,9 +111,9 @@ class MapAddressController {
   }
 
   void onSearch(String value) async {
-    List<Address>? suggestions = await getSuggestions(value);
+    List<AddressWithDetails>? suggestions = await getSuggestions(value);
     if (suggestions != null && suggestions.isNotEmpty) {
-      Address address = suggestions.first;
+      AddressWithDetails address = suggestions.first;
 
       onSelected(address);
       //print(address);
@@ -126,7 +126,7 @@ class MapAddressController {
     }
   }
 
-  void onSelected(Address address) {
+  void onSelected(AddressWithDetails address) {
     setAddress(address);
     mapAnimation.animate(address.position, zoom: 15);
   }

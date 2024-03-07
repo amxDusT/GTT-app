@@ -1,23 +1,39 @@
 import 'package:latlong2/latlong.dart';
 
-class Address {
+class SimpleAddress {
+  final String label;
+  final LatLng position;
+  SimpleAddress({
+    required this.label,
+    required this.position,
+  });
+
+  factory SimpleAddress.fromCurrentPosition(LatLng position) {
+    return SimpleAddress(
+      label: 'La tua posizione',
+      position: position,
+    );
+  }
+  String get toQueryPlace =>
+      '$label::${position.latitude},${position.longitude}';
+}
+
+class AddressWithDetails extends SimpleAddress {
   final String street;
   final String city;
   final String state;
   final String postalCode;
   final String houseNumber;
-  final LatLng position;
-  final String label;
   final String province;
   double distanceInKm;
-  Address({
+  AddressWithDetails({
     required this.street,
     required this.city,
     required this.state,
     required this.postalCode,
     required this.houseNumber,
-    required this.position,
-    required this.label,
+    required super.position,
+    required super.label,
     required this.province,
     required this.distanceInKm,
   });
@@ -27,8 +43,8 @@ class Address {
       city.isNotEmpty &&
       state.isNotEmpty &&
       province.isNotEmpty;
-  factory Address.empty() {
-    return Address(
+  factory AddressWithDetails.empty() {
+    return AddressWithDetails(
       distanceInKm: 0.0,
       province: '',
       label: '',
@@ -40,8 +56,8 @@ class Address {
       position: const LatLng(0, 0),
     );
   }
-  factory Address.fromJson(Map<String, dynamic> json) {
-    return Address(
+  factory AddressWithDetails.fromJson(Map<String, dynamic> json) {
+    return AddressWithDetails(
       position: LatLng(
         json['geometry']['coordinates'][1] ?? '',
         json['geometry']['coordinates'][0] ?? '',
@@ -68,7 +84,14 @@ class Address {
 
   @override
   String toString() {
-    return '$street $houseNumber, $city, $state, $postalCode';
+    return toDetailedString(
+      showCity: true,
+      showState: true,
+      showStreet: true,
+      showPostalCode: true,
+      showHouseNumber: true,
+      showProvince: true,
+    );
   }
 
   String toDetailedString({
@@ -107,7 +130,7 @@ class Address {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Address &&
+    return other is AddressWithDetails &&
         other.street == street &&
         other.city == city &&
         other.state == state &&

@@ -19,7 +19,7 @@ class SearchAddress extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          TypeAheadField<Address>(
+          TypeAheadField<AddressWithDetails>(
             itemSeparatorBuilder: (context, index) => Divider(
               indent: context.width * 0.18,
               height: 1.0,
