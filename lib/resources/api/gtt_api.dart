@@ -8,6 +8,7 @@ import 'package:flutter_gtt/models/gtt/travel.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/resources/api/api_exception.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class GttApi {
   static const String _url =
@@ -19,12 +20,12 @@ class GttApi {
 
     final request = json.encode({
       'query':
-          'query StopPageContentContainer_StopRelayQL(\$id_0:String!,\$startTime_1:Long!,\$timeRange_2:Int!,\$numberOfDepartures_3:Int!) {stop (id:\$id_0) {stopTimes:stoptimesForPatterns(startTime:\$startTime_1,timeRange:\$timeRange_2,numberOfDepartures:\$numberOfDepartures_3,omitCanceled:false) {pattern {code route{alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate}}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}}}',
+          'query StopPageContentContainer_StopRelayQL(\$id:String!,\$startTime:Long!,\$timeRange:Int!,\$numberOfDepartures:Int!) {stop (id:\$id) {stopTimes:stoptimesForPatterns(startTime:\$startTime,timeRange:\$timeRange,numberOfDepartures:\$numberOfDepartures,omitCanceled:false) {pattern {code route{alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate}}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}}}',
       'variables': {
-        'id_0': 'gtt:$stopNum',
-        'startTime_1': time,
-        'timeRange_2': timeRange,
-        'numberOfDepartures_3': 100
+        'id': 'gtt:$stopNum',
+        'startTime': time,
+        'timeRange': timeRange,
+        'numberOfDepartures': 100
       }
     });
 
@@ -76,8 +77,8 @@ class GttApi {
       routesByFeed() async {
     final request = json.encode({
       'query':
-          'query AllRoutes(\$feed_id: [String]){routes(feeds: \$feed_id) {agency{gtfsId} gtfsId shortName longName type desc patterns{name code directionId headsign stops{ name code gtfsId lat lon} patternGeometry{points}}}}',
-      'variables': {'feed_id': 'gtt'}
+          'query AllRoutes(\$feedId: [String]){routes(feeds: \$feedId) {agency{gtfsId} gtfsId shortName longName type desc patterns{name code directionId headsign stops{ name code gtfsId lat lon} patternGeometry{points}}}}',
+      'variables': {'feedId': 'gtt'}
     });
     final response = await _post(request);
     if (response.statusCode != 200) {
@@ -124,8 +125,8 @@ class GttApi {
       'variables': {
         'fromPlace': from.toQueryPlace,
         'toPlace': to.toQueryPlace,
-        'date': '${time.year}-${time.month}-${time.day}',
-        'time': '${time.hour}:${time.minute}:${time.second}',
+        'date': DateFormat('yyyy-MM-dd').format(time),
+        'time': DateFormat.Hms().format(time),
         'transportModes': [],
         'maxItineraries': 5
       }

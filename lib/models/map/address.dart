@@ -14,8 +14,12 @@ class SimpleAddress {
       position: position,
     );
   }
+
   String get toQueryPlace =>
       '$label::${position.latitude},${position.longitude}';
+
+  @override
+  String toString() => label;
 }
 
 class AddressWithDetails extends SimpleAddress {
@@ -82,17 +86,17 @@ class AddressWithDetails extends SimpleAddress {
     return '${distanceInKm.toStringAsFixed(1)} km';
   }
 
-  @override
+  /* @override
   String toString() {
     return toDetailedString(
       showCity: true,
-      showState: true,
       showStreet: true,
       showPostalCode: true,
       showHouseNumber: true,
       showProvince: true,
+      showState: false,
     );
-  }
+  } */
 
   String toDetailedString({
     bool showStreet = true,
@@ -106,13 +110,11 @@ class AddressWithDetails extends SimpleAddress {
     if (showStreet) {
       result = street;
     }
-    if (showHouseNumber) {
-      result +=
-          '${result.isNotEmpty ? ' ' : ''}${houseNumber.isNotEmpty ? houseNumber : ''}';
+    if (showHouseNumber && houseNumber.isNotEmpty) {
+      result += '${result.isNotEmpty ? ' ' : ''}$houseNumber';
     }
-    if (showPostalCode) {
-      result +=
-          '${result.isNotEmpty ? ', ' : ''}${postalCode.isNotEmpty ? postalCode : ''}';
+    if (showPostalCode && postalCode.isNotEmpty) {
+      result += '${result.isNotEmpty ? ', ' : ''}$postalCode';
     }
     if (showCity) {
       result += '${result.isNotEmpty ? ', ' : ''}$city';

@@ -57,7 +57,7 @@ class MapPageController extends GetxController
       <String, RxMap<int, MqttVehicle>>{}.obs;
 
   Marker? lastOpenedMarker;
-
+  late Timer _timer;
   final MapLocation userLocation = Get.find();
   final RxBool isLocationLoading = false.obs;
 
@@ -103,11 +103,13 @@ class MapPageController extends GetxController
     for (var element in _activeAnimations) {
       element.dispose();
     }
+    _timer.cancel();
     await _mqttController.dispose();
     _mapAnimation.dispose();
     mapController.dispose();
     popupController.dispose();
     userLocation.onMapDispose();
+
     super.onClose();
   }
 
@@ -152,7 +154,7 @@ class MapPageController extends GetxController
   }
 
   void onMapReady() async {
-    Timer.periodic(const Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       _removeOldVehicles();
     });
     _mqttController = MqttController();

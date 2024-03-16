@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
+import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart';

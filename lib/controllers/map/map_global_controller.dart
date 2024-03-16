@@ -1,9 +1,9 @@
 import 'package:flutter_gtt/controllers/map/map_address.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
+import 'package:flutter_gtt/controllers/map/map_travel_controller.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -11,24 +11,18 @@ class MapGlobalController extends GetxController
     with GetTickerProviderStateMixin {
   static const LatLng initialCenter = LatLng(45.063609, 7.679618);
   final mapController = MapController();
-  final popupController = PopupController();
-  late final MapAddressController mapAddress;
+
   late final MapAnimation _mapAnimation;
-  late final MapSearchController searchController;
+  late final MapAddressController mapAddress = Get.find();
+  late final MapSearchController searchController = Get.find();
+  late final MapTravelController travelController = Get.find();
   final MapLocation mapLocation = Get.find<MapLocation>();
+
   @override
   void onInit() {
     super.onInit();
-
+    _mapAnimation = Get.find(tag: 'globalAnimation');
     mapLocation.switchLocationShowing();
-    _mapAnimation = MapAnimation(controller: mapController, vsync: this);
-    mapAddress = MapAddressController(
-      popupController: popupController,
-      mapAnimation: _mapAnimation,
-    );
-    searchController = MapSearchController(
-      mapAddress: mapAddress,
-    );
   }
 
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
@@ -37,11 +31,10 @@ class MapGlobalController extends GetxController
   }
 
   void onTap(TapPosition tapPosition, LatLng position) {
-    popupController.hideAllPopups();
+    mapAddress.popupController.hideAllPopups();
     mapAddress.addressReset();
-    searchController.focusNode?.unfocus();
-    searchController.isSearching.value = false;
-    //searchController.isSearching.toggle();
+    searchController.focusNode.unfocus();
+    //searchController.isSearching.value = false;
   }
 
   void onMapReady() {
@@ -52,11 +45,9 @@ class MapGlobalController extends GetxController
   @override
   void onClose() {
     super.onClose();
-    mapAddress.dispose();
     searchController.dispose();
     _mapAnimation.dispose();
     mapController.dispose();
-    popupController.dispose();
     mapLocation.onMapDispose();
   }
 

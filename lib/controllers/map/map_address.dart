@@ -13,17 +13,13 @@ import 'package:latlong2/latlong.dart';
 
 import '../../resources/utils/utils.dart';
 
-class MapAddressController {
+class MapAddressController extends GetxController {
   final RxList<Marker> markerSelected = <Marker>[].obs;
   RxList<AddressWithDetails> lastAddress = <AddressWithDetails>[].obs;
   RxBool isLoadingAddress = false.obs;
-  final PopupController popupController;
+  final PopupController popupController = PopupController();
   final mapLocation = Get.put(MapLocation(), permanent: true);
-  final MapAnimation mapAnimation;
-  MapAddressController({
-    required this.popupController,
-    required this.mapAnimation,
-  });
+  final MapAnimation mapAnimation = Get.find(tag: 'globalAnimation');
 
   void onMapLongPress(TapPosition tapPosition, LatLng location) {
     getAddress(location);
@@ -90,7 +86,7 @@ class MapAddressController {
 
   FutureOr<List<AddressWithDetails>?> getSuggestions(String value) async {
     if (value.isEmpty) {
-      return null;
+      value = 'Torino';
     }
     double? lat, lon;
 
@@ -110,30 +106,9 @@ class MapAddressController {
     return suggestions.toList();
   }
 
-  void onSearch(String value) async {
-    List<AddressWithDetails>? suggestions = await getSuggestions(value);
-    if (suggestions != null && suggestions.isNotEmpty) {
-      AddressWithDetails address = suggestions.first;
-
-      onSelected(address);
-      //print(address);
-    } else {
-      Utils.showSnackBar(
-        'Nessun indirizzo trovato',
-        snackPosition: SnackPosition.BOTTOM,
-        closePrevious: true,
-      );
-    }
-  }
-
   void onSelected(AddressWithDetails address) {
+    print(address.position);
     setAddress(address);
     mapAnimation.animate(address.position, zoom: 15);
-  }
-
-  void dispose() {
-    markerSelected.close();
-    lastAddress.close();
-    isLoadingAddress.close();
   }
 }

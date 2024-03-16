@@ -23,6 +23,7 @@ class DistanceWidget extends StatelessWidget {
           Text(
             address.distanceString,
             style: const TextStyle(letterSpacing: -0.5),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
