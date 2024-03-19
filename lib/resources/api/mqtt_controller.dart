@@ -5,6 +5,7 @@ import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:uuid/uuid.dart';
 
 class MqttController {
   final Set<String> _shortNames = {};
@@ -14,8 +15,8 @@ class MqttController {
       StreamController<MqttVehicle>();
 
   MqttController() {
-    _client = MqttServerClient.withPort(
-        'wss://mapi.5t.torino.it/scre', 'busInformation', 443);
+    _client = MqttServerClient.withPort('wss://mapi.5t.torino.it/scre',
+        'busInformation${const Uuid().v1()}', 443);
     _client.logging(on: false);
     _client.keepAlivePeriod = 60;
     final connMess = MqttConnectMessage().withWillQos(MqttQos.atMostOnce);

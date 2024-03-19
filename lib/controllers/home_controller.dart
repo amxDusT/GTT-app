@@ -60,6 +60,17 @@ class HomeController extends GetxController {
     getStops();
   }
 
+  void updateFavorites() {
+    var date = DateTime.now();
+
+    fermate = fermate.map((fermata) {
+      date = date.add(const Duration(seconds: 1));
+      return fermata.copyWith(dateTime: date);
+    }).toList();
+    DatabaseCommands.updateAllStops(fermate);
+    update();
+  }
+
   void switchAddDeleteFermata(Stop stop) async {
     if (fermate.contains(stop)) {
       DatabaseCommands.deleteStop(stop);

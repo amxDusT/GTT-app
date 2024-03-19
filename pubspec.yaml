@@ -55,8 +55,10 @@ dependencies:
   nfc_manager: ^3.3.0
   package_info_plus: ^5.0.1
   path: ^1.8.3
+  reorderable_grid: ^1.0.10
   sqflite: ^2.3.0
   url_launcher: ^6.2.1
+  uuid: ^4.3.3
 
 dev_dependencies:
   flutter_lints: ^3.0.1

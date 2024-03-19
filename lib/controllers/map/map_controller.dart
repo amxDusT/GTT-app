@@ -51,7 +51,7 @@ class MapPageController extends GetxController
   final RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
 
   //live bus
-  late final MqttController _mqttController;
+  final MqttController _mqttController = MqttController();
 
   final RxMap<String, RxMap<int, MqttVehicle>> mqttInformation =
       <String, RxMap<int, MqttVehicle>>{}.obs;
@@ -83,7 +83,7 @@ class MapPageController extends GetxController
       )
       .toList()
       .obs;
-
+  late final Route<dynamic>? currentRoute;
   double get offsetVal {
     int len = routes.length;
     switch (len) {
@@ -150,14 +150,17 @@ class MapPageController extends GetxController
   @override
   void onInit() {
     super.onInit();
+    currentRoute = Get.rawRoute;
     _mapAnimation = MapAnimation(controller: mapController, vsync: this);
+    //onMapReady();
+    _onMapReady();
   }
 
-  void onMapReady() async {
+  void _onMapReady() async {
     _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       _removeOldVehicles();
     });
-    _mqttController = MqttController();
+    //_mqttController = MqttController();
     List<gtt.Route> routeValues = Get.arguments['vehicles'];
     final Stop? initialStop = Get.arguments['fermata'];
 
@@ -219,6 +222,13 @@ class MapPageController extends GetxController
     _listenData();
     lastView = _getCenterBounds();
     centerBounds();
+  }
+
+  void onMapReady() async {
+    if (routes.values.isNotEmpty) {
+      lastView = _getCenterBounds();
+      centerBounds();
+    }
   }
 
   void centerBounds() {

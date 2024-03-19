@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 
 class FavStop extends Stop {
@@ -44,31 +43,21 @@ class FavStop extends Stop {
     };
   }
 
-  static Future<FavStop?> fromDbMap(Map<String, dynamic> js) async {
-    Stop? stop =
-        await DatabaseCommands.getStop(js['stopId']?.split(':')[1] ?? 0);
-    return stop == null
-        ? null
-        : FavStop.fromStop(
-            stop: (await DatabaseCommands.getStop(
-                js['stopId']?.split(':')[1] ?? 0))!,
-            dateTime:
-                DateTime.fromMillisecondsSinceEpoch((js['date'] as int) * 1000),
-            color: Storage.stringToColor(js['color'])!,
-            descrizione: js['descrizione'],
-          );
-  }
-
   factory FavStop.fromJson(Map<String, dynamic> js) {
     return FavStop.fromStop(
       stop: Stop.fromJson(js),
       dateTime: DateTime.fromMillisecondsSinceEpoch((js['date'] as int) * 1000),
       color: Storage.stringToColor(js['color'])!,
       descrizione: js['descrizione'],
+      //order: js['order'],
     );
   }
 
-  FavStop copyWith({Color? color, String? descrizione, DateTime? dateTime}) {
+  FavStop copyWith({
+    Color? color,
+    String? descrizione,
+    DateTime? dateTime,
+  }) {
     return FavStop(
       descrizione: descrizione ?? this.descrizione,
       dateTime: dateTime ?? this.dateTime,

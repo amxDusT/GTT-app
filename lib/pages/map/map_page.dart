@@ -69,6 +69,7 @@ class MapPage extends StatelessWidget {
                 onMapEvent: _flutterMapController.onMapEvent,
                 onTap: (tapPosition, point) {
                   _flutterMapController.popupController.hideAllPopups();
+                  _flutterMapController.lastOpenedMarker = null;
                 },
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
