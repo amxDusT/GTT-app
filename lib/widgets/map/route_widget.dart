@@ -20,7 +20,7 @@ class RouteWidget extends StatelessWidget {
           '${MapUtils.isTram(marker.mqttData.vehicleNum) ? 'Tram' : 'Bus'} ${controller.routes[marker.mqttData.gtfsId]?.shortName ?? 'UNKOWN'} - ${marker.mqttData.vehicleNum}',
         ),
         Text(
-          'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
+          'Last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
           style: Get.textTheme.bodySmall,
         ),
         /* Text(

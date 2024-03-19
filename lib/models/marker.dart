@@ -12,13 +12,16 @@ import 'package:latlong2/latlong.dart';
 @immutable
 class UserLocationMarker extends Marker {
   final Position position;
-  UserLocationMarker({required this.position, bool beta = false})
+  UserLocationMarker(
+      {required this.position, bool beta = false, double? heading})
       : super(
             point: LatLng(position.latitude, position.longitude),
             height: 30,
             width: 30,
             child: Transform.rotate(
-                angle: beta ? position.heading * pi / 180 : 0,
+                angle: heading != null
+                    ? heading * pi / 180
+                    : (beta ? position.heading * pi / 180 : 0),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [

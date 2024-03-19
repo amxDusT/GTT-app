@@ -136,6 +136,8 @@ class MapPage extends StatelessWidget {
                         UserLocationMarker(
                           position: _flutterMapController
                               .userLocation.userPosition.first,
+                          heading: _flutterMapController
+                              .userLocation.userHeading.value,
                           beta: _settingsController.showBetaFeatures.isTrue,
                         ),
                     ],

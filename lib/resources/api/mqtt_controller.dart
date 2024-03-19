@@ -13,10 +13,11 @@ class MqttController {
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>>? _subscription;
   final StreamController<MqttVehicle> _payloadStreamController =
       StreamController<MqttVehicle>();
-
+  final uuid = const Uuid();
   MqttController() {
-    _client = MqttServerClient.withPort('wss://mapi.5t.torino.it/scre',
-        'busInformation${const Uuid().v1()}', 443);
+    final clientId = uuid.v1().substring(0, 18);
+    _client = MqttServerClient.withPort(
+        'wss://mapi.5t.torino.it/scre', clientId, 443);
     _client.logging(on: false);
     _client.keepAlivePeriod = 60;
     final connMess = MqttConnectMessage().withWillQos(MqttQos.atMostOnce);

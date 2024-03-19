@@ -48,7 +48,6 @@ class MqttVehicle {
 
   factory MqttVehicle.fromList(List<dynamic> list, String topic) {
     final List<String> splitTopic = topic.split('/');
-
     return MqttVehicle(
       gtfsId: 'gtt:${splitTopic[1]}U',
       vehicleNum: int.parse(splitTopic[2]),

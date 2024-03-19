@@ -84,11 +84,11 @@ class MapGlobal extends StatelessWidget {
                 ),
               ),
               BottomButtons(children: [
-                CircleButton(
+                /* CircleButton(
                   tooltip: 'Location',
                   icon: const Icon(Icons.location_on),
-                  onPressed: () => _mapController.zoomOut,
-                ),
+                  onPressed: () => _mapController.,
+                ), */
                 CircleButton(
                   tooltip: 'Zoom out',
                   icon: const Icon(Icons.remove),
