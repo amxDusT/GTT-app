@@ -33,9 +33,11 @@ class SearchStopsController extends GetxController {
 
   void onSubmitted([String? value]) async {
     value ??= _searchController?.text ?? '';
-    List<Stop> stops = await getStopsFromValue(value);
     _searchController?.clear();
     _focusNode?.unfocus();
+    if (value.isEmpty) return;
+    List<Stop> stops = await getStopsFromValue(value);
+
     if (stops.isEmpty) {
       Utils.showSnackBar('La fermata non esiste',
           title: 'Errore', snackPosition: SnackPosition.TOP);

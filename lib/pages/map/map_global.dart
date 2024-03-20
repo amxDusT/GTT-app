@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
+import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/resources/utils/maps.dart';
 import 'package:flutter_gtt/widgets/map/address_widget.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/circle_button.dart';
@@ -63,6 +65,55 @@ class MapGlobal extends StatelessWidget {
               if (!_mapController.travelController.isSearching.isTrue)
                 SearchAddress(
                     searchController: _mapController.searchController),
+              Obx(
+                () => MarkerLayer(
+                  markers: [
+                    if (_mapController.mapLocation.isLocationAvailable.isTrue)
+                      UserLocationMarker(
+                        position: _mapController.mapLocation.userPosition.first,
+                        heading: _mapController.mapLocation.userHeading.value,
+                        beta: true,
+                      ),
+                  ],
+                ),
+              ),
+              Obx(
+                () => MarkerLayer(
+                  markers: [
+                    if (_mapController.travelController.isSearching.isTrue)
+                      Marker(
+                        point: _mapController
+                            .travelController.fromAddress.value.position,
+                        child: const Icon(Icons.circle),
+                      ),
+                    if (_mapController.travelController.isSearching.isTrue)
+                      Marker(
+                        point: _mapController
+                            .travelController.toAddress.value.position,
+                        child: const Icon(
+                          Icons.circle,
+                          size: 24,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              PolylineLayer(polylines: [
+                if (_mapController.travelController.isSearching.isTrue &&
+                    _mapController.travelController.lastTravel.isNotEmpty)
+                  ..._mapController.travelController.lastTravel.first.legs.map(
+                    (leg) => Polyline(
+                      points: MapUtils.decodeGooglePolyline(leg.points),
+                      isDotted: leg.mode == 'WALK',
+                      color: leg.mode == 'WALK'
+                          ? Colors.blue
+                          : leg.mode == 'BUS'
+                              ? Colors.green
+                              : Colors.red,
+                      strokeWidth: 4,
+                    ),
+                  ),
+              ]),
               GestureDetector(
                 // block flutter_map from handling taps on markers
                 onTap: () {},
@@ -107,7 +158,7 @@ class MapGlobal extends StatelessWidget {
     );
   }
 
-  AppBar oldAppBar() => AppBar(
+  /* AppBar oldAppBar() => AppBar(
         actions: [
           IconButton(
             tooltip: 'Inverti indirizzi',
@@ -160,5 +211,5 @@ class MapGlobal extends StatelessWidget {
                 ),
               ),
             )),
-      );
+      ); */
 }

@@ -55,7 +55,6 @@ class MapAddressController extends GetxController {
     var jsonResult = await GeocoderApi.getAddressFromPosition(
         position.latitude, position.longitude);
 
-    print(jsonResult);
     AddressWithDetails address = AddressWithDetails.empty();
     if (jsonResult['features'] != null && jsonResult['features'].isNotEmpty) {
       address = AddressWithDetails.fromJson(jsonResult['features'][0]);
@@ -107,7 +106,6 @@ class MapAddressController extends GetxController {
   }
 
   void onSelected(AddressWithDetails address) {
-    print(address.position);
     setAddress(address);
     mapAnimation.animate(address.position, zoom: 15);
   }

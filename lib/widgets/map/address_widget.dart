@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
-import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/widgets/map/distance_icon.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -96,8 +95,7 @@ class AddressWidget extends StatelessWidget {
                       TextButton(
                         onPressed: () async {
                           controller.travelController.searchTravel(
-                            from: SimpleAddress.fromCurrentPosition(
-                                MapGlobalController.initialCenter),
+                            from: null,
                             to: controller.mapAddress.lastAddress.first,
                             date: DateTime.now(),
                           );

@@ -141,9 +141,11 @@ class MapPageController extends GetxController
       List<FermataMarker> list = allStops
           .map((marker) => marker.copyWith(zoom: mapEvent.camera.zoom))
           .toList();
-      // TODO: allStops = list.obs; might not notify the listener to rebuild
-      allStops.clear();
-      allStops.addAll(list);
+      // TODO: check if works.
+      allStops.value = list;
+      allStops.refresh();
+      /* allStops.clear();
+      allStops.addAll(list); */
     }
   }
 

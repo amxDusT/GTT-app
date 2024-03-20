@@ -81,6 +81,7 @@ class Utils {
     if (closePrevious ?? false) {
       await Get.closeCurrentSnackbar();
     }
+
     Get.showSnackbar(
       GetSnackBar(
         title: title,
@@ -88,7 +89,7 @@ class Utils {
         duration: duration ?? const Duration(seconds: 2),
         animationDuration: const Duration(milliseconds: 300),
         snackPosition: snackPosition ?? SnackPosition.BOTTOM,
-        snackStyle: SnackStyle.GROUNDED,
+        snackStyle: SnackStyle.FLOATING,
         mainButton: mainButton ??
             TextButton(
               onPressed: () async {

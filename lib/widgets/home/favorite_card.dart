@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
 import 'package:flutter_gtt/pages/map/map_point_page.dart';

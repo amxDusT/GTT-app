@@ -22,7 +22,7 @@ class MapGlobalController extends GetxController
   void onInit() {
     super.onInit();
     _mapAnimation = Get.find(tag: 'globalAnimation');
-    mapLocation.switchLocationShowing();
+    mapLocation.locationShowing = true;
   }
 
   void onMapLongPress(TapPosition tapPosition, LatLng location) {

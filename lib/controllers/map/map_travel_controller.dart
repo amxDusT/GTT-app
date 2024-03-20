@@ -1,12 +1,17 @@
+import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_address.dart';
+import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
+import 'package:flutter_gtt/models/gtt/travel.dart';
 import 'package:flutter_gtt/models/map/address.dart';
-import 'package:flutter_gtt/pages/map/map_search.dart';
+import 'package:flutter_gtt/pages/map/map_search_page.dart';
+import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/widgets/search/disabled_focusnode.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 
 class MapTravelController extends GetxController {
   static const _textfieldHeight = 56.0;
@@ -17,8 +22,7 @@ class MapTravelController extends GetxController {
       Get.put(MapSearchController(), tag: 'from');
   final MapSearchController toController =
       Get.put(MapSearchController(), tag: 'to');
-  final TextEditingController fromTextController = TextEditingController();
-  final TextEditingController toTextController = TextEditingController();
+
   final RxBool isSearching = false.obs;
   final Rx<SimpleAddress> fromAddress =
       SimpleAddress(label: '', position: const LatLng(0.0, 0.0)).obs;
@@ -28,14 +32,7 @@ class MapTravelController extends GetxController {
   final MapAddressController mapAddress = Get.find();
   final MapLocation mapLocation = Get.find<MapLocation>();
   final double appBarHeight = 56.0;
-
-  @override
-  void onClose() {
-    fromTextController.dispose();
-    toTextController.dispose();
-
-    super.onClose();
-  }
+  final RxList<Travel> lastTravel = <Travel>[].obs;
 
   void switchAddresses() {
     final SimpleAddress tmp = fromAddress.value;
@@ -46,23 +43,109 @@ class MapTravelController extends GetxController {
   }
 
   void searchTravel({
-    required SimpleAddress from,
-    required SimpleAddress to,
+    SimpleAddress? from,
+    SimpleAddress? to,
     DateTime? date,
-  }) async {
+  }) {
     isSearching.value = true;
-    fromAddress.value = from;
-    toAddress.value = to;
+
+    if (from != null) {
+      fromAddress.value = from;
+    } else if (fromAddress.value.label.isEmpty) {
+      fromAddress.value = SimpleAddress.fromCurrentPosition(
+        mapLocation.isLocationShowing.isTrue
+            ? LatLng(mapLocation.userPosition.first.latitude,
+                mapLocation.userPosition.first.longitude)
+            : MapGlobalController.initialCenter,
+      );
+    }
+    if (to != null) {
+      toAddress.value = to;
+    }
     travelDate.value = date ?? DateTime.now();
     _updateControllers();
   }
 
-  void _updateControllers() {
+  Future<void> _updateControllers() async {
     fromController.controller.text = fromAddress.value.label;
     toController.controller.text = toAddress.value.label;
-    //fromTextController.text = fromAddress.value.label;
-    //toTextController.text = toAddress.value.label;
+
+    var travels = await GttApi.getTravels(
+        from: fromAddress.value, to: toAddress.value, time: travelDate.value);
+    print(travels);
+    showFlexibleBottomSheet(
+      minHeight: 0,
+      initHeight: 0.5,
+      maxHeight: 1,
+      context: Get.context!,
+      builder: ((context, scrollController, bottomSheetOffset) {
+        return _buildBottomSheet(
+            travels, context, scrollController, bottomSheetOffset);
+      }),
+      anchors: [0, 0.5, 1],
+      isSafeArea: false,
+    );
   }
+
+  //-- test---
+
+  Widget _buildBottomSheet(
+    List<Travel> travels,
+    BuildContext context,
+    ScrollController scrollController,
+    double bottomSheetOffset,
+  ) {
+    return SingleChildScrollView(
+      controller: scrollController,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Center(
+            child: Icon(
+              Icons.horizontal_rule_rounded,
+              size: 40,
+            ),
+          ),
+          ...travels.map((e) => _buildTravel(e)),
+          Flexible(
+            child: Text(
+              travels.toString(),
+              maxLines: 50,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTravel(Travel travel) {
+    /* String getDistanceString(double distance) {
+      if (distance < 1000) {
+        return '${distance.toStringAsFixed(0)} m';
+      }
+      return '${(distance / 1000.0).toStringAsFixed(1)} km';
+    } */
+
+    String getDurationString(int duration) {
+      if (duration < 60) {
+        return '${duration.toString()} sec';
+      }
+      return '${(duration / 60).toStringAsFixed(0)} min';
+    }
+
+    List<gtt.Route> routes = travel.legs
+        .where((element) => element.route != null)
+        .map((e) => e.route!)
+        .toList();
+    String routesString = routes.map((e) => e.shortName).join(',');
+    return ListTile(
+      title: Text(routesString.isEmpty ? 'A piedi' : routesString),
+      subtitle: Text(getDurationString(travel.duration)),
+      onTap: () => lastTravel.value = [travel],
+    );
+  }
+  // --end test--
 
   int get addedElements => (additionalHeight.value / _textfieldHeight).round();
   List<Widget> get intermediateWithSpaces {
@@ -78,8 +161,11 @@ class MapTravelController extends GetxController {
         children: [
           Expanded(
             child: TextField(
-              onTap: () =>
-                  Get.to(MapSearchPage(searchController: fromController)),
+              onTap: () => Get.to(() => MapSearchPage(
+                    searchController: fromController,
+                    isTravel: true,
+                    isFrom: true,
+                  )),
               readOnly: true,
               focusNode: AlwaysDisabledFocusNode(),
               controller: fromController.controller,
@@ -113,8 +199,11 @@ class MapTravelController extends GetxController {
             child: TextField(
               readOnly: true,
               focusNode: AlwaysDisabledFocusNode(),
-              onTap: () =>
-                  Get.to(MapSearchPage(searchController: toController)),
+              onTap: () => Get.to(() => MapSearchPage(
+                    searchController: toController,
+                    isFrom: false,
+                    isTravel: true,
+                  )),
               controller: toController.controller,
               decoration: InputDecoration(
                 contentPadding: const EdgeInsets.only(left: 8.0),

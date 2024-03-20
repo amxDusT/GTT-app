@@ -5,6 +5,7 @@ import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/resources/api/geocoder_api.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:latlong2/latlong.dart';
 
 class MapSearchController extends GetxController {
   TextEditingController controller = TextEditingController();
@@ -12,6 +13,10 @@ class MapSearchController extends GetxController {
   final MapAddressController mapAddress = Get.find();
   final MapLocation mapLocation = Get.find();
   final RxList<AddressWithDetails> suggestions = <AddressWithDetails>[].obs;
+  final Rx<SimpleAddress> lastAddress = SimpleAddress(
+    label: '',
+    position: const LatLng(0.0, 0.0),
+  ).obs;
 
   @override
   void onClose() {
@@ -33,7 +38,7 @@ class MapSearchController extends GetxController {
     await getSuggestions(value);
     if (suggestions.isNotEmpty) {
       AddressWithDetails address = suggestions.first;
-
+      lastAddress.value = address;
       mapAddress.onSelected(address);
     } else {
       Utils.showSnackBar(
@@ -45,8 +50,6 @@ class MapSearchController extends GetxController {
   }
 
   Future<void> getSuggestions([String? value]) async {
-    print('here');
-
     if (value == null || value.isEmpty) {
       if (controller.text.isEmpty) {
         value = 'Torino';
@@ -68,8 +71,6 @@ class MapSearchController extends GetxController {
       address = AddressWithDetails.fromJson(json);
       if (address.isValid) suggestionsLocal.add(address);
     }
-    print('here2');
     suggestions.value = suggestionsLocal.toList();
-    print(suggestions);
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
-import 'package:flutter_gtt/pages/map/map_search.dart';
+import 'package:flutter_gtt/pages/map/map_search_page.dart';
 import 'package:flutter_gtt/widgets/search/search_textfield.dart';
 import 'package:get/get.dart';
 
@@ -23,7 +23,7 @@ class SearchAddress extends StatelessWidget {
               Get.to(() => MapSearchPage(searchController: searchController)),
           readOnly: true,
           labelText: 'Cerca indirizzo...',
-          onPrefixPressed: () => Get.back(),
+          onPrefixPressed: () => Get.back(closeOverlays: true),
           onSuffixPressed: () {
             searchController.controller.clear();
             searchController.mapAddress.addressReset();
