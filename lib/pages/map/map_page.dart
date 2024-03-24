@@ -116,11 +116,11 @@ class MapPage extends StatelessWidget {
                               color: _flutterMapController.routes.length == 1
                                   ? Colors.red
                                   : Utils.lighten(
-                                      MapPageController.colors[
-                                          (_flutterMapController.routeIndex[
-                                                      route.shortName] ??
-                                                  0) %
-                                              MapPageController.colors.length],
+                                      MapPageController
+                                          .colors[(_flutterMapController
+                                                  .routeIndex[route.gtfsId] ??
+                                              0) %
+                                          MapPageController.colors.length],
                                       20,
                                     ),
                             );
