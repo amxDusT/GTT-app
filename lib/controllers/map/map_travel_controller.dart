@@ -107,13 +107,13 @@ class MapTravelController extends GetxController {
             ),
           ),
           ...travels.map((e) => _buildTravel(e)),
-          Flexible(
+          /*Flexible(
             child: Text(
               travels.toString(),
               maxLines: 50,
               overflow: TextOverflow.ellipsis,
             ),
-          ),
+          ),*/
         ],
       ),
     );
