@@ -8,7 +8,9 @@ class MapPageBindings extends Bindings {
   void dependencies() {
     var key =
         Get.arguments['vehicles'].map((Route route) => route.gtfsId).join();
+
     Get.put(MapLocation(), permanent: true);
-    Get.put(MapPageController(), tag: key);
+
+    Get.create(() => MapPageController(), tag: key);
   }
 }

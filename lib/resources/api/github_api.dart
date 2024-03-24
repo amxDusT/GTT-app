@@ -17,17 +17,23 @@ class GithubApi {
           versionCells[2];
     }
 
-    final response = await http.get(Uri.parse(_releaseUrl));
-    if (response.statusCode != 200) {
-      throw ApiException(response.statusCode, response.body);
-    }
-    final Map<String, dynamic> jsonResponse = json.decode(response.body);
-    final String gitVersion = jsonResponse['tag_name'];
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    final String currentVersion = packageInfo.version;
+    try {
+      final response = await http.get(Uri.parse(_releaseUrl)).timeout(
+            const Duration(seconds: 5),
+          );
+      if (response.statusCode != 200) {
+        throw ApiException(response.statusCode, response.body);
+      }
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+      final String gitVersion = jsonResponse['tag_name'];
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      final String currentVersion = packageInfo.version;
 
-    return getExtendedVersionNumber(gitVersion) >
-        getExtendedVersionNumber(currentVersion);
+      return getExtendedVersionNumber(gitVersion) >
+          getExtendedVersionNumber(currentVersion);
+    } catch (e) {
+      return false;
+    }
   }
 
   static Future<Map<String, dynamic>> getAppInfo() async {

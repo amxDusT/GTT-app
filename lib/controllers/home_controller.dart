@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
+import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
@@ -57,6 +58,17 @@ class HomeController extends GetxController {
   void deleteStop(FavStop fermata) {
     DatabaseCommands.deleteStop(fermata);
     getStops();
+  }
+
+  void updateFavorites() {
+    var date = DateTime.now();
+
+    fermate = fermate.map((fermata) {
+      date = date.add(const Duration(seconds: 1));
+      return fermata.copyWith(dateTime: date);
+    }).toList();
+    DatabaseCommands.updateAllStops(fermate);
+    update();
   }
 
   void switchAddDeleteFermata(Stop stop) async {

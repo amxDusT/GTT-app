@@ -69,6 +69,7 @@ class MapPage extends StatelessWidget {
                 onMapEvent: _flutterMapController.onMapEvent,
                 onTap: (tapPosition, point) {
                   _flutterMapController.popupController.hideAllPopups();
+                  _flutterMapController.lastOpenedMarker = null;
                 },
                 interactionOptions: const InteractionOptions(
                   flags: ~InteractiveFlag.rotate,
@@ -115,11 +116,11 @@ class MapPage extends StatelessWidget {
                               color: _flutterMapController.routes.length == 1
                                   ? Colors.red
                                   : Utils.lighten(
-                                      MapPageController.colors[
-                                          (_flutterMapController.routeIndex[
-                                                      route.shortName] ??
-                                                  0) %
-                                              MapPageController.colors.length],
+                                      MapPageController
+                                          .colors[(_flutterMapController
+                                                  .routeIndex[route.gtfsId] ??
+                                              0) %
+                                          MapPageController.colors.length],
                                       20,
                                     ),
                             );
@@ -135,6 +136,8 @@ class MapPage extends StatelessWidget {
                         UserLocationMarker(
                           position: _flutterMapController
                               .userLocation.userPosition.first,
+                          heading: _flutterMapController
+                              .userLocation.userHeading.value,
                           beta: _settingsController.showBetaFeatures.isTrue,
                         ),
                     ],
@@ -157,7 +160,7 @@ class MapPage extends StatelessWidget {
                         ],
                         popupDisplayOptions: PopupDisplayOptions(
                           builder: (BuildContext context, Marker marker) {
-                            //_flutterMapController.lastOpenedMarker = marker;
+                            _flutterMapController.lastOpenedMarker = marker;
 
                             return CardMapWidget(
                                 marker: marker,

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
@@ -7,7 +8,9 @@ import 'package:geolocator/geolocator.dart';
 
 class MapLocation extends GetxController {
   StreamSubscription<Position>? _geolocatorSubscription;
+  StreamSubscription<CompassEvent>? _compassSubscription;
   final RxList<Position> userPosition = <Position>[].obs;
+  final RxDouble userHeading = 0.0.obs;
   final RxBool isLocationShowing = false.obs;
 
   RxBool get isLocationInitialized => userPosition.isNotEmpty.obs;
@@ -109,10 +112,17 @@ class MapLocation extends GetxController {
 
       userPosition.value = [position];
     });
+
+    _compassSubscription = FlutterCompass.events?.listen((event) {
+      if (event.heading != null) {
+        userHeading.value = event.heading!;
+      }
+    });
   }
 
   Future<void> stopLocationListen() async {
     await _geolocatorSubscription?.cancel();
+    _compassSubscription?.cancel();
     _geolocatorSubscription = null;
   }
 

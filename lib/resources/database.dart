@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
+import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart';
@@ -133,8 +134,11 @@ class DatabaseCommands {
 
   static Future<void> insertStop(Stop fermata) async {
     Database db = await instance;
-    final FavStop fermataFav =
-        (fermata is FavStop) ? fermata : FavStop.fromStop(stop: fermata);
+    final FavStop fermataFav = (fermata is FavStop)
+        ? fermata
+        : FavStop.fromStop(
+            stop: fermata,
+          );
     await db.insert(
       _favoritesTable,
       fermataFav.toDbMap(),
@@ -149,6 +153,19 @@ class DatabaseCommands {
       json,
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
+  }
+
+  static Future<void> updateAllStops(List<FavStop> fermate) async {
+    Database db = await instance;
+    final batch = db.batch();
+    for (var fermata in fermate) {
+      batch.insert(
+        _favoritesTable,
+        fermata.toDbMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
+    await batch.commit();
   }
 
   static Future<void> updateStop(FavStop fermata) async {

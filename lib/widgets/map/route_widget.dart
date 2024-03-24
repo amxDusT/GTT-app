@@ -17,12 +17,14 @@ class RouteWidget extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${MapUtils.isTram(marker.mqttData.vehicleNum) ? 'Tram' : 'Bus'} ${marker.mqttData.shortName} - ${marker.mqttData.vehicleNum}',
+          '${MapUtils.isTram(marker.mqttData.vehicleNum) ? 'Tram' : 'Bus'} ${controller.routes[marker.mqttData.gtfsId]?.shortName ?? 'UNKOWN'} - ${marker.mqttData.vehicleNum}',
         ),
         Text(
-          'last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
+          'Last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
           style: Get.textTheme.bodySmall,
         ),
+        /* Text(
+            'next stop: ${controller.stopsMap[marker.mqttData.nextStop]?.name ?? 'UNKOWN'}'), */
         TextButton(
           onPressed: () =>
               controller.followVehicle.value == marker.mqttData.vehicleNum

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 
 class DistanceWidget extends StatelessWidget {
-  final Address address;
+  final AddressWithDetails address;
   final bool showIcon;
   final double width;
   const DistanceWidget(
@@ -23,6 +23,7 @@ class DistanceWidget extends StatelessWidget {
           Text(
             address.distanceString,
             style: const TextStyle(letterSpacing: -0.5),
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

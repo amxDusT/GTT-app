@@ -121,9 +121,11 @@ class InfoPage extends StatelessWidget {
                     bottom: 20,
                     child: Obx(
                       () {
-                        if (!_infoController.canShowMap) {
+                        if (!_infoController.canShowMap ||
+                            _infoController.isLoading.isTrue) {
                           return const SizedBox();
                         }
+
                         return Opacity(
                           opacity: 0.9,
                           child: ElevatedButton(

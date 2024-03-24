@@ -8,6 +8,7 @@ import 'package:flutter_gtt/widgets/home/drawer/drawer.dart';
 import 'package:flutter_gtt/widgets/home/favorite_card.dart';
 import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
 import 'package:get/get.dart';
+import 'package:reorderable_grid/reorderable_grid.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -75,7 +76,25 @@ class HomePage extends StatelessWidget {
                                 )),
                     GetBuilder<HomeController>(
                       builder: (controller) {
-                        return GridView.count(
+                        return ReorderableGridView.count(
+                          proxyDecorator: (child, index, animation) {
+                            return Material(
+                              color: Colors.transparent,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                side: const BorderSide(
+                                  color: Colors.grey,
+                                  width: 1.5,
+                                ),
+                              ),
+                              child: child,
+                            );
+                          },
+                          onReorder: (oldIndex, newIndex) {
+                            final item = controller.fermate.removeAt(oldIndex);
+                            controller.fermate.insert(newIndex, item);
+                            controller.updateFavorites();
+                          },
                           physics: const ScrollPhysics(),
                           crossAxisSpacing: 10,
                           mainAxisSpacing: 10,
@@ -85,6 +104,7 @@ class HomePage extends StatelessWidget {
                           primary: true,
                           children: [
                             ...controller.fermate.map((fermata) => HomeFavCard(
+                                  key: ValueKey(fermata.code),
                                   fermata: fermata,
                                   controller: controller,
                                 ))

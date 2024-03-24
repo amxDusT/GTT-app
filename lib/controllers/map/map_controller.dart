@@ -42,20 +42,22 @@ class MapPageController extends GetxController
   final List<AnimationController> _activeAnimations = [];
 
   late RxList<FermataMarker> allStops;
+  RxMap<int, Stop> stopsMap = <int, Stop>{}.obs;
   final RxMap<int, VehicleMarker> allVehicles = <int, VehicleMarker>{}.obs;
   final RxMap<String, gtt.RouteWithDetails> routes =
       <String, gtt.RouteWithDetails>{}.obs;
+
   final Map<String, int> routeIndex = {};
   final RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
 
   //live bus
-  late final MqttController _mqttController;
+  final MqttController _mqttController = MqttController();
 
   final RxMap<String, RxMap<int, MqttVehicle>> mqttInformation =
       <String, RxMap<int, MqttVehicle>>{}.obs;
 
   Marker? lastOpenedMarker;
-
+  late Timer _timer;
   final MapLocation userLocation = Get.find();
   final RxBool isLocationLoading = false.obs;
 
@@ -77,11 +79,11 @@ class MapPageController extends GetxController
       .where(
         (vehicle) =>
             vehicle.mqttData.direction ==
-            routes[vehicle.mqttData.shortName]?.pattern.directionId,
+            routes[vehicle.mqttData.gtfsId]?.pattern.directionId,
       )
       .toList()
       .obs;
-
+  late final Route<dynamic>? currentRoute;
   double get offsetVal {
     int len = routes.length;
     switch (len) {
@@ -101,11 +103,13 @@ class MapPageController extends GetxController
     for (var element in _activeAnimations) {
       element.dispose();
     }
+    _timer.cancel();
     await _mqttController.dispose();
     _mapAnimation.dispose();
     mapController.dispose();
     popupController.dispose();
     userLocation.onMapDispose();
+
     super.onClose();
   }
 
@@ -137,22 +141,28 @@ class MapPageController extends GetxController
       List<FermataMarker> list = allStops
           .map((marker) => marker.copyWith(zoom: mapEvent.camera.zoom))
           .toList();
-      allStops.clear();
-      allStops.addAll(list);
+      // TODO: check if works.
+      allStops.value = list;
+      allStops.refresh();
+      /* allStops.clear();
+      allStops.addAll(list); */
     }
   }
 
   @override
   void onInit() {
     super.onInit();
+    currentRoute = Get.rawRoute;
     _mapAnimation = MapAnimation(controller: mapController, vsync: this);
+    //onMapReady();
+    _onMapReady();
   }
 
-  void onMapReady() async {
-    Timer.periodic(const Duration(minutes: 1), (timer) {
+  void _onMapReady() async {
+    _timer = Timer.periodic(const Duration(minutes: 1), (timer) {
       _removeOldVehicles();
     });
-    _mqttController = MqttController();
+    //_mqttController = MqttController();
     List<gtt.Route> routeValues = Get.arguments['vehicles'];
     final Stop? initialStop = Get.arguments['fermata'];
 
@@ -186,8 +196,7 @@ class MapPageController extends GetxController
           !Storage.isRouteWithoutPassagesShowing &&
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
 
-      _mqttController
-          .addSubscription((route as gtt.RouteWithDetails).shortName);
+      _mqttController.addSubscription((route as gtt.RouteWithDetails).gtfsId);
       stops.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
 
       /*for (var stop in stops) {
@@ -199,12 +208,12 @@ class MapPageController extends GetxController
 
       // stopsTemp.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
 
-      routes.putIfAbsent(route.shortName.replaceAll(' ', ''), () => route);
-      routeIndex.putIfAbsent(
-          route.shortName.replaceAll(' ', ''), () => routeIndex.length);
+      routes.putIfAbsent(route.gtfsId, () => route);
+      routeIndex.putIfAbsent(route.gtfsId, () => routeIndex.length);
 
       if (++routeCount >= maxRoutesInMap) break;
     }
+    stopsMap = {for (var stop in stops) stop.code: stop}.obs;
     allStops = stops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
     /*allStops =
         uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
@@ -215,6 +224,13 @@ class MapPageController extends GetxController
     _listenData();
     lastView = _getCenterBounds();
     centerBounds();
+  }
+
+  void onMapReady() async {
+    if (routes.values.isNotEmpty) {
+      lastView = _getCenterBounds();
+      centerBounds();
+    }
   }
 
   void centerBounds() {
@@ -294,6 +310,7 @@ class MapPageController extends GetxController
       popupController.showPopupsOnlyFor([VehicleMarker(mqttData: payload)]);
       lastOpenedMarker = VehicleMarker(mqttData: payload);
     }
+    //follow vehicle
     if (followVehicle.value == payload.vehicleNum) {
       _mapAnimation.animate(payload.position, zoom: mapController.camera.zoom);
     }
@@ -312,10 +329,9 @@ class MapPageController extends GetxController
             color: routes.length == 1
                 ? null
                 : Utils.darken(
-                    colors[
-                        (routeIndex[payload.shortName] ?? 0) % colors.length],
+                    colors[(routeIndex[payload.gtfsId] ?? 0) % colors.length],
                     30),
-            internalColor: routes[payload.shortName]?.type == 0 &&
+            internalColor: routes[payload.gtfsId]?.type == 0 &&
                     !MapUtils.isTram(payload.vehicleNum)
                 ? Colors.white
                 : null,
@@ -334,7 +350,7 @@ class MapPageController extends GetxController
     allStops.clear();
     List<Stop> stopTemp =
         await DatabaseCommands.getStopsFromPattern(newPattern);
-
+    stopsMap = {for (var stop in stopTemp) stop.code: stop}.obs;
     allStops.addAll(stopTemp.map((stop) => FermataMarker(fermata: stop)));
     routes.update(routes.keys.first,
         (value) => routes.values.first.copyWith(pattern: newPattern));

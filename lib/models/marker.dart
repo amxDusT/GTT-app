@@ -12,13 +12,16 @@ import 'package:latlong2/latlong.dart';
 @immutable
 class UserLocationMarker extends Marker {
   final Position position;
-  UserLocationMarker({required this.position, bool beta = false})
+  UserLocationMarker(
+      {required this.position, bool beta = false, double? heading})
       : super(
             point: LatLng(position.latitude, position.longitude),
             height: 30,
             width: 30,
             child: Transform.rotate(
-                angle: beta ? position.heading * pi / 180 : 0,
+                angle: heading != null
+                    ? heading * pi / 180
+                    : (beta ? position.heading * pi / 180 : 0),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -76,7 +79,16 @@ class VehicleMarker extends Marker {
     Color? internalColor,
   }) {
     return VehicleMarker(
-        mqttData: mqttData ?? this.mqttData,
+        mqttData: this.mqttData.copyWith(
+              position: mqttData?.position,
+              rotation: mqttData?.rotation,
+              speed: mqttData?.speed,
+              tripId: mqttData?.tripId,
+              direction: mqttData?.direction,
+              isFull: mqttData?.isFull,
+              nextStop: mqttData?.nextStop,
+              lastUpdate: mqttData?.lastUpdate,
+            ),
         color: color ?? this.color,
         internalColor: internalColor ?? this.internalColor);
   }

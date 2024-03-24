@@ -81,6 +81,7 @@ class Utils {
     if (closePrevious ?? false) {
       await Get.closeCurrentSnackbar();
     }
+
     Get.showSnackbar(
       GetSnackBar(
         title: title,
@@ -88,7 +89,7 @@ class Utils {
         duration: duration ?? const Duration(seconds: 2),
         animationDuration: const Duration(milliseconds: 300),
         snackPosition: snackPosition ?? SnackPosition.BOTTOM,
-        snackStyle: SnackStyle.GROUNDED,
+        snackStyle: SnackStyle.FLOATING,
         mainButton: mainButton ??
             TextButton(
               onPressed: () async {
@@ -141,6 +142,10 @@ class Utils {
       return a.shortName.compareTo(b.shortName);
     }
     return compare;
+  }
+
+  static String getBusIdentifier(String gtfsId) {
+    return gtfsId.split(':')[1].substring(0, gtfsId.split(':')[1].length - 1);
   }
 
   static List<GetPage> getPages() {
