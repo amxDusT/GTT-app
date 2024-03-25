@@ -1,9 +1,11 @@
 import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_gtt/controllers/map/map_address.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
+import 'package:flutter_gtt/models/custom_datepicker.dart';
 import 'package:flutter_gtt/models/gtt/travel.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/pages/map/map_search_page.dart';
@@ -22,7 +24,7 @@ class MapTravelController extends GetxController {
       Get.put(MapSearchController(), tag: 'from');
   final MapSearchController toController =
       Get.put(MapSearchController(), tag: 'to');
-
+  final RxBool isUsingCustomTime = false.obs;
   final RxBool isSearching = false.obs;
   final Rx<SimpleAddress> fromAddress =
       SimpleAddress(label: '', position: const LatLng(0.0, 0.0)).obs;
@@ -62,8 +64,14 @@ class MapTravelController extends GetxController {
     if (to != null) {
       toAddress.value = to;
     }
+    isUsingCustomTime.value = date != null;
     travelDate.value = date ?? DateTime.now();
     _updateControllers();
+  }
+
+  set dateTravel(DateTime date) {
+    isUsingCustomTime.value = true;
+    travelDate.value = date;
   }
 
   Future<void> _updateControllers() async {
@@ -106,7 +114,8 @@ class MapTravelController extends GetxController {
               size: 40,
             ),
           ),
-          ...travels.map((e) => _buildTravel(e)),
+          ..._buildTravels(travels),
+          //...travels.map((e) => _buildTravel(e)).toSet(),
           /*Flexible(
             child: Text(
               travels.toString(),
@@ -117,6 +126,43 @@ class MapTravelController extends GetxController {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildTravels(List<Travel> travels) {
+    String getDurationString(int duration) {
+      if (duration < 60) {
+        return '${duration.toString()} sec';
+      }
+      return '${(duration / 60).toStringAsFixed(0)} min';
+    }
+
+    Map<String, List<Travel>> groupedTravels = {};
+    for (var travel in travels) {
+      String key = travel.legs
+          .where((element) => element.route != null)
+          .map((e) => e.route!.shortName)
+          .join(',');
+      if (!groupedTravels.containsKey(key)) {
+        groupedTravels[key] = [];
+      }
+      groupedTravels[key]!.add(travel);
+    }
+
+    final res = groupedTravels.entries
+        .map((e) => ListTile(
+              title: Text(e.key.isEmpty ? 'A piedi' : e.key),
+              subtitle: Text(getDurationString(e.value.first.duration)),
+              onTap: () => lastTravel.value = [e.value.first],
+            ))
+        .toList();
+
+    res.sort((a, b) {
+      print(a.subtitle.toString().split('"')[1].split(' ')[0]);
+      final aInt = int.parse(a.subtitle.toString().split('"')[1].split(' ')[0]);
+      final bInt = int.parse(b.subtitle.toString().split('"')[1].split(' ')[0]);
+      return aInt.compareTo(bInt);
+    });
+    return res;
   }
 
   Widget _buildTravel(Travel travel) {
@@ -134,10 +180,10 @@ class MapTravelController extends GetxController {
       return '${(duration / 60).toStringAsFixed(0)} min';
     }
 
-    List<gtt.Route> routes = travel.legs
+    Set<gtt.Route> routes = travel.legs
         .where((element) => element.route != null)
         .map((e) => e.route!)
-        .toList();
+        .toSet();
     String routesString = routes.map((e) => e.shortName).join(',');
     return ListTile(
       title: Text(routesString.isEmpty ? 'A piedi' : routesString),
@@ -288,5 +334,34 @@ class MapTravelController extends GetxController {
     additionalHeight.value = 0.0;
 
     rows.removeRange(1, rows.length - 1);
+  }
+
+  void onOpenDate(BuildContext context) async {
+    final now = DateTime.now();
+    /*  DatePicker.showDateTimePicker(
+      context,
+      currentTime: isUsingCustomTime.isTrue ? travelDate.value : now,
+      minTime: now.subtract(const Duration(days: 1)),
+      maxTime: now.add(const Duration(days: 7)),
+      locale: LocaleType.it,
+      onConfirm: (date) {
+        dateTravel = date;
+        _updateControllers();
+      },
+      onChanged: (time) => print(time),
+    ); */
+    DatePicker.showPicker(context,
+        showTitleActions: true,
+        pickerModel: CustomPicker(
+          currentTime: isUsingCustomTime.isTrue ? travelDate.value : now,
+          maxTime: now.add(const Duration(days: 7)),
+          minTime: DateTime.utc(now.year, now.month, now.day),
+          locale: LocaleType.it,
+        ),
+        onChanged: (time) => print(time),
+        onConfirm: (date) {
+          dateTravel = date;
+          _updateControllers();
+        });
   }
 }
