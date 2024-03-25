@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter_gtt/resources/api/api_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
@@ -11,10 +12,14 @@ class GithubApi {
     // thx to https://stackoverflow.com/a/70136908
     int getExtendedVersionNumber(String version) {
       List versionCells = version.split('.');
+      final int length = min(versionCells.length, 3);
+      const int powMax = 5;
       versionCells = versionCells.map((i) => int.parse(i)).toList();
-      return versionCells[0] * 100000 +
-          versionCells[1] * 1000 +
-          versionCells[2];
+      int result = 0;
+      for (int i = 0; i < length; i++) {
+        result += (versionCells[i] as int) * pow(10, powMax - 2 * i) as int;
+      }
+      return result;
     }
 
     try {
