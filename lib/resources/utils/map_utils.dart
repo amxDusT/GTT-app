@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -83,5 +85,30 @@ class MapUtils {
         color: Colors.grey,
       ),
     );
+  }
+
+  static bool isAtSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
+  static String getHour(DateTime date) {
+    return DateFormat('H:mm', Get.locale?.languageCode).format(date);
+  }
+
+  static String dateToString(DateTime date) {
+    final now = DateTime.now();
+    if (isAtSameDay(date, now)) {
+      final hour = getHour(date);
+      return 'Oggi, $hour';
+    } else if (isAtSameDay(date, now.add(const Duration(days: 1)))) {
+      final hour = getHour(date);
+      return 'Domani, $hour';
+    } else if (isAtSameDay(date, now.subtract(const Duration(days: 1)))) {
+      final hour = getHour(date);
+      return 'Ieri, $hour';
+    }
+    return DateFormat('d MMM H:mm', Get.locale?.languageCode).format(date);
   }
 }

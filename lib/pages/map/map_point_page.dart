@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_point_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/resources/utils/maps.dart';
+import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';

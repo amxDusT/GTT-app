@@ -5,7 +5,7 @@ import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/resources/utils/maps.dart';
+import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/card_map_widget.dart';

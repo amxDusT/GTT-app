@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/resources/utils/maps.dart';
+import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_gtt/widgets/map/address_widget.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/circle_button.dart';
