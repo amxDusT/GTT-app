@@ -1,3 +1,5 @@
+import 'package:bottom_sheet/bottom_sheet.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
@@ -64,44 +66,41 @@ class MapGlobal extends StatelessWidget {
             ), */
               if (!_mapController.travelController.isSearching.isTrue)
                 SearchAddress(
-                    searchController: _mapController.searchController),
-              Obx(
-                () => MarkerLayer(
-                  markers: [
-                    if (_mapController.mapLocation.isLocationAvailable.isTrue)
-                      UserLocationMarker(
-                        position: _mapController.mapLocation.userPosition.first,
-                        heading: _mapController.mapLocation.userHeading.value,
-                        beta: true,
-                      ),
-                  ],
+                  searchController: _mapController.searchController,
                 ),
+              MarkerLayer(
+                markers: [
+                  if (_mapController.mapLocation.isLocationAvailable.isTrue)
+                    UserLocationMarker(
+                      position: _mapController.mapLocation.userPosition.first,
+                      heading: _mapController.mapLocation.userHeading.value,
+                      beta: true,
+                    ),
+                ],
               ),
-              Obx(
-                () => MarkerLayer(
-                  markers: [
-                    if (_mapController.travelController.isSearching.isTrue)
-                      Marker(
-                        point: _mapController
-                            .travelController.fromAddress.value.position,
-                        child: const Icon(Icons.circle),
+              MarkerLayer(
+                markers: [
+                  if (_mapController.travelController.isSearching.isTrue)
+                    Marker(
+                      point: _mapController
+                          .travelController.fromAddress.value.position,
+                      child: const Icon(Icons.circle),
+                    ),
+                  if (_mapController.travelController.isSearching.isTrue)
+                    Marker(
+                      point: _mapController
+                          .travelController.toAddress.value.position,
+                      child: const Icon(
+                        Icons.circle,
+                        size: 24,
                       ),
-                    if (_mapController.travelController.isSearching.isTrue)
-                      Marker(
-                        point: _mapController
-                            .travelController.toAddress.value.position,
-                        child: const Icon(
-                          Icons.circle,
-                          size: 24,
-                        ),
-                      ),
-                  ],
-                ),
+                    ),
+                ],
               ),
               PolylineLayer(polylines: [
                 if (_mapController.travelController.isSearching.isTrue &&
-                    _mapController.travelController.lastTravel.isNotEmpty)
-                  ..._mapController.travelController.lastTravel.first.legs.map(
+                    _mapController.travelController.lastTravel.value != null)
+                  ..._mapController.travelController.lastTravel.value!.legs.map(
                     (leg) => Polyline(
                       points: MapUtils.decodeGooglePolyline(leg.points),
                       isDotted: leg.mode == 'WALK',
@@ -150,66 +149,83 @@ class MapGlobal extends StatelessWidget {
                   icon: const Icon(Icons.add),
                   onPressed: () => _mapController.zoomIn,
                 ),
-              ])
+              ]),
+              FlexibleBottomSheet(
+                minHeight: _mapController.travelController.isSearching.isTrue
+                    ? 0.14
+                    : 0,
+                initHeight: _mapController.travelController.isSearching.isTrue
+                    ? 0.2
+                    : 0,
+                isCollapsible: false,
+                builder: (context, scrollController, bottomSheetOffset) =>
+                    DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(
+                        color: Colors.grey[300]!,
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: SingleChildScrollView(
+                    controller: scrollController,
+                    //physics: const NeverScrollableScrollPhysics(),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                          margin: const EdgeInsets.all(8),
+                          width: 70,
+                          height: 5,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(3),
+                          )),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        primary: true,
+                        physics: const BouncingScrollPhysics(),
+                        itemCount:
+                            _mapController.travelController.lastTravels.length +
+                                1,
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return Container(
+                              padding: const EdgeInsets.all(20),
+                              alignment: Alignment.center,
+                              child: Text(
+                                'Strade possibili',
+                                style: Get.textTheme.titleLarge!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            );
+                          }
+                          final travel = _mapController
+                              .travelController.lastTravels[index - 1];
+                          return ListTile(
+                            title: Text(travel.legs
+                                    .where((element) => element.mode != 'WALK')
+                                    .map((e) => e.route?.shortName ?? '')
+                                    .isEmpty
+                                ? 'no text'
+                                : 'text'),
+                            subtitle: Text(travel.duration.toString()),
+                            onTap: () {},
+                          );
+                        },
+                        separatorBuilder: (context, index) => index != 0
+                            ? const Divider()
+                            : const Divider() /* const SizedBox() */,
+                      ),
+                    ]),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
-
-  /* AppBar oldAppBar() => AppBar(
-        actions: [
-          IconButton(
-            tooltip: 'Inverti indirizzi',
-            onPressed: () => _mapController.travelController.switchAddresses(),
-            icon: const Icon(Icons.swap_vert),
-          ),
-        ],
-        leadingWidth: 40,
-        title: TextField(
-          controller: _mapController.travelController.fromTextController,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.only(left: 8.0),
-            hintText: 'Da..',
-            hintStyle: const TextStyle(color: Colors.grey),
-            border: const OutlineInputBorder(),
-            suffixIcon: IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                _mapController.travelController.fromTextController.clear();
-              },
-            ),
-          ),
-        ),
-        bottom: AppBar(
-            actions: [
-              IconButton(
-                tooltip: 'Aggiungi intermedio',
-                onPressed: () {},
-                icon: const Icon(Icons.add),
-              ),
-            ],
-            toolbarHeight: 70,
-            leadingWidth: 40,
-            leading: const SizedBox(),
-            automaticallyImplyLeading: false,
-            title: Container(
-              margin: const EdgeInsets.only(bottom: 10.0),
-              child: TextField(
-                controller: _mapController.travelController.toTextController,
-                decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.only(left: 8.0),
-                  hintText: 'A..',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      _mapController.travelController.toTextController.clear();
-                    },
-                  ),
-                ),
-              ),
-            )),
-      ); */
 }

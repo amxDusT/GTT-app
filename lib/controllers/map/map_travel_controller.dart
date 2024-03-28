@@ -1,4 +1,3 @@
-import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_gtt/controllers/map/map_address.dart';
@@ -34,8 +33,8 @@ class MapTravelController extends GetxController {
   final MapAddressController mapAddress = Get.find();
   final MapLocation mapLocation = Get.find<MapLocation>();
   final double appBarHeight = 56.0;
-  final RxList<Travel> lastTravel = <Travel>[].obs;
-
+  final RxList<Travel> lastTravels = <Travel>[].obs;
+  final Rx<Travel?> lastTravel = Rx<Travel?>(null);
   void switchAddresses() {
     final SimpleAddress tmp = fromAddress.value;
     fromAddress.value = toAddress.value;
@@ -69,9 +68,17 @@ class MapTravelController extends GetxController {
     _updateControllers();
   }
 
+  bool _isAtSameTime(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day &&
+        date1.hour == date2.hour &&
+        date1.minute == date2.minute;
+  }
+
   set dateTravel(DateTime date) {
-    isUsingCustomTime.value = true;
     travelDate.value = date;
+    isUsingCustomTime.value = !_isAtSameTime(date, DateTime.now());
   }
 
   Future<void> _updateControllers() async {
@@ -80,10 +87,11 @@ class MapTravelController extends GetxController {
 
     var travels = await GttApi.getTravels(
         from: fromAddress.value, to: toAddress.value, time: travelDate.value);
-    print(travels);
-    showFlexibleBottomSheet(
+
+    lastTravels.value = travels;
+    /*  showFlexibleBottomSheet(
       minHeight: 0,
-      initHeight: 0.5,
+      initHeight: 0.3,
       maxHeight: 1,
       context: Get.context!,
       builder: ((context, scrollController, bottomSheetOffset) {
@@ -92,7 +100,7 @@ class MapTravelController extends GetxController {
       }),
       anchors: [0, 0.5, 1],
       isSafeArea: false,
-    );
+    ); */
   }
 
   //-- test---
@@ -152,12 +160,11 @@ class MapTravelController extends GetxController {
         .map((e) => ListTile(
               title: Text(e.key.isEmpty ? 'A piedi' : e.key),
               subtitle: Text(getDurationString(e.value.first.duration)),
-              onTap: () => lastTravel.value = [e.value.first],
+              onTap: () => lastTravel.value = e.value.first,
             ))
         .toList();
 
     res.sort((a, b) {
-      print(a.subtitle.toString().split('"')[1].split(' ')[0]);
       final aInt = int.parse(a.subtitle.toString().split('"')[1].split(' ')[0]);
       final bInt = int.parse(b.subtitle.toString().split('"')[1].split(' ')[0]);
       return aInt.compareTo(bInt);
@@ -188,7 +195,7 @@ class MapTravelController extends GetxController {
     return ListTile(
       title: Text(routesString.isEmpty ? 'A piedi' : routesString),
       subtitle: Text(getDurationString(travel.duration)),
-      onTap: () => lastTravel.value = [travel],
+      onTap: () => lastTravel.value = travel,
     );
   }
   // --end test--
@@ -358,10 +365,10 @@ class MapTravelController extends GetxController {
           minTime: DateTime.utc(now.year, now.month, now.day),
           locale: LocaleType.it,
         ),
-        onChanged: (time) => print(time),
+        //onChanged: (time) => print(time),
         onConfirm: (date) {
-          dateTravel = date;
-          _updateControllers();
-        });
+      dateTravel = date;
+      _updateControllers();
+    });
   }
 }

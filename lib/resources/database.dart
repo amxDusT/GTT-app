@@ -133,7 +133,7 @@ class DatabaseCommands {
   }
 
   static Future<void> insertStop(Stop fermata) async {
-    Database db = await instance;
+    final Database db = await instance;
     final FavStop fermataFav = (fermata is FavStop)
         ? fermata
         : FavStop.fromStop(
@@ -147,7 +147,7 @@ class DatabaseCommands {
   }
 
   static Future<void> insertStopRaw(Map<String, dynamic> json) async {
-    Database db = await instance;
+    final Database db = await instance;
     await db.insert(
       _favoritesTable,
       json,
@@ -156,7 +156,7 @@ class DatabaseCommands {
   }
 
   static Future<void> updateAllStops(List<FavStop> fermate) async {
-    Database db = await instance;
+    final Database db = await instance;
     final batch = db.batch();
     for (var fermata in fermate) {
       batch.insert(
@@ -169,7 +169,7 @@ class DatabaseCommands {
   }
 
   static Future<void> updateStop(FavStop fermata) async {
-    Database db = await instance;
+    final Database db = await instance;
 
     await db.insert(
       _favoritesTable,
@@ -179,7 +179,7 @@ class DatabaseCommands {
   }
 
   static Future<void> updateStopWithSmallestDate(Stop stop) async {
-    Database db = await instance;
+    final Database db = await instance;
 
     await db.rawUpdate('''
       UPDATE $_favoritesTable
@@ -189,7 +189,7 @@ class DatabaseCommands {
   }
 
   static Future<bool> hasStop(Stop fermata) async {
-    Database db = await instance;
+    final Database db = await instance;
 
     final List<Map<String, dynamic>> result = await db.query(
       _favoritesTable,
@@ -200,7 +200,7 @@ class DatabaseCommands {
   }
 
   static Future<void> deleteStop(Stop fermata) async {
-    Database db = await instance;
+    final Database db = await instance;
 
     await db.delete(
       _favoritesTable,
@@ -210,7 +210,7 @@ class DatabaseCommands {
   }
 
   static Future<void> addFavoriteRoute(Route route) async {
-    Database db = await instance;
+    final Database db = await instance;
     await db.insert(
       _favoritesVehiclesTable,
       {
@@ -222,7 +222,7 @@ class DatabaseCommands {
   }
 
   static Future<void> removeFavoriteRoute(Route route) async {
-    Database db = await instance;
+    final Database db = await instance;
     await db.delete(
       _favoritesVehiclesTable,
       where: 'routeId = ?',
@@ -231,7 +231,7 @@ class DatabaseCommands {
   }
 
   static Future<void> removeAllFromFavorites() async {
-    Database db = await instance;
+    final Database db = await instance;
     await db.delete(_favoritesVehiclesTable);
   }
   /*
@@ -239,7 +239,7 @@ class DatabaseCommands {
   */
 
   static Future<List<Route>> get favoriteRoutes async {
-    Database db = await instance;
+    final Database db = await instance;
     final List<Map<String, dynamic>> result = await db.rawQuery(
       '''
       SELECT $_routesTable.*, $_favoritesVehiclesTable.date
@@ -255,7 +255,7 @@ class DatabaseCommands {
   }
 
   static Future<List<FavStop>> get favorites async {
-    Database db = await instance;
+    final Database db = await instance;
     final List<Map<String, dynamic>> result = await db.rawQuery(
       '''
       SELECT $_stopsTable.*, $_favoritesTable.*
@@ -271,14 +271,14 @@ class DatabaseCommands {
   }
 
   static Future<String> get exportFavorites async {
-    Database db = await instance;
+    final Database db = await instance;
 
     var result = await db.query(_favoritesTable);
     return json.encode(result);
   }
 
   static Future<void> importFavorites(List<dynamic> favoritesJson) async {
-    Database db = await instance;
+    final Database db = await instance;
 
     final batch = db.batch();
 
