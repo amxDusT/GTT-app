@@ -3,6 +3,7 @@
 Iniziata come un'idea semplice di salvare le mie fermate preferite.. adesso sto cercando di renderla il più completa possibile. 
 
 Alcune features:
+- controllo automatico di nuovi aggiornamenti, basati sulle release github.
 - cerca per numero fermata o nome e vedi che mezzi passano in fermata (dati da mato.muoversiatorino.it)
 - salva le fermate nei preferiti
 - aggiungi una descrizione nelle fermate preferite
@@ -37,6 +38,7 @@ Credits:
 Started as a simple idea to just save my favorite stops.. now I'm trying to make it as much complete as I can.
 
 Some of the features: 
+- automatically check for updates based on github releases.
 - search by stop num or name and see busses passing in the stop (data from mato.muoversiatorino.it)
 - save a stop to favorites
 - add description to a stop in favorites
