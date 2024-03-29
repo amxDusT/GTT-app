@@ -33,6 +33,7 @@ class Travel {
 }
 
 class TravelLegs {
+  final bool transitLeg;
   final String points;
   final String mode;
   final int duration;
@@ -44,6 +45,7 @@ class TravelLegs {
   final String? patternCode;
 
   TravelLegs({
+    required this.transitLeg,
     required this.points,
     required this.mode,
     required this.duration,
@@ -57,6 +59,7 @@ class TravelLegs {
 
   factory TravelLegs.fromJson(Map<String, dynamic> json) {
     return TravelLegs(
+      transitLeg: json['transitLeg'],
       points: json['legGeometry']['points'],
       mode: json['mode'],
       duration: (json['duration'] as double).toInt(),
@@ -82,6 +85,6 @@ class TravelLegs {
   }
   @override
   String toString() {
-    return 'TravelLegs(points: $points, mode: $mode, duration: $duration, distance: $distance, from: $from, to: $to, route: $route, patternCode: $patternCode)';
+    return 'TravelLegs(transitLeg: $transitLeg ,points: $points, mode: $mode, duration: $duration, distance: $distance, from: $from, to: $to, route: $route, patternCode: $patternCode)';
   }
 }

@@ -138,7 +138,6 @@ class MapPage extends StatelessWidget {
                               .userLocation.userPosition.first,
                           heading: _flutterMapController
                               .userLocation.userHeading.value,
-                          beta: _settingsController.showBetaFeatures.isTrue,
                         ),
                     ],
                   ),

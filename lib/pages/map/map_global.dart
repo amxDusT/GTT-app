@@ -24,7 +24,7 @@ class MapGlobal extends StatelessWidget {
       canPop: false,
       onPopInvoked: (didPop) {
         if (_mapController.travelController.isSearching.isTrue) {
-          _mapController.travelController.isSearching.value = false;
+          _mapController.travelController.updateIsSearching = false;
         } else if (_mapController.searchController.focusNode.hasFocus) {
           _mapController.searchController.focusNode.unfocus();
           //print('unfocus');
@@ -74,7 +74,6 @@ class MapGlobal extends StatelessWidget {
                     UserLocationMarker(
                       position: _mapController.mapLocation.userPosition.first,
                       heading: _mapController.mapLocation.userHeading.value,
-                      beta: true,
                     ),
                 ],
               ),
@@ -155,7 +154,7 @@ class MapGlobal extends StatelessWidget {
                     ? 0.14
                     : 0,
                 initHeight: _mapController.travelController.isSearching.isTrue
-                    ? 0.2
+                    ? 0.14
                     : 0,
                 isCollapsible: false,
                 builder: (context, scrollController, bottomSheetOffset) =>
@@ -171,54 +170,66 @@ class MapGlobal extends StatelessWidget {
                   child: SingleChildScrollView(
                     controller: scrollController,
                     //physics: const NeverScrollableScrollPhysics(),
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Container(
-                          margin: const EdgeInsets.all(8),
-                          width: 70,
-                          height: 5,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(3),
-                          )),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        primary: true,
-                        physics: const BouncingScrollPhysics(),
-                        itemCount:
-                            _mapController.travelController.lastTravels.length +
-                                1,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            return Container(
-                              padding: const EdgeInsets.all(20),
-                              alignment: Alignment.center,
-                              child: Text(
-                                'Strade possibili',
-                                style: Get.textTheme.titleLarge!.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                    child: Column(
+                      //mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                            margin: const EdgeInsets.only(top: 12, bottom: 6),
+                            width: 70,
+                            height: 5,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(3),
+                            )),
+                        _mapController.travelController.lastTravels.isEmpty
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : ListView.separated(
+                                shrinkWrap: true,
+                                primary: true,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: _mapController
+                                        .travelController.lastTravels.length +
+                                    1,
+                                itemBuilder: (context, index) {
+                                  if (index == 0) {
+                                    return Container(
+                                      padding: const EdgeInsets.all(20),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Strade possibili',
+                                        style:
+                                            Get.textTheme.titleLarge!.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  final travel = _mapController
+                                      .travelController.lastTravels[index - 1];
+                                  final legs = travel.legs
+                                      .where((element) =>
+                                          element.transitLeg == true)
+                                      .map((e) => e.route!.shortName);
+                                  return ListTile(
+                                    title: Text(
+                                        legs.isEmpty ? 'WALK' : legs.first),
+                                    subtitle: Text(
+                                        '${(travel.duration / 60).toStringAsFixed(0)} min'),
+                                    onTap: () {
+                                      _mapController.travelController.lastTravel
+                                          .value = travel;
+                                    },
+                                  );
+                                },
+                                separatorBuilder: (context, index) => index != 0
+                                    ? const Divider()
+                                    : const Divider() /* const SizedBox() */,
                               ),
-                            );
-                          }
-                          final travel = _mapController
-                              .travelController.lastTravels[index - 1];
-                          return ListTile(
-                            title: Text(travel.legs
-                                    .where((element) => element.mode != 'WALK')
-                                    .map((e) => e.route?.shortName ?? '')
-                                    .isEmpty
-                                ? 'no text'
-                                : 'text'),
-                            subtitle: Text(travel.duration.toString()),
-                            onTap: () {},
-                          );
-                        },
-                        separatorBuilder: (context, index) => index != 0
-                            ? const Divider()
-                            : const Divider() /* const SizedBox() */,
-                      ),
-                    ]),
+                      ],
+                    ),
                   ),
                 ),
               ),

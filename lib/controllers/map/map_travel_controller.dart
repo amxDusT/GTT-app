@@ -5,7 +5,7 @@ import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
 import 'package:flutter_gtt/models/custom_datepicker.dart';
-import 'package:flutter_gtt/models/gtt/travel.dart';
+import 'package:flutter_gtt/models/map/travel.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/pages/map/map_search_page.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
@@ -35,6 +35,21 @@ class MapTravelController extends GetxController {
   final double appBarHeight = 56.0;
   final RxList<Travel> lastTravels = <Travel>[].obs;
   final Rx<Travel?> lastTravel = Rx<Travel?>(null);
+
+  set updateIsSearching(bool value) {
+    isSearching.value = value;
+    if (!value) {
+      lastTravels.clear();
+      lastTravel.value = null;
+    }
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+  }
+
+  RxBool get hasTravels => (isSearching.isTrue && lastTravels.isNotEmpty).obs;
   void switchAddresses() {
     final SimpleAddress tmp = fromAddress.value;
     fromAddress.value = toAddress.value;
@@ -48,7 +63,7 @@ class MapTravelController extends GetxController {
     SimpleAddress? to,
     DateTime? date,
   }) {
-    isSearching.value = true;
+    updateIsSearching = true;
 
     if (from != null) {
       fromAddress.value = from;
@@ -85,26 +100,14 @@ class MapTravelController extends GetxController {
     fromController.controller.text = fromAddress.value.label;
     toController.controller.text = toAddress.value.label;
 
+    lastTravels.clear();
     var travels = await GttApi.getTravels(
         from: fromAddress.value, to: toAddress.value, time: travelDate.value);
 
     lastTravels.value = travels;
-    /*  showFlexibleBottomSheet(
-      minHeight: 0,
-      initHeight: 0.3,
-      maxHeight: 1,
-      context: Get.context!,
-      builder: ((context, scrollController, bottomSheetOffset) {
-        return _buildBottomSheet(
-            travels, context, scrollController, bottomSheetOffset);
-      }),
-      anchors: [0, 0.5, 1],
-      isSafeArea: false,
-    ); */
   }
 
   //-- test---
-
   Widget _buildBottomSheet(
     List<Travel> travels,
     BuildContext context,

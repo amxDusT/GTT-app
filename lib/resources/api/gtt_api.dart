@@ -4,7 +4,7 @@ import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/models/gtt/travel.dart';
+import 'package:flutter_gtt/models/map/travel.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/resources/api/api_exception.dart';
 import 'package:http/http.dart' as http;
@@ -121,7 +121,7 @@ class GttApi {
       required DateTime time}) async {
     final request = json.encode({
       'query':
-          'query TravelRoutes( \$fromPlace: String!, \$toPlace: String!, \$date: String!, \$time: String!, \$transportModes: [TransportMode!]!, \$maxItineraries: Int!){ plan( fromPlace: \$fromPlace toPlace: \$toPlace date: \$date time: \$time transportModes: \$transportModes numItineraries: \$maxItineraries ) { itineraries { startTime endTime walkDistance duration legs { legGeometry { points } trip{pattern {code}} mode distance duration from { name lat lon } to { name lat lon stop { gtfsId code name lat lon}} route { gtfsId shortName longName type desc agency { gtfsId } } } } }}',
+          'query TravelRoutes( \$fromPlace: String!, \$toPlace: String!, \$date: String!, \$time: String!, \$transportModes: [TransportMode!]!, \$maxItineraries: Int!){ plan( fromPlace: \$fromPlace toPlace: \$toPlace date: \$date time: \$time transportModes: \$transportModes numItineraries: \$maxItineraries ) { itineraries { startTime endTime walkDistance duration legs { transitLeg legGeometry { points } trip{pattern {code}} mode distance duration from { name lat lon } to { name lat lon stop { gtfsId code name lat lon}} route { gtfsId shortName longName type desc agency { gtfsId } } } } }}',
       'variables': {
         'fromPlace': from.toQueryPlace,
         'toPlace': to.toQueryPlace,
