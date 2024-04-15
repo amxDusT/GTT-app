@@ -10,6 +10,7 @@ import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/resources/apk_install.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/update_utils.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
@@ -105,7 +106,7 @@ class LoadingController extends GetxController {
   Future<bool> needToLoad() async {
     return Storage.lastUpdate
             .isBefore(DateTime.now().subtract(const Duration(days: 30))) &&
-        (await DatabaseCommands.agencies).isEmpty;
+        (await DatabaseCommands.instance.agencies).isEmpty;
   }
 
   Future<void> loadFromApi() async {
@@ -114,7 +115,8 @@ class LoadingController extends GetxController {
         StorageParam.lastUpdate, Utils.dateToString(DateTime.now()));
     try {
       List<Agency> agencyList = await GttApi.getAgencies();
-      DatabaseCommands.transaction(agencyList);
+      UpdateUtils.update(agencyList);
+      //DatabaseCommands.instance.bulkInsert(agencyList);
       //getAgencies(agencyList);
       List<gtt.Route> routeValues;
       List<gtt.Pattern> patternValues;
@@ -123,10 +125,14 @@ class LoadingController extends GetxController {
       (routeValues, patternValues, stopValues, patternStopValues) =
           await GttApi.routesByFeed();
 
-      await DatabaseCommands.transaction(routeValues);
-      await DatabaseCommands.transaction(patternValues);
-      await DatabaseCommands.transaction(stopValues);
-      await DatabaseCommands.transaction(patternStopValues);
+      UpdateUtils.update(patternStopValues);
+      UpdateUtils.update(stopValues);
+      UpdateUtils.update(patternValues);
+      UpdateUtils.update(routeValues);
+      /* await DatabaseCommands.instance.bulkInsert(patternStopValues);
+      DatabaseCommands.instance.bulkInsert(stopValues);
+      DatabaseCommands.instance.bulkInsert(patternValues);
+      DatabaseCommands.instance.bulkInsert(routeValues); */
     } on ApiException catch (e) {
       Utils.showSnackBar(e.message, title: 'Error ${e.statusCode}');
     } finally {
@@ -135,7 +141,7 @@ class LoadingController extends GetxController {
   }
 
   void resetData() async {
-    await DatabaseCommands.clearTables();
+    //await DatabaseCommands.instance.clearTables();
     await loadFromApi();
     moveToHome(const Duration(milliseconds: 1));
   }

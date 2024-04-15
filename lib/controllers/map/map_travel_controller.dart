@@ -35,11 +35,15 @@ class MapTravelController extends GetxController {
   final double appBarHeight = 56.0;
   final RxList<Travel> lastTravels = <Travel>[].obs;
   final Rx<Travel?> lastTravel = Rx<Travel?>(null);
+  final Map<String, Travel> lastTravelsMap = <String, Travel>{};
+  final DraggableScrollableController draggableScrollableController =
+      DraggableScrollableController();
 
   set updateIsSearching(bool value) {
     isSearching.value = value;
     if (!value) {
       lastTravels.clear();
+      lastTravelsMap.clear();
       lastTravel.value = null;
     }
   }
@@ -47,6 +51,7 @@ class MapTravelController extends GetxController {
   @override
   void onClose() {
     super.onClose();
+    draggableScrollableController.dispose();
   }
 
   RxBool get hasTravels => (isSearching.isTrue && lastTravels.isNotEmpty).obs;
@@ -105,6 +110,21 @@ class MapTravelController extends GetxController {
         from: fromAddress.value, to: toAddress.value, time: travelDate.value);
 
     lastTravels.value = travels;
+
+    for (Travel travel in travels) {
+      final transitLegs =
+          travel.legs.where((element) => element.transitLeg == true);
+      if (transitLegs.isEmpty) {
+        lastTravelsMap.putIfAbsent('A piedi', () => travel);
+      } else {
+        final key = transitLegs
+            .map((e) => e.route!.shortName)
+            .toList()
+            .join(',')
+            .replaceAll(' ', '');
+        lastTravelsMap.putIfAbsent(key, () => travel);
+      }
+    }
   }
 
   //-- test---

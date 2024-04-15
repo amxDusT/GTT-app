@@ -10,8 +10,8 @@ class RouteListController extends GetxController {
   List<Route> favorites = [];
   Future<void> getFavorites() async {
     //favorites.clear();
-    favorites = await DatabaseCommands.favoriteRoutes;
-    //favorites.addAll(await DatabaseCommands.favoriteRoutes);
+    favorites = await DatabaseCommands.instance.favoriteRoutes;
+    //favorites.addAll(await DatabaseCommands.instance.favoriteRoutes);
     update();
   }
 
@@ -26,22 +26,22 @@ class RouteListController extends GetxController {
   void toggleFavorite(Route route) async {
     if (favorites.contains(route)) {
       favorites.remove(route);
-      DatabaseCommands.removeFavoriteRoute(route);
+      DatabaseCommands.instance.removeFavoriteRoute(route);
     } else {
       favorites.add(route);
-      DatabaseCommands.addFavoriteRoute(route);
+      DatabaseCommands.instance.addFavoriteRoute(route);
     }
     update();
   }
 
   Future<void> getAgencies([List<Agency>? agencyValues]) async {
-    agencies = agencyValues ?? await DatabaseCommands.agencies;
+    agencies = agencyValues ?? await DatabaseCommands.instance.agencies;
     _sortAgencies();
     update();
   }
 
   void getRoutes([List<Route>? routeValues]) async {
-    List<Route> routes = routeValues ?? await DatabaseCommands.routes;
+    List<Route> routes = routeValues ?? await DatabaseCommands.instance.routes;
     routesMap = {};
     for (var route in routes) {
       routesMap.putIfAbsent(route.agencyId, () => []).add(route);

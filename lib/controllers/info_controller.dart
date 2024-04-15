@@ -27,7 +27,7 @@ class InfoController extends GetxController {
     fermata = StopWithDetails.fromStop(stop: stop).obs;
 
     getFermata();
-    isSaved.value = (await DatabaseCommands.hasStop(fermata.value));
+    isSaved.value = (await DatabaseCommands.instance.hasStop(fermata.value));
   }
 
   // select elements to be displayed in map

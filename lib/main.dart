@@ -9,11 +9,9 @@ import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  DatabaseCommands.init();
   Storage.loadSettings();
+  await DatabaseCommands.instance.initialize();
 
-  //await DatabaseCommands.deleteTable();
-  //await DatabaseCommands.createTable();
   runApp(const MyApp());
   await FlutterDisplayMode.setHighRefreshRate();
 }

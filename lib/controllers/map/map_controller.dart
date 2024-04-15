@@ -174,12 +174,13 @@ class MapPageController extends GetxController
     }
     // if opened from bus list
     if (!showMultiplePatterns && routeValues.first is! gtt.RouteWithDetails) {
-      routePatterns
-          .addAll(await DatabaseCommands.getPatterns(routeValues.first));
+      routePatterns.addAll(
+          await DatabaseCommands.instance.getPatterns(routeValues.first));
 
       for (var pattern in routePatterns) {
         Stop firstStopValue =
-            (await DatabaseCommands.getStopsFromPattern(pattern)).first;
+            (await DatabaseCommands.instance.getStopsFromPattern(pattern))
+                .first;
         firstStop.putIfAbsent(pattern.code, () => firstStopValue);
       }
       routeValues = [
@@ -197,16 +198,17 @@ class MapPageController extends GetxController
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
 
       _mqttController.addSubscription((route as gtt.RouteWithDetails).gtfsId);
-      stops.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
+      stops.addAll(
+          await DatabaseCommands.instance.getStopsFromPattern(route.pattern));
 
       /*for (var stop in stops) {
         List<gtt.Route> routeValues =
-            await DatabaseCommands.getRouteFromStop(stop);
+            await DatabaseCommands.instance.getRouteFromStop(stop);
         uniqueStops
             .add(StopWithDetails.fromStop(stop: stop, vehicles: routeValues));
       }*/
 
-      // stopsTemp.addAll(await DatabaseCommands.getStopsFromPattern(route.pattern));
+      // stopsTemp.addAll(await DatabaseCommands.instance.getStopsFromPattern(route.pattern));
 
       routes.putIfAbsent(route.gtfsId, () => route);
       routeIndex.putIfAbsent(route.gtfsId, () => routeIndex.length);
@@ -349,7 +351,7 @@ class MapPageController extends GetxController
   void setCurrentPattern(gtt.Pattern newPattern) async {
     allStops.clear();
     List<Stop> stopTemp =
-        await DatabaseCommands.getStopsFromPattern(newPattern);
+        await DatabaseCommands.instance.getStopsFromPattern(newPattern);
     stopsMap = {for (var stop in stopTemp) stop.code: stop}.obs;
     allStops.addAll(stopTemp.map((stop) => FermataMarker(fermata: stop)));
     routes.update(routes.keys.first,

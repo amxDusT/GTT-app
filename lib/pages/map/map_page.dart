@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
@@ -89,7 +90,8 @@ class MapPage extends StatelessWidget {
                 TileLayer(
                   maxNativeZoom:
                       _settingsController.showBetaFeatures.isTrue ? 22 : 19,
-                  urlTemplate: _settingsController.showBetaFeatures.isTrue
+                  urlTemplate: _settingsController.showBetaFeatures.isTrue &&
+                          !kDebugMode
                       ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey'
                       : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 ),

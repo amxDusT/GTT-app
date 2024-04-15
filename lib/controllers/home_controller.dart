@@ -41,22 +41,22 @@ class HomeController extends GetxController {
   }
 
   void getStops() async {
-    fermate = await DatabaseCommands.favorites;
+    fermate = await DatabaseCommands.instance.favorites;
     update();
   }
 
   void moveOnTop(Stop stop) {
-    DatabaseCommands.updateStopWithSmallestDate(stop);
+    DatabaseCommands.instance.updateStopWithSmallestDate(stop);
     getStops();
   }
 
   void updateStop(FavStop fermata) {
-    DatabaseCommands.updateStop(fermata);
+    DatabaseCommands.instance.updateStop(fermata);
     getStops();
   }
 
   void deleteStop(FavStop fermata) {
-    DatabaseCommands.deleteStop(fermata);
+    DatabaseCommands.instance.deleteStop(fermata);
     getStops();
   }
 
@@ -67,16 +67,16 @@ class HomeController extends GetxController {
       date = date.add(const Duration(seconds: 1));
       return fermata.copyWith(dateTime: date);
     }).toList();
-    DatabaseCommands.updateAllStops(fermate);
+    DatabaseCommands.instance.updateAllStops(fermate);
     update();
   }
 
   void switchAddDeleteFermata(Stop stop) async {
     if (fermate.contains(stop)) {
-      DatabaseCommands.deleteStop(stop);
+      DatabaseCommands.instance.deleteStop(stop);
       fermate.remove(stop);
     } else {
-      DatabaseCommands.insertStop(stop);
+      DatabaseCommands.instance.insertStop(stop);
       if (stop is FavStop) {
         fermate.add(stop);
       } else {
