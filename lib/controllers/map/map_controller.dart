@@ -169,9 +169,6 @@ class MapPageController extends GetxController
     final bool showMultiplePatterns =
         Get.arguments['multiple-patterns'] ?? false;
 
-    if (initialStop != null && Storage.isFermataShowing) {
-      popupController.togglePopup(FermataMarker(fermata: initialStop));
-    }
     // if opened from bus list
     if (!showMultiplePatterns && routeValues.first is! gtt.RouteWithDetails) {
       routePatterns.addAll(
@@ -221,7 +218,9 @@ class MapPageController extends GetxController
         uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
     */
     _mqttController.connect();
-
+    if (initialStop != null && Storage.isFermataShowing) {
+      popupController.togglePopup(FermataMarker(fermata: initialStop));
+    }
     isPatternInitialized.value = true;
     _listenData();
     lastView = _getCenterBounds();
