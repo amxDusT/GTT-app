@@ -1,10 +1,11 @@
-import 'package:bottom_sheet/bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker_plus/flutter_datetime_picker_plus.dart';
 import 'package:flutter_gtt/controllers/map/map_address.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/controllers/search/search_controller.dart';
-import 'package:flutter_gtt/models/gtt/travel.dart';
+import 'package:flutter_gtt/models/custom_datepicker.dart';
+import 'package:flutter_gtt/models/map/travel.dart';
 import 'package:flutter_gtt/models/map/address.dart';
 import 'package:flutter_gtt/pages/map/map_search_page.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
@@ -22,7 +23,7 @@ class MapTravelController extends GetxController {
       Get.put(MapSearchController(), tag: 'from');
   final MapSearchController toController =
       Get.put(MapSearchController(), tag: 'to');
-
+  final RxBool isUsingCustomTime = false.obs;
   final RxBool isSearching = false.obs;
   final Rx<SimpleAddress> fromAddress =
       SimpleAddress(label: '', position: const LatLng(0.0, 0.0)).obs;
@@ -32,8 +33,28 @@ class MapTravelController extends GetxController {
   final MapAddressController mapAddress = Get.find();
   final MapLocation mapLocation = Get.find<MapLocation>();
   final double appBarHeight = 56.0;
-  final RxList<Travel> lastTravel = <Travel>[].obs;
+  final RxList<Travel> lastTravels = <Travel>[].obs;
+  final Rx<Travel?> lastTravel = Rx<Travel?>(null);
+  final Map<String, Travel> lastTravelsMap = <String, Travel>{};
+  final DraggableScrollableController draggableScrollableController =
+      DraggableScrollableController();
 
+  set updateIsSearching(bool value) {
+    isSearching.value = value;
+    if (!value) {
+      lastTravels.clear();
+      lastTravelsMap.clear();
+      lastTravel.value = null;
+    }
+  }
+
+  @override
+  void onClose() {
+    super.onClose();
+    draggableScrollableController.dispose();
+  }
+
+  RxBool get hasTravels => (isSearching.isTrue && lastTravels.isNotEmpty).obs;
   void switchAddresses() {
     final SimpleAddress tmp = fromAddress.value;
     fromAddress.value = toAddress.value;
@@ -47,7 +68,7 @@ class MapTravelController extends GetxController {
     SimpleAddress? to,
     DateTime? date,
   }) {
-    isSearching.value = true;
+    updateIsSearching = true;
 
     if (from != null) {
       fromAddress.value = from;
@@ -62,33 +83,51 @@ class MapTravelController extends GetxController {
     if (to != null) {
       toAddress.value = to;
     }
+    isUsingCustomTime.value = date != null;
     travelDate.value = date ?? DateTime.now();
     _updateControllers();
+  }
+
+  bool _isAtSameTime(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day &&
+        date1.hour == date2.hour &&
+        date1.minute == date2.minute;
+  }
+
+  set dateTravel(DateTime date) {
+    travelDate.value = date;
+    isUsingCustomTime.value = !_isAtSameTime(date, DateTime.now());
   }
 
   Future<void> _updateControllers() async {
     fromController.controller.text = fromAddress.value.label;
     toController.controller.text = toAddress.value.label;
 
+    lastTravels.clear();
     var travels = await GttApi.getTravels(
         from: fromAddress.value, to: toAddress.value, time: travelDate.value);
-    print(travels);
-    showFlexibleBottomSheet(
-      minHeight: 0,
-      initHeight: 0.5,
-      maxHeight: 1,
-      context: Get.context!,
-      builder: ((context, scrollController, bottomSheetOffset) {
-        return _buildBottomSheet(
-            travels, context, scrollController, bottomSheetOffset);
-      }),
-      anchors: [0, 0.5, 1],
-      isSafeArea: false,
-    );
+
+    lastTravels.value = travels;
+
+    for (Travel travel in travels) {
+      final transitLegs =
+          travel.legs.where((element) => element.transitLeg == true);
+      if (transitLegs.isEmpty) {
+        lastTravelsMap.putIfAbsent('A piedi', () => travel);
+      } else {
+        final key = transitLegs
+            .map((e) => e.route!.shortName)
+            .toList()
+            .join(',')
+            .replaceAll(' ', '');
+        lastTravelsMap.putIfAbsent(key, () => travel);
+      }
+    }
   }
 
   //-- test---
-
   Widget _buildBottomSheet(
     List<Travel> travels,
     BuildContext context,
@@ -106,7 +145,8 @@ class MapTravelController extends GetxController {
               size: 40,
             ),
           ),
-          ...travels.map((e) => _buildTravel(e)),
+          ..._buildTravels(travels),
+          //...travels.map((e) => _buildTravel(e)).toSet(),
           /*Flexible(
             child: Text(
               travels.toString(),
@@ -117,6 +157,42 @@ class MapTravelController extends GetxController {
         ],
       ),
     );
+  }
+
+  List<Widget> _buildTravels(List<Travel> travels) {
+    String getDurationString(int duration) {
+      if (duration < 60) {
+        return '${duration.toString()} sec';
+      }
+      return '${(duration / 60).toStringAsFixed(0)} min';
+    }
+
+    Map<String, List<Travel>> groupedTravels = {};
+    for (var travel in travels) {
+      String key = travel.legs
+          .where((element) => element.route != null)
+          .map((e) => e.route!.shortName)
+          .join(',');
+      if (!groupedTravels.containsKey(key)) {
+        groupedTravels[key] = [];
+      }
+      groupedTravels[key]!.add(travel);
+    }
+
+    final res = groupedTravels.entries
+        .map((e) => ListTile(
+              title: Text(e.key.isEmpty ? 'A piedi' : e.key),
+              subtitle: Text(getDurationString(e.value.first.duration)),
+              onTap: () => lastTravel.value = e.value.first,
+            ))
+        .toList();
+
+    res.sort((a, b) {
+      final aInt = int.parse(a.subtitle.toString().split('"')[1].split(' ')[0]);
+      final bInt = int.parse(b.subtitle.toString().split('"')[1].split(' ')[0]);
+      return aInt.compareTo(bInt);
+    });
+    return res;
   }
 
   Widget _buildTravel(Travel travel) {
@@ -134,15 +210,15 @@ class MapTravelController extends GetxController {
       return '${(duration / 60).toStringAsFixed(0)} min';
     }
 
-    List<gtt.Route> routes = travel.legs
+    Set<gtt.Route> routes = travel.legs
         .where((element) => element.route != null)
         .map((e) => e.route!)
-        .toList();
+        .toSet();
     String routesString = routes.map((e) => e.shortName).join(',');
     return ListTile(
       title: Text(routesString.isEmpty ? 'A piedi' : routesString),
       subtitle: Text(getDurationString(travel.duration)),
-      onTap: () => lastTravel.value = [travel],
+      onTap: () => lastTravel.value = travel,
     );
   }
   // --end test--
@@ -288,5 +364,34 @@ class MapTravelController extends GetxController {
     additionalHeight.value = 0.0;
 
     rows.removeRange(1, rows.length - 1);
+  }
+
+  void onOpenDate(BuildContext context) async {
+    final now = DateTime.now();
+    /*  DatePicker.showDateTimePicker(
+      context,
+      currentTime: isUsingCustomTime.isTrue ? travelDate.value : now,
+      minTime: now.subtract(const Duration(days: 1)),
+      maxTime: now.add(const Duration(days: 7)),
+      locale: LocaleType.it,
+      onConfirm: (date) {
+        dateTravel = date;
+        _updateControllers();
+      },
+      onChanged: (time) => print(time),
+    ); */
+    DatePicker.showPicker(context,
+        showTitleActions: true,
+        pickerModel: CustomPicker(
+          currentTime: isUsingCustomTime.isTrue ? travelDate.value : now,
+          maxTime: now.add(const Duration(days: 7)),
+          minTime: DateTime.utc(now.year, now.month, now.day),
+          locale: LocaleType.it,
+        ),
+        //onChanged: (time) => print(time),
+        onConfirm: (date) {
+      dateTravel = date;
+      _updateControllers();
+    });
   }
 }

@@ -97,7 +97,6 @@ class AddressWidget extends StatelessWidget {
                           controller.travelController.searchTravel(
                             from: null,
                             to: controller.mapAddress.lastAddress.first,
-                            date: DateTime.now(),
                           );
                         },
                         style: TextButton.styleFrom(

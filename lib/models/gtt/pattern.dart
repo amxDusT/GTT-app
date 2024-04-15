@@ -1,4 +1,4 @@
-import 'package:flutter_gtt/resources/utils/maps.dart';
+import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:latlong2/latlong.dart';
 
 class Pattern {
@@ -35,6 +35,21 @@ class Pattern {
       'points': points,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Pattern &&
+        other.routeId == routeId &&
+        other.code == code &&
+        other.directionId == directionId &&
+        other.headsign == headsign &&
+        other.points == points;
+  }
+
+  @override
+  int get hashCode => Object.hash(routeId, code, directionId, headsign, points);
 }
 
 class PatternStop {
@@ -63,4 +78,17 @@ class PatternStop {
       stopOrder: json['stopOrder'] ?? 0,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is PatternStop &&
+        other.patternCode == patternCode &&
+        other.stopId == stopId &&
+        other.stopOrder == stopOrder;
+  }
+
+  @override
+  int get hashCode => Object.hash(patternCode, stopId, stopOrder);
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
@@ -5,7 +6,7 @@ import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/resources/utils/maps.dart';
+import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/card_map_widget.dart';
@@ -89,7 +90,8 @@ class MapPage extends StatelessWidget {
                 TileLayer(
                   maxNativeZoom:
                       _settingsController.showBetaFeatures.isTrue ? 22 : 19,
-                  urlTemplate: _settingsController.showBetaFeatures.isTrue
+                  urlTemplate: _settingsController.showBetaFeatures.isTrue &&
+                          !kDebugMode
                       ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey'
                       : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 ),
@@ -138,7 +140,6 @@ class MapPage extends StatelessWidget {
                               .userLocation.userPosition.first,
                           heading: _flutterMapController
                               .userLocation.userHeading.value,
-                          beta: _settingsController.showBetaFeatures.isTrue,
                         ),
                     ],
                   ),

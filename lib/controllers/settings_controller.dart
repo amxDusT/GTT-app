@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/loading_controller.dart';
-import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -69,19 +68,18 @@ class SettingsController extends GetxController {
   }
 
   void resetData() async {
-    Get.offAll(() => LoadingPage(), arguments: {'first-time': false});
-    Get.find<LoadingController>().resetData();
-    _restoreFavorites();
+    Get.offAllNamed('/home');
+    Get.find<LoadingController>().loadFromApi();
   }
 
-  void _restoreFavorites() async {
+  /*  void _restoreFavorites() async {
     for (var fermata in _homeController.fermate) {
-      DatabaseCommands.insertStop(fermata);
+      DatabaseCommands.instance.insertStop(fermata);
     }
-  }
+  } */
 
   Future<void> exportFavorites() async {
-    String jsonResult = await DatabaseCommands.exportFavorites;
+    String jsonResult = await DatabaseCommands.instance.exportFavorites;
 
     Directory downloadsDirectory = Directory('/storage/emulated/0/Download');
     File file = File('${downloadsDirectory.path}/gtt_favorites.json');
@@ -107,7 +105,7 @@ class SettingsController extends GetxController {
     File file = File(result.files.single.path!);
     String jsonResult = await file.readAsString();
     List<dynamic> jsonMap = json.decode(jsonResult);
-    await DatabaseCommands.importFavorites(jsonMap);
+    await DatabaseCommands.instance.importFavorites(jsonMap);
     _homeController.getStops();
   }
 

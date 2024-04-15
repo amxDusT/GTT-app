@@ -12,9 +12,9 @@ class SearchStopsController extends GetxController {
       return [];
     }
     if (int.tryParse(value) != null) {
-      return await DatabaseCommands.getStopsFromCode(int.parse(value));
+      return await DatabaseCommands.instance.getStopsFromCode(int.parse(value));
     } else {
-      return await DatabaseCommands.getStopsFromName(value);
+      return await DatabaseCommands.instance.getStopsFromName(value);
     }
   }
 

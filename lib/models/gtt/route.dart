@@ -113,12 +113,19 @@ class Route {
   }
 
   @override
-  int get hashCode => gtfsId.hashCode;
+  int get hashCode =>
+      Object.hash(gtfsId, agencyId, shortName, longName, type, desc);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Route && other.gtfsId == gtfsId;
+    return other is Route &&
+        other.gtfsId == gtfsId &&
+        other.agencyId == agencyId &&
+        other.shortName == shortName &&
+        other.longName == longName &&
+        other.type == type &&
+        other.desc == desc;
   }
 }

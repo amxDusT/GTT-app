@@ -33,6 +33,7 @@ class Travel {
 }
 
 class TravelLegs {
+  final bool transitLeg;
   final String points;
   final String mode;
   final int duration;
@@ -44,6 +45,7 @@ class TravelLegs {
   final String? patternCode;
 
   TravelLegs({
+    required this.transitLeg,
     required this.points,
     required this.mode,
     required this.duration,
@@ -57,6 +59,7 @@ class TravelLegs {
 
   factory TravelLegs.fromJson(Map<String, dynamic> json) {
     return TravelLegs(
+      transitLeg: json['transitLeg'],
       points: json['legGeometry']['points'],
       mode: json['mode'],
       duration: (json['duration'] as double).toInt(),
@@ -82,6 +85,38 @@ class TravelLegs {
   }
   @override
   String toString() {
-    return 'TravelLegs(points: $points, mode: $mode, duration: $duration, distance: $distance, from: $from, to: $to, route: $route, patternCode: $patternCode)';
+    return 'TravelLegs(transitLeg: $transitLeg ,points: $points, mode: $mode, duration: $duration, distance: $distance, from: $from, to: $to, route: $route, patternCode: $patternCode)';
+  }
+
+  // equal
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is TravelLegs &&
+        other.transitLeg == transitLeg &&
+        other.points == points &&
+        other.mode == mode &&
+        other.duration == duration &&
+        other.distance == distance &&
+        other.from == from &&
+        other.to == to &&
+        other.route == route &&
+        other.patternCode == patternCode;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      transitLeg,
+      points,
+      mode,
+      duration,
+      distance,
+      from,
+      to,
+      route,
+      patternCode,
+    );
   }
 }

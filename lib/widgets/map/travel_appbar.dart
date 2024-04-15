@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_travel_controller.dart';
+import 'package:flutter_gtt/resources/utils/map_utils.dart';
+import 'package:get/get.dart';
 
 class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {
   final MapTravelController controller;
@@ -33,21 +35,30 @@ class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {
               TextButton.icon(
                 style: TextButton.styleFrom(
                   //fixedSize: const Size(100, 40),
-                  padding: const EdgeInsets.only(left: 0.0),
+                  padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                   //backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     side: const BorderSide(color: Colors.blue),
                   ),
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  controller.onOpenDate(context);
+                },
                 icon: const Icon(
                   Icons.calendar_month,
                   size: 18,
                 ),
-                label: const Text(
-                  'Oggi',
-                ),
+                label: Obx(() {
+                  if (controller.isUsingCustomTime.isTrue) {
+                    return Text(
+                      MapUtils.dateToString(controller.travelDate.value),
+                    );
+                  }
+                  return const Text(
+                    'Oggi',
+                  );
+                }),
               ),
               const Expanded(
                 child: SizedBox(),

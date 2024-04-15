@@ -12,7 +12,7 @@ class ListSearchController extends GetxController {
   FocusNode? focusNode;
   @override
   void onInit() async {
-    routes = await DatabaseCommands.routes;
+    routes = await DatabaseCommands.instance.routes;
     super.onInit();
   }
 

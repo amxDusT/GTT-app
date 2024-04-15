@@ -18,14 +18,15 @@ class StopWithDetails extends Stop {
     Map<String, dynamic> json,
     int stopNum,
   ) async {
-    Stop stop = (await DatabaseCommands.getStop(stopNum))!;
+    Stop stop = (await DatabaseCommands.instance.getStop(stopNum))!;
 
     Map<String, RouteWithDetails> routesWithDetails = {};
-    for (Route route in await DatabaseCommands.getRouteFromStop(stop)) {
+    for (Route route
+        in await DatabaseCommands.instance.getRouteFromStop(stop)) {
       RouteWithDetails routeWithDetails = RouteWithDetails.fromData(
         route: route,
         stoptimes: [],
-        pattern: (await DatabaseCommands.getPatterns(route)).first,
+        pattern: (await DatabaseCommands.instance.getPatterns(route)).first,
       );
       routesWithDetails.putIfAbsent(route.gtfsId, () => routeWithDetails);
     }
@@ -33,7 +34,8 @@ class StopWithDetails extends Stop {
       String patternCode = js['pattern']['code'];
       String routeId =
           '${patternCode.split(':')[0]}:${patternCode.split(':')[1]}';
-      Pattern pattern = await DatabaseCommands.getPatternFromCode(patternCode);
+      Pattern pattern =
+          await DatabaseCommands.instance.getPatternFromCode(patternCode);
 
       /*
       TODO: check this
@@ -135,12 +137,17 @@ class Stop {
   }
 
   @override
-  int get hashCode => code.hashCode;
+  int get hashCode => Object.hash(gtfsId, code, name, lat, lon);
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Stop && other.code == code;
+    return other is Stop &&
+        other.code == code &&
+        other.name == name &&
+        other.gtfsId == gtfsId &&
+        other.lat == lat &&
+        other.lon == lon;
   }
 }

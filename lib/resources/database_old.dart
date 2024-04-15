@@ -12,9 +12,8 @@ import 'package:flutter_gtt/resources/storage.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-class DatabaseCommands {
-  static DatabaseCommands? _instance;
-  Future<Database>? database;
+class _DatabaseOld {
+  static Future<Database>? database;
   static const _databaseName = 'flutter_gtt';
   static const _favoritesTable = 'favorites_table';
 
@@ -25,19 +24,10 @@ class DatabaseCommands {
   static const _patternStopsTable = "pattern_stops";
   static const _favoritesVehiclesTable = "favorites_vehicles";
 
-  FutureOr<Database> get _dbInstance async => database ??= _init();
-  DatabaseCommands._();
+  static Future<Database> get instance => database ?? init();
 
-  static DatabaseCommands get instance {
-    _instance ??= DatabaseCommands._();
-    return _instance!;
-  }
-
-  Future<void> initialize() async {
-    await _init();
-  }
-
-  Future<Database> _init() async {
+  static Future<Database> init() async {
+    //print(join(await getDatabasesPath(), '$_databaseName.db'));
     database = openDatabase(
       join(await getDatabasesPath(), '$_databaseName.db'),
       onCreate: (db, version) {
@@ -51,8 +41,20 @@ class DatabaseCommands {
     return database!;
   }
 
-  Future<void> createTable({Database? db}) async {
-    db ??= await _dbInstance;
+  // test
+  static Future<void> deleteTable() async {
+    final db = await instance;
+    await db.execute('DROP TABLE $_favoritesTable');
+    await db.execute('DROP TABLE $_stopsTable');
+    await db.execute('DROP TABLE $_agencyTable');
+    await db.execute('DROP TABLE $_routesTable');
+    await db.execute('DROP TABLE $_patternsTable');
+    await db.execute('DROP TABLE $_stopsTable');
+    await db.execute('DROP TABLE $_patternStopsTable');
+  }
+
+  static Future<void> createTable({Database? db}) async {
+    db ??= await instance;
     final Batch batch = db.batch();
     batch.execute(
       '''CREATE TABLE IF NOT EXISTS $_agencyTable (
@@ -130,8 +132,8 @@ class DatabaseCommands {
     await batch.commit();
   }
 
-  Future<void> insertStop(Stop fermata) async {
-    final Database db = await _dbInstance;
+  static Future<void> insertStop(Stop fermata) async {
+    final Database db = await instance;
     final FavStop fermataFav = (fermata is FavStop)
         ? fermata
         : FavStop.fromStop(
@@ -140,12 +142,12 @@ class DatabaseCommands {
     await db.insert(
       _favoritesTable,
       fermataFav.toDbMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.ignore,
     );
   }
 
-  Future<void> insertStopRaw(Map<String, dynamic> json) async {
-    final Database db = await _dbInstance;
+  static Future<void> insertStopRaw(Map<String, dynamic> json) async {
+    final Database db = await instance;
     await db.insert(
       _favoritesTable,
       json,
@@ -153,8 +155,8 @@ class DatabaseCommands {
     );
   }
 
-  Future<void> updateAllStops(List<FavStop> fermate) async {
-    final Database db = await _dbInstance;
+  static Future<void> updateAllStops(List<FavStop> fermate) async {
+    final Database db = await instance;
     final batch = db.batch();
     for (var fermata in fermate) {
       batch.insert(
@@ -166,8 +168,8 @@ class DatabaseCommands {
     await batch.commit();
   }
 
-  Future<void> updateStop(FavStop fermata) async {
-    final Database db = await _dbInstance;
+  static Future<void> updateStop(FavStop fermata) async {
+    final Database db = await instance;
 
     await db.insert(
       _favoritesTable,
@@ -176,8 +178,8 @@ class DatabaseCommands {
     );
   }
 
-  Future<void> updateStopWithSmallestDate(Stop stop) async {
-    final Database db = await _dbInstance;
+  static Future<void> updateStopWithSmallestDate(Stop stop) async {
+    final Database db = await instance;
 
     await db.rawUpdate('''
       UPDATE $_favoritesTable
@@ -186,8 +188,8 @@ class DatabaseCommands {
     ''', [stop.gtfsId]);
   }
 
-  Future<bool> hasStop(Stop fermata) async {
-    final Database db = await _dbInstance;
+  static Future<bool> hasStop(Stop fermata) async {
+    final Database db = await instance;
 
     final List<Map<String, dynamic>> result = await db.query(
       _favoritesTable,
@@ -197,8 +199,8 @@ class DatabaseCommands {
     return result.isNotEmpty;
   }
 
-  Future<void> deleteStop(Stop fermata) async {
-    final Database db = await _dbInstance;
+  static Future<void> deleteStop(Stop fermata) async {
+    final Database db = await instance;
 
     await db.delete(
       _favoritesTable,
@@ -207,8 +209,8 @@ class DatabaseCommands {
     );
   }
 
-  Future<void> addFavoriteRoute(Route route) async {
-    final Database db = await _dbInstance;
+  static Future<void> addFavoriteRoute(Route route) async {
+    final Database db = await instance;
     await db.insert(
       _favoritesVehiclesTable,
       {
@@ -219,8 +221,8 @@ class DatabaseCommands {
     );
   }
 
-  Future<void> removeFavoriteRoute(Route route) async {
-    final Database db = await _dbInstance;
+  static Future<void> removeFavoriteRoute(Route route) async {
+    final Database db = await instance;
     await db.delete(
       _favoritesVehiclesTable,
       where: 'routeId = ?',
@@ -228,16 +230,16 @@ class DatabaseCommands {
     );
   }
 
-  Future<void> removeAllFromFavorites() async {
-    final Database db = await _dbInstance;
+  static Future<void> removeAllFromFavorites() async {
+    final Database db = await instance;
     await db.delete(_favoritesVehiclesTable);
   }
   /*
     ------------------------------------------------------------------------
   */
 
-  Future<List<Route>> get favoriteRoutes async {
-    final Database db = await _dbInstance;
+  static Future<List<Route>> get favoriteRoutes async {
+    final Database db = await instance;
     final List<Map<String, dynamic>> result = await db.rawQuery(
       '''
       SELECT $_routesTable.*, $_favoritesVehiclesTable.date
@@ -252,8 +254,8 @@ class DatabaseCommands {
     });
   }
 
-  Future<List<FavStop>> get favorites async {
-    final Database db = await _dbInstance;
+  static Future<List<FavStop>> get favorites async {
+    final Database db = await instance;
     final List<Map<String, dynamic>> result = await db.rawQuery(
       '''
       SELECT $_stopsTable.*, $_favoritesTable.*
@@ -268,15 +270,15 @@ class DatabaseCommands {
     });
   }
 
-  Future<String> get exportFavorites async {
-    final Database db = await _dbInstance;
+  static Future<String> get exportFavorites async {
+    final Database db = await instance;
 
     var result = await db.query(_favoritesTable);
     return json.encode(result);
   }
 
-  Future<void> importFavorites(List<dynamic> favoritesJson) async {
-    final Database db = await _dbInstance;
+  static Future<void> importFavorites(List<dynamic> favoritesJson) async {
+    final Database db = await instance;
 
     final batch = db.batch();
 
@@ -309,8 +311,8 @@ class DatabaseCommands {
     await batch.commit();
   }
 
-  Future<List<Agency>> get agencies async {
-    final db = await _dbInstance;
+  static Future<List<Agency>> get agencies async {
+    final db = await instance;
     final results = await db.query(
       _agencyTable,
       orderBy: 'gtfsId DESC',
@@ -322,8 +324,8 @@ class DatabaseCommands {
     });
   }
 
-  Future<List<Route>> get routes async {
-    final db = await _dbInstance;
+  static Future<List<Route>> get routes async {
+    final db = await instance;
     final results = await db.query(
       _routesTable,
       orderBy: 'type ASC',
@@ -333,8 +335,8 @@ class DatabaseCommands {
     });
   }
 
-  //  Future<List<Pattern>> getPatterns(Route route) async {
-  //   final db = await _dbInstance;
+  // static Future<List<Pattern>> getPatterns(Route route) async {
+  //   final db = await instance;
   //   final results = await db.query(
   //     _patternsTable,
   //     where: 'routeId = ?',
@@ -345,8 +347,8 @@ class DatabaseCommands {
   //     return Pattern.fromJson(results[i]);
   //   });
   // }
-  Future<List<Pattern>> getPatterns(Route route) async {
-    final db = await _dbInstance;
+  static Future<List<Pattern>> getPatterns(Route route) async {
+    final db = await instance;
     final results = await db.rawQuery('''
     SELECT $_patternsTable.*, COUNT($_patternStopsTable.stopId) AS numStops
     FROM $_patternsTable
@@ -360,105 +362,44 @@ class DatabaseCommands {
     });
   }
 
-  Future<void> bulkDelete(List<dynamic> elements) async {
+  static Future<void> transaction(List<dynamic> elements) async {
     if (elements.isEmpty) {
       return;
     }
-    late String table;
-    switch (elements[0].runtimeType) {
-      case const (Route):
-        table = _routesTable;
-        break;
-      case const (Pattern):
-        table = _patternsTable;
-        break;
-      case const (Stop):
-        table = _stopsTable;
-        break;
-      case const (PatternStop):
-        table = _patternStopsTable;
-        break;
-      case const (Agency):
-        table = _agencyTable;
-        break;
-      default:
-        throw 'Error, Object not found';
+    String? table;
+
+    if (elements[0] is Route) {
+      table = _routesTable;
+    } else if (elements[0] is Pattern) {
+      table = _patternsTable;
+    } else if (elements[0] is Stop) {
+      table = _stopsTable;
+    } else if (elements[0] is PatternStop) {
+      table = _patternStopsTable;
+    } else if (elements[0] is Agency) {
+      table = _agencyTable;
     }
 
-    final db = await _dbInstance;
-
+    if (table == null) {
+      throw 'Error, Object not found';
+    }
+    final db = await instance;
     await db.transaction((txn) async {
       final batch = txn.batch();
-      for (var element in elements) {
-        if (table == _patternsTable) {
-          batch.delete(
-            table,
-            where: 'code = ?',
-            whereArgs: [element.code],
-          );
-        } else if (table == _patternStopsTable) {
-          batch.delete(
-            table,
-            where: 'patternCode = ? AND stopId = ?',
-            whereArgs: [element.patternCode, element.stopId],
-          );
-        } else {
-          batch.delete(
-            table,
-            where: 'gtfsId = ?',
-            whereArgs: [element.gtfsId],
-          );
-        }
-      }
-      await batch.commit(noResult: true);
-      if (kDebugMode) print("finished $table");
-    });
-  }
-
-  Future<void> bulkInsert(List<dynamic> elements) async {
-    if (elements.isEmpty) {
-      return;
-    }
-    late String table;
-    switch (elements[0].runtimeType) {
-      case const (Route):
-        table = _routesTable;
-        break;
-      case const (Pattern):
-        table = _patternsTable;
-        break;
-      case const (Stop):
-        table = _stopsTable;
-        break;
-      case const (PatternStop):
-        table = _patternStopsTable;
-        break;
-      case const (Agency):
-        table = _agencyTable;
-        break;
-      default:
-        throw 'Error, Object not found';
-    }
-
-    final db = await _dbInstance;
-
-    await db.transaction((txn) async {
-      final batch = txn.batch();
-      //batch.delete(table!);
       for (var element in elements) {
         batch.insert(
-          table,
+          table!,
           element.toMap(),
           conflictAlgorithm: ConflictAlgorithm.replace,
         );
       }
-      await batch.commit(noResult: true);
+      await batch.commit();
       if (kDebugMode) print("finished $table");
     });
   }
 
-  Future<Stop?> getStop(int stopNum) async {
-    final db = await _dbInstance;
+  static Future<Stop?> getStop(int stopNum) async {
+    final db = await instance;
     final List<Map<String, dynamic>> result = await db.query(
       _stopsTable,
       where: 'code = ?',
@@ -471,8 +412,8 @@ class DatabaseCommands {
     return null;
   }
 
-  Future<List<Stop>> getStopsFromPattern(Pattern pattern) async {
-    final db = await _dbInstance;
+  static Future<List<Stop>> getStopsFromPattern(Pattern pattern) async {
+    final db = await instance;
     final List<Map<String, dynamic>> result = await db.rawQuery(
       '''
       SELECT $_stopsTable.* 
@@ -488,8 +429,8 @@ class DatabaseCommands {
     });
   }
 
-  Future<List<Route>> getRouteFromStop(Stop stop) async {
-    final db = await _dbInstance;
+  static Future<List<Route>> getRouteFromStop(Stop stop) async {
+    final db = await instance;
     final List<Map<String, dynamic>> result = await db.rawQuery('''
       SELECT DISTINCT $_routesTable.*
       FROM $_routesTable
@@ -504,8 +445,8 @@ class DatabaseCommands {
     });
   }
 
-  Future<Pattern> getPatternFromCode(String code) async {
-    final db = await _dbInstance;
+  static Future<Pattern> getPatternFromCode(String code) async {
+    final db = await instance;
     final List<Map<String, dynamic>> result = await db.query(
       _patternsTable,
       where: 'code = ?',
@@ -514,8 +455,8 @@ class DatabaseCommands {
     return Pattern.fromJson(result.first);
   }
 
-  Future<List<Stop>> getStopsFromCode(int code, [limit = 25]) async {
-    final db = await _dbInstance;
+  static Future<List<Stop>> getStopsFromCode(int code, [limit = 25]) async {
+    final db = await instance;
     final List<Map<String, dynamic>> result = await db.query(
       _stopsTable,
       where: 'code LIKE ?',
@@ -528,8 +469,8 @@ class DatabaseCommands {
     });
   }
 
-  Future<List<Stop>> getStopsFromName(String name, [limit = 25]) async {
-    final db = await _dbInstance;
+  static Future<List<Stop>> getStopsFromName(String name, [limit = 25]) async {
+    final db = await instance;
     final List<Map<String, dynamic>> result = await db.query(
       _stopsTable,
       where: 'name LIKE ?',
@@ -542,33 +483,9 @@ class DatabaseCommands {
     });
   }
 
-  Future<List<PatternStop>> get allPatternStops async {
-    final db = await _dbInstance;
-    final results = await db.query(_patternStopsTable);
-    return List.generate(results.length, (i) {
-      return PatternStop.fromJson(results[i]);
-    });
-  }
-
-  Future<List<Pattern>> get allPatterns async {
-    final db = await _dbInstance;
-    final results = await db.query(_patternsTable);
-    return List.generate(results.length, (i) {
-      return Pattern.fromJson(results[i]);
-    });
-  }
-
-  Future<List<Stop>> get allStops async {
-    final db = await _dbInstance;
-    final results = await db.query(_stopsTable);
-    return List.generate(results.length, (i) {
-      return Stop.fromJson(results[i]);
-    });
-  }
-
   // test
-  Future<void> clearTables() async {
-    final db = await _dbInstance;
+  static Future<void> clearTables() async {
+    final db = await instance;
     await db.transaction((txn) async {
       final batch = txn.batch();
       batch.delete(_patternStopsTable);
