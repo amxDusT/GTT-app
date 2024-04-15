@@ -87,4 +87,36 @@ class TravelLegs {
   String toString() {
     return 'TravelLegs(transitLeg: $transitLeg ,points: $points, mode: $mode, duration: $duration, distance: $distance, from: $from, to: $to, route: $route, patternCode: $patternCode)';
   }
+
+  // equal
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is TravelLegs &&
+        other.transitLeg == transitLeg &&
+        other.points == points &&
+        other.mode == mode &&
+        other.duration == duration &&
+        other.distance == distance &&
+        other.from == from &&
+        other.to == to &&
+        other.route == route &&
+        other.patternCode == patternCode;
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+      transitLeg,
+      points,
+      mode,
+      duration,
+      distance,
+      from,
+      to,
+      route,
+      patternCode,
+    );
+  }
 }

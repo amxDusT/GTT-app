@@ -28,4 +28,19 @@ class Agency {
         'fareUrl': fareUrl,
         'phone': phone,
       };
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Agency &&
+        other.gtfsId == gtfsId &&
+        other.name == name &&
+        other.url == url &&
+        other.fareUrl == fareUrl &&
+        other.phone == phone;
+  }
+
+  @override
+  int get hashCode => Object.hash(gtfsId, name, url, fareUrl, phone);
 }
