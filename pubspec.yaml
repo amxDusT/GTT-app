@@ -28,7 +28,6 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  bottom_sheet: ^4.0.2
   convert: ^3.1.1
   cupertino_icons: ^1.0.2
   file_picker: ^6.2.0
@@ -62,6 +61,7 @@ dependencies:
   package_info_plus: ^5.0.1
   path: ^1.8.3
   reorderable_grid: ^1.0.10
+  sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.0
   url_launcher: ^6.2.1
   uuid: ^4.3.3

@@ -13,6 +13,7 @@ import 'package:flutter_gtt/widgets/search/disabled_focusnode.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class MapTravelController extends GetxController {
   static const _textfieldHeight = 56.0;
@@ -36,8 +37,8 @@ class MapTravelController extends GetxController {
   final RxList<Travel> lastTravels = <Travel>[].obs;
   final Rx<Travel?> lastTravel = Rx<Travel?>(null);
   final Map<String, Travel> lastTravelsMap = <String, Travel>{};
-  final DraggableScrollableController draggableScrollableController =
-      DraggableScrollableController();
+
+  PanelController panelController = PanelController();
 
   set updateIsSearching(bool value) {
     isSearching.value = value;
@@ -51,7 +52,6 @@ class MapTravelController extends GetxController {
   @override
   void onClose() {
     super.onClose();
-    draggableScrollableController.dispose();
   }
 
   RxBool get hasTravels => (isSearching.isTrue && lastTravels.isNotEmpty).obs;
@@ -106,11 +106,13 @@ class MapTravelController extends GetxController {
     toController.controller.text = toAddress.value.label;
 
     lastTravels.clear();
+    lastTravelsMap.clear();
+    lastTravel.value = null;
     var travels = await GttApi.getTravels(
         from: fromAddress.value, to: toAddress.value, time: travelDate.value);
 
     lastTravels.value = travels;
-
+    panelController.open();
     for (Travel travel in travels) {
       final transitLegs =
           travel.legs.where((element) => element.transitLeg == true);
