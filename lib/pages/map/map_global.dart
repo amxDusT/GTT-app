@@ -52,6 +52,7 @@ class MapGlobal extends StatelessWidget {
                     .travelController.isSearching.isFalse
                 ? Container()
                 : SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
                     controller: scrollController,
                     child: Column(
                       children: [
@@ -70,9 +71,9 @@ class MapGlobal extends StatelessWidget {
                                 child: CircularProgressIndicator(),
                               )
                             : ListView.separated(
+                                //controller: scrollController,
                                 shrinkWrap: true,
-                                primary: true,
-                                physics: const BouncingScrollPhysics(),
+                                physics: const NeverScrollableScrollPhysics(),
                                 itemCount: controller.travelController
                                         .lastTravelsMap.length +
                                     1,
@@ -121,6 +122,7 @@ class MapGlobal extends StatelessWidget {
                                           left: 20.0,
                                           right: 20.0,
                                           bottom: 200.0,
+                                          top: 60.0,
                                         ),
                                       ).fit(controller.mapController.camera));
                                     },
@@ -133,6 +135,7 @@ class MapGlobal extends StatelessWidget {
                                       )
                                     : const Divider() /* const SizedBox() */,
                               ),
+                        const SizedBox(height: 150),
                       ],
                     ),
                   ),
@@ -228,23 +231,20 @@ class MapGlobal extends StatelessWidget {
                     ),
                   ),
                 ),
-                BottomButtons(children: [
-                  /* CircleButton(
-                    tooltip: 'Location',
-                    icon: const Icon(Icons.location_on),
-                    onPressed: () => controller.,
-                  ), */
-                  CircleButton(
-                    tooltip: 'Zoom out',
-                    icon: const Icon(Icons.remove),
-                    onPressed: () => controller.zoomOut,
-                  ),
-                  CircleButton(
-                    tooltip: 'Zoom in',
-                    icon: const Icon(Icons.add),
-                    onPressed: () => controller.zoomIn,
-                  ),
-                ]),
+                BottomButtons(
+                  children: [
+                    CircleButton(
+                      tooltip: 'Zoom out',
+                      icon: const Icon(Icons.remove),
+                      onPressed: () => controller.zoomOut,
+                    ),
+                    CircleButton(
+                      tooltip: 'Zoom in',
+                      icon: const Icon(Icons.add),
+                      onPressed: () => controller.zoomIn,
+                    ),
+                  ],
+                ),
               ],
             ),
           ),

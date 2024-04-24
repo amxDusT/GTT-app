@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
-import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
+import 'package:flutter_gtt/exceptions/map_location_exception.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/resources/api/mqtt_controller.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
@@ -144,8 +145,6 @@ class MapPageController extends GetxController
       // TODO: check if works.
       allStops.value = list;
       allStops.refresh();
-      /* allStops.clear();
-      allStops.addAll(list); */
     }
   }
 
@@ -195,8 +194,13 @@ class MapPageController extends GetxController
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
 
       _mqttController.addSubscription((route as gtt.RouteWithDetails).gtfsId);
-      stops.addAll(
-          await DatabaseCommands.instance.getStopsFromPattern(route.pattern));
+      var tempStops =
+          await DatabaseCommands.instance.getStopsFromPattern(route.pattern);
+
+      if (tempStops.isEmpty) {
+        tempStops = await GttApi.getStopsFromPattern(route.pattern);
+      }
+      stops.addAll(tempStops);
 
       /*for (var stop in stops) {
         List<gtt.Route> routeValues =

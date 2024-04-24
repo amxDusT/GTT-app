@@ -148,6 +148,15 @@ class Utils {
     return gtfsId.split(':')[1].substring(0, gtfsId.split(':')[1].length - 1);
   }
 
+  static bool isSameDay(DateTime? date1, DateTime? date2) {
+    if (date1 == null || date2 == null) {
+      return false;
+    }
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
+  }
+
   static List<GetPage> getPages() {
     return [
       GetPage(

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_compass/flutter_compass.dart';
-import 'package:flutter_gtt/controllers/map/map_location_exception.dart';
+import 'package:flutter_gtt/exceptions/map_location_exception.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
