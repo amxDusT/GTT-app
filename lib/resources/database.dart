@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
@@ -282,28 +283,49 @@ class DatabaseCommands {
     final batch = db.batch();
 
     for (var fermata in favoritesJson) {
+      String? stopId = fermata['stopId'];
+      if (stopId == null) {
+        continue;
+      }
       var result = await db.query(
         _stopsTable,
         where: 'gtfsId = ?',
-        whereArgs: [fermata['stopId']],
+        whereArgs: [stopId],
       );
+      // check if stop exists
       if (result.isEmpty) {
         continue;
       }
-      if (Storage.stringToColor(fermata['color']) == null) {
-        fermata['color'] = Storage.colorToString(initialColor);
+      final Stop stop = Stop.fromJson(result.first);
+      String? colorString = fermata['color'];
+      int? date = fermata['date'];
+      String? description = fermata['descrizione'];
+      Color? color = Storage.stringToColor(colorString);
+      if (color == null) {
+        colorString = Storage.colorToString(initialColor);
+        color = initialColor;
       }
-      if (fermata['date'] == null || fermata['date'] < 0) {
-        fermata['date'] = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+
+      {
+        final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+        if (date == null || date < 0 || date > now) {
+          date = now;
+        }
       }
-      if (fermata['descrizione'] != null &&
-          fermata['descrizione'].toString().length > 128) {
-        fermata['descrizione'] =
-            fermata['descrizione'].toString().substring(0, 128);
+
+      if (description != null && description.length > 128) {
+        description = description.toString().substring(0, 128);
       }
+
+      final favStop = FavStop.fromStop(
+        stop: stop,
+        dateTime: DateTime.fromMillisecondsSinceEpoch(date * 1000),
+        color: color,
+        descrizione: description,
+      );
       batch.insert(
         _favoritesTable,
-        fermata,
+        favStop.toDbMap(),
         conflictAlgorithm: ConflictAlgorithm.ignore,
       );
     }

@@ -15,9 +15,7 @@ import 'package:url_launcher/url_launcher.dart';
 class SettingsController extends GetxController {
   final String betaFeatures = '''
   - mappa default senza tratte
-  - importa preferiti da backup locale
   - map api da mapbox invece di openstreetmap
-  - colori personalizzati per le fermate preferite
   ''';
   final _homeController = Get.find<HomeController>();
   final RxBool showBetaFeatures = Storage.showBetaFeatures.obs;
@@ -90,23 +88,28 @@ class SettingsController extends GetxController {
   }
 
   Future<void> importFavorites() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      dialogTitle: 'Seleziona il file da importare',
-      initialDirectory: '/storage/emulated/0/Download',
-      allowCompression: false,
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-    );
-    if (result == null) {
-      //Utils.showSnackBar('Nessun file selezionato');
-      return;
-    }
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        dialogTitle: 'Seleziona il file da importare',
+        initialDirectory: '/storage/emulated/0/Download',
+        allowCompression: false,
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (result == null) {
+        //Utils.showSnackBar('Nessun file selezionato');
+        return;
+      }
 
-    File file = File(result.files.single.path!);
-    String jsonResult = await file.readAsString();
-    List<dynamic> jsonMap = json.decode(jsonResult);
-    await DatabaseCommands.instance.importFavorites(jsonMap);
-    _homeController.getStops();
+      File file = File(result.files.single.path!);
+      String jsonResult = await file.readAsString();
+
+      List<dynamic> jsonMap = json.decode(jsonResult);
+      await DatabaseCommands.instance.importFavorites(jsonMap);
+      _homeController.getStops();
+    } catch (e) {
+      Utils.showSnackBar('Errore durante l\'importazione');
+    }
   }
 
   void infoApp() {

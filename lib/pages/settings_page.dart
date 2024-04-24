@@ -84,12 +84,10 @@ class SettingsPage extends StatelessWidget {
                   title: const Text('Backup locale preferiti'),
                   onTap: () => _settingsController.exportFavorites(),
                 ),
-                Obx(() => _settingsController.showBetaFeatures.isTrue
-                    ? ListTile(
-                        title: const Text('Ripristina preferiti'),
-                        onTap: () => _settingsController.importFavorites(),
-                      )
-                    : const SizedBox()),
+                ListTile(
+                  title: const Text('Ripristina preferiti'),
+                  onTap: () => _settingsController.importFavorites(),
+                ),
                 ListTile(
                   title: const Text('Informazioni app'),
                   onTap: () => _settingsController.infoApp(),

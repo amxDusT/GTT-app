@@ -52,11 +52,25 @@ class Storage {
       '${color.alpha}/${color.red}/${color.green}/${color.blue}';
 
   static Color? stringToColor(String? colorString) {
-    List<int>? values =
-        colorString?.split('/').map((e) => int.parse(e)).toList();
-    return values == null
-        ? null
-        : Color.fromARGB(values[0], values[1], values[2], values[3]);
+    int clamped(int value) => value.clamp(0, 255);
+
+    if (colorString == null) return null;
+    colorString = colorString.trim();
+    final split = colorString.split('/');
+    if (split.length != 4) return null;
+    List<int> values = split
+        .where((e) => int.tryParse(e) != null)
+        .map((e) => int.parse(e))
+        .toList();
+
+    if (values.length != 4) return null;
+
+    return Color.fromARGB(
+      clamped(values[0]),
+      clamped(values[1]),
+      clamped(values[2]),
+      clamped(values[3]),
+    );
   }
 
   static Future<void> setParam(StorageParam key, String value) async {
