@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:flutter_gtt/resources/api/api_exception.dart';
+import 'package:flutter_gtt/exceptions/api_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
 

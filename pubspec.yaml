@@ -38,7 +38,6 @@ dependencies:
     git:
       url: https://github.com/amxDusT/flutter_compass
       ref: master
-  flutter_datetime_picker_plus: ^2.1.0
   flutter_displaymode: ^0.6.0
   flutter_localizations:
     sdk: flutter

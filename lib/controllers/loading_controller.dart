@@ -4,7 +4,7 @@ import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/api/api_exception.dart';
+import 'package:flutter_gtt/exceptions/api_exception.dart';
 import 'package:flutter_gtt/resources/api/github_api.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/resources/apk_install.dart';

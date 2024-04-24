@@ -1,7 +1,10 @@
+import 'package:flutter_gtt/controllers/loading_controller.dart';
 import 'package:flutter_gtt/models/gtt/stoptime.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:get/get.dart';
 
 class StopWithDetails extends Stop {
   List<Route> vehicles;
@@ -14,6 +17,20 @@ class StopWithDetails extends Stop {
     required super.lon,
   });
 
+  static void _addRoute(
+    Map<String, RouteWithDetails> routesWithDetails, {
+    required Route route,
+    required Pattern pattern,
+    required List<Stoptime> stoptimes,
+  }) {
+    RouteWithDetails routeWithDetails = RouteWithDetails.fromData(
+      route: route,
+      stoptimes: stoptimes,
+      pattern: pattern,
+    );
+    routesWithDetails.putIfAbsent(route.gtfsId, () => routeWithDetails);
+  }
+
   static Future<StopWithDetails> decodeJson(
     Map<String, dynamic> json,
     int stopNum,
@@ -23,24 +40,51 @@ class StopWithDetails extends Stop {
     Map<String, RouteWithDetails> routesWithDetails = {};
     for (Route route
         in await DatabaseCommands.instance.getRouteFromStop(stop)) {
-      RouteWithDetails routeWithDetails = RouteWithDetails.fromData(
+      _addRoute(
+        routesWithDetails,
+        route: route,
+        pattern: (await DatabaseCommands.instance.getPatterns(route)).first,
+        stoptimes: [],
+      );
+      /* RouteWithDetails routeWithDetails = RouteWithDetails.fromData(
         route: route,
         stoptimes: [],
         pattern: (await DatabaseCommands.instance.getPatterns(route)).first,
       );
-      routesWithDetails.putIfAbsent(route.gtfsId, () => routeWithDetails);
+      print('routeIds : ${route.gtfsId}');
+      routesWithDetails.putIfAbsent(route.gtfsId, () => routeWithDetails); */
     }
+
     for (var js in (json['stopTimes'] as List)) {
       String patternCode = js['pattern']['code'];
       String routeId =
           '${patternCode.split(':')[0]}:${patternCode.split(':')[1]}';
-      Pattern pattern =
-          await DatabaseCommands.instance.getPatternFromCode(patternCode);
+
+      Pattern pattern;
+      try {
+        pattern =
+            await DatabaseCommands.instance.getPatternFromCode(patternCode);
+      } on StateError {
+        // pattern not in db, add it later
+        pattern = Pattern.fromJson(js['pattern']);
+        Get.find<LoadingController>().loadFromApi();
+      }
+
+      if (!routesWithDetails.containsKey(routeId)) {
+        _addRoute(
+          routesWithDetails,
+          route: await DatabaseCommands.instance.getRoute(routeId),
+          pattern: pattern,
+          stoptimes: [],
+        );
+      }
 
       /*
-      TODO: check this
       sometimes the query returns different patterns and stoptimes for the same route
-      so we keep the pattern with most stoptimes and add the stoptimes to it
+      so we keep the pattern with most stoptimes  
+      
+      (not anymore)
+      ---and add the stoptimes to it
       */
       routesWithDetails.update(routesWithDetails[routeId]!.gtfsId, (route) {
         RouteWithDetails r = routesWithDetails[routeId]!;
@@ -59,8 +103,18 @@ class StopWithDetails extends Stop {
         return r;
       });
     }
+    final vehicles = routesWithDetails.values.toList();
+    Utils.sort(vehicles);
+    vehicles.sort((a, b) {
+      if (a.stoptimes.isEmpty && b.stoptimes.isNotEmpty) {
+        return 1;
+      } else if (a.stoptimes.isNotEmpty && b.stoptimes.isEmpty) {
+        return -1;
+      }
+      return 0;
+    });
     return StopWithDetails(
-      vehicles: routesWithDetails.values.toList(),
+      vehicles: vehicles,
       gtfsId: stop.gtfsId,
       code: stop.code,
       name: stop.name,

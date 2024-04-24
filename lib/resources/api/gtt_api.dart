@@ -6,7 +6,7 @@ import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/map/travel.dart';
 import 'package:flutter_gtt/models/map/address.dart';
-import 'package:flutter_gtt/resources/api/api_exception.dart';
+import 'package:flutter_gtt/exceptions/api_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -14,13 +14,32 @@ class GttApi {
   static const String _url =
       'https://plan.muoversiatorino.it/otp/routers/mato/index/graphql';
 
+  static Future<List<Stop>> getStopsFromPattern(Pattern pattern) async {
+    final request = json.encode({
+      'query':
+          'query GetStopsFromPattern(\$patternCode: String!) { pattern(id:\$patternCode) {stops{ name code gtfsId lat lon}}}',
+      'variables': {
+        'patternCode': pattern.code,
+      }
+    });
+    final response = await _post(request);
+    if (response.statusCode != 200) {
+      throw ApiException(response.statusCode, response.body);
+    }
+    final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+    return (jsonResponse['data']['pattern']['stops'] as List)
+        .map((e) => Stop.fromJson(e))
+        .toList();
+  }
+
   static Future<StopWithDetails> getStop(int stopNum) async {
     final int time = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     const timeRange = 60 * 60 * 2;
 
     final request = json.encode({
       'query':
-          'query StopPageContentContainer_StopRelayQL(\$id:String!,\$startTime:Long!,\$timeRange:Int!,\$numberOfDepartures:Int!) {stop (id:\$id) {stopTimes:stoptimesForPatterns(startTime:\$startTime,timeRange:\$timeRange,numberOfDepartures:\$numberOfDepartures,omitCanceled:false) {pattern {code route{alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate}}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}}}',
+          'query StopInfo(\$id:String!,\$startTime:Long!,\$timeRange:Int!,\$numberOfDepartures:Int!) {stop (id:\$id) {stopTimes:stoptimesForPatterns(startTime:\$startTime,timeRange:\$timeRange,numberOfDepartures:\$numberOfDepartures,omitCanceled:false) {pattern {code directionId headsign patternGeometry{points} route{alerts {alertSeverityLevel,effectiveEndDate,effectiveStartDate}}}, stoptimes{realtimeState,realtimeDeparture,scheduledDeparture,realtimeArrival,scheduledArrival,realtime}}}}',
       'variables': {
         'id': 'gtt:$stopNum',
         'startTime': time,

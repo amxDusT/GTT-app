@@ -197,6 +197,7 @@ class DatabaseCommands {
     return result.isNotEmpty;
   }
 
+  /// Remove stop from favorites
   Future<void> deleteStop(Stop fermata) async {
     final Database db = await _dbInstance;
 
@@ -566,8 +567,34 @@ class DatabaseCommands {
     });
   }
 
+  // --------- test -----------
+  Future<Route> getRoute(String routeId) async {
+    final db = await _dbInstance;
+    final List<Map<String, dynamic>> result = await db.query(
+      _routesTable,
+      where: 'gtfsId = ?',
+      whereArgs: [routeId],
+    );
+    return Route.fromJson(result.first);
+  }
+
+  /* Future<void> removePattern(Pattern pattern) async {
+    final db = await _dbInstance;
+    await db.delete(
+      _patternsTable,
+      where: 'code = ?',
+      whereArgs: [pattern.code],
+    );
+
+    await db.delete(
+      _patternStopsTable,
+      where: 'patternCode = ?',
+      whereArgs: [pattern.code],
+    );
+  } */
+
   // test
-  Future<void> clearTables() async {
+  /* Future<void> clearTables() async {
     final db = await _dbInstance;
     await db.transaction((txn) async {
       final batch = txn.batch();
@@ -579,5 +606,5 @@ class DatabaseCommands {
       batch.delete(_favoritesTable);
       await batch.commit();
     });
-  }
+  } */
 }
