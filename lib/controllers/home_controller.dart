@@ -206,7 +206,7 @@ class HomeController extends GetxController {
   void _getDeleteConfirm(FavStop fermata) {
     Get.defaultDialog(
         title: "Elimina",
-        middleText: "Vuoi eliminare la fermata ${fermata.code}?",
+        middleText: "Vuoi eliminare la fermata ${fermata.toString()}?",
         textConfirm: "Elimina",
         textCancel: "Annulla",
         onConfirm: () {
