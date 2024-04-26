@@ -10,8 +10,160 @@ import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
 import 'package:get/get.dart';
 import 'package:reorderable_grid/reorderable_grid.dart';
 
-class HomePage extends StatelessWidget {
+class StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+  final double height;
+
+  StickyHeaderDelegate({
+    required this.child,
+    required this.height,
+  });
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return child;
+  }
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
+    return false;
+  }
+}
+
+class HomePage extends GetView<HomeController> {
   HomePage({super.key});
+  final _searchController = Get.find<SearchStopsController>();
+  final _settingsController = Get.find<SettingsController>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      key: controller.scaffoldKey,
+      endDrawer: HomeDrawer(),
+      appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        title: const Text("Gtt Fermate"),
+      ),
+      body: Obx(
+        () {
+          return CustomScrollView(
+            slivers: [
+              // sticky sliver
+              SliverPersistentHeader(
+                pinned: true,
+                floating: true,
+                delegate: StickyHeaderDelegate(child: SearchStop(), height: 90),
+              ),
+              if (_settingsController.isFavoritesRoutesShowing.value)
+                GetBuilder<RouteListController>(
+                  builder: (controller) => controller.favorites.isEmpty
+                      ? SliverToBoxAdapter(child: Container())
+                      : SliverList(
+                          delegate: SliverChildListDelegate(
+                            [
+                              const Divider(
+                                indent: 10,
+                                endIndent: 10,
+                              ),
+                              SingleChildScrollView(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ...controller.favorites
+                                        .map((route) => RouteListFavorite(
+                                              route: route,
+                                              controller: controller,
+                                              hasRemoveIcon: false,
+                                            )),
+                                  ],
+                                ),
+                              ),
+                              const Divider(
+                                indent: 10,
+                                endIndent: 10,
+                              ),
+                            ],
+                          ),
+                        ),
+                ),
+              GetBuilder<HomeController>(
+                builder: (controller) {
+                  return SliverPadding(
+                    padding: const EdgeInsets.all(20),
+                    sliver: SliverReorderableGrid(
+                      itemBuilder: (context, index) {
+                        final fermata = controller.fermate[index];
+                        return HomeFavCard(
+                          key: ValueKey(fermata.code),
+                          fermata: fermata,
+                          controller: controller,
+                        );
+                      },
+                      itemCount: controller.fermate.length,
+                      onReorder: (oldIndex, newIndex) {
+                        final item = controller.fermate.removeAt(oldIndex);
+                        controller.fermate.insert(newIndex, item);
+                        controller.updateFavorites();
+                      },
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 1.0,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      ),
+      floatingActionButton: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              elevation: 2,
+              heroTag: '___Menu',
+              child: const Icon(Icons.menu),
+              onPressed: () {
+                controller.scaffoldKey.currentState?.openEndDrawer();
+              },
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            FloatingActionButton(
+              elevation: 2,
+              child: const Icon(Icons.search),
+              onPressed: () {
+                _searchController.searchButton();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/* 
+class HomePageOld extends StatelessWidget {
+  HomePageOld({super.key});
   final _homeController = Get.find<HomeController>();
   final _searchController = Get.find<SearchStopsController>();
   final _settingsController = Get.find<SettingsController>();
@@ -147,3 +299,4 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+ */
