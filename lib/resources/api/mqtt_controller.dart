@@ -15,7 +15,7 @@ class MqttController {
       StreamController<MqttVehicle>();
   final uuid = const Uuid();
   MqttController() {
-    final clientId = uuid.v1().substring(0, 18);
+    final clientId = uuid.v1().substring(0, 10);
     _client = MqttServerClient.withPort(
         'wss://mapi.5t.torino.it/scre', clientId, 443);
     _client.logging(on: false);

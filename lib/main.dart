@@ -38,10 +38,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      //initialRoute: ,
       home: LoadingPage(),
 
-      //home: Testing(),
+      //home: TestingPage(),
     );
   }
 }

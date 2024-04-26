@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const int daysBeforeAutoUpdate = 3;
+
 const double mapMaxZoom = 18;
 const double mapMinZoom = 12;
 const double markerMinSize = 10;

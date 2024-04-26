@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_gtt/resources/api/api_exception.dart';
+import 'package:flutter_gtt/exceptions/api_exception.dart';
 import 'package:http/http.dart' as http;
 
 class GeocoderApi {

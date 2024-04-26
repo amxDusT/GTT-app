@@ -11,6 +11,7 @@ class HomeDrawer extends StatelessWidget {
     'Leggi Biglietto/Carta': () => Get.toNamed('/nfc'),
     'Mappa Bus/Tram': () => Get.toNamed('/routelist'),
     'Impostazioni': () => Get.toNamed('/settings'),
+    //'Testing': () => Get.to(() => TestingPage()),
   };
   final _divider = const Divider(
     height: 8,

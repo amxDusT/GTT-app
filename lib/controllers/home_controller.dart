@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
+import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/home/color_picker.dart';
 import 'package:get/get.dart';
 
@@ -143,27 +143,50 @@ class HomeController extends GetxController {
                 mainAxisSpacing: 5,
                 children: [
                   for (Color color in colors) child(color),
-                  if (Get.find<SettingsController>().showBetaFeatures.isTrue)
-                    IconButton(
-                      onPressed: () async {
-                        await Get.defaultDialog(
-                            title: 'Choose custom color',
-                            textCancel: 'Annulla',
-                            textConfirm: 'Conferma',
-                            onConfirm: () {
-                              fermata = fermata.copyWith(color: lastColor);
-                              updateStop(fermata);
-                              Get.back(closeOverlays: true);
-                            },
-                            content: ColorPicker(
-                              pickerColor: initialColor,
-                              onColorChanged: (color) {
-                                lastColor = color;
-                              },
-                            ));
-                      },
-                      icon: const Icon(Icons.add),
+                  Container(
+                    margin: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      //border: Border.all(color: Utils.darken(lastColor)),
+                      color: Utils.lighten(lastColor),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Utils.lighten(lastColor),
+                          offset: const Offset(1, 2),
+                          blurRadius: 5,
+                        ),
+                      ],
                     ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () async {
+                          await Get.defaultDialog(
+                              title: 'Choose custom color',
+                              textCancel: 'Annulla',
+                              textConfirm: 'Conferma',
+                              onConfirm: () {
+                                fermata = fermata.copyWith(color: lastColor);
+                                updateStop(fermata);
+                                Get.back(closeOverlays: true);
+                              },
+                              content: ColorPicker(
+                                pickerColor: lastColor,
+                                onColorChanged: (color) {
+                                  lastColor = color;
+                                },
+                              ));
+                        },
+                        borderRadius: BorderRadius.circular(50),
+                        child: Icon(
+                          Icons.add,
+                          color: useWhiteForeground(Utils.lighten(lastColor))
+                              ? Colors.white
+                              : Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

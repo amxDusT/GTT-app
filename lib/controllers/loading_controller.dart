@@ -4,11 +4,12 @@ import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/api/api_exception.dart';
+import 'package:flutter_gtt/exceptions/api_exception.dart';
 import 'package:flutter_gtt/resources/api/github_api.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/resources/apk_install.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/update_utils.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -100,12 +101,12 @@ class LoadingController extends GetxController {
   }
 
   /*
-    check if hasnt been updated in the last 30 days
+    check if hasnt been updated in the last $daysBeforeAutoUpdate days
     and if the database is empty (by checking the agencies table)
   */
   Future<bool> needToLoad() async {
-    return Storage.lastUpdate
-            .isBefore(DateTime.now().subtract(const Duration(days: 30))) &&
+    return Storage.lastUpdate.isBefore(DateTime.now()
+            .subtract(const Duration(days: daysBeforeAutoUpdate))) ||
         (await DatabaseCommands.instance.agencies).isEmpty;
   }
 

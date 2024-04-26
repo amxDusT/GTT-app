@@ -30,6 +30,10 @@ class MapGlobalController extends GetxController
     mapAddress.onMapLongPress(tapPosition, location);
   }
 
+  void animateCamera(MapCamera camera) {
+    _mapAnimation.animate(camera.center, zoom: camera.zoom);
+  }
+
   void onTap(TapPosition tapPosition, LatLng position) {
     mapAddress.popupController.hideAllPopups();
     mapAddress.addressReset();

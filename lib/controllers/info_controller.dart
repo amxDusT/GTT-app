@@ -4,7 +4,7 @@ import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
-import 'package:flutter_gtt/resources/api/api_exception.dart';
+import 'package:flutter_gtt/exceptions/api_exception.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
