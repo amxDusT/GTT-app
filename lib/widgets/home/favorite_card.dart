@@ -14,83 +14,87 @@ class HomeFavCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Hero(
-            tag: 'HeroTagFermata${fermata.code}',
-            flightShuttleBuilder: ((flightContext, animation, flightDirection,
-                    fromHeroContext, toHeroContext) =>
-                Material(
-                  color: Utils.lighten(fermata.color),
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(12),
-                  ),
-                  //type: MaterialType.transparency,
-                  child: toHeroContext.widget,
-                )),
-            child: InkWell(
-              splashColor: Colors.red,
-              onTapDown: controller.getPosition,
-              onLongPress: () => controller.showContextMenu(fermata),
-              onTap: () =>
-                  Get.toNamed('/info', arguments: {'fermata': fermata}),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Utils.lighten(fermata.color).withOpacity(0.9),
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(12),
-                  ),
-                ),
-                //height: 115,
-                padding: const EdgeInsets.all(8),
-                //color: Utils.lighten(e.color),
-                child: Column(
-                  children: [
-                    Text(
-                      fermata.toString(),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+    return ReorderableGridDelayedDragStartListener(
+      index: controller.fermate.indexOf(fermata),
+      child: Column(
+        children: [
+          Expanded(
+            child: Hero(
+              tag: 'HeroTagFermata${fermata.code}',
+              flightShuttleBuilder: ((flightContext, animation, flightDirection,
+                      fromHeroContext, toHeroContext) =>
+                  Material(
+                    color: Utils.lighten(fermata.color),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(12),
                     ),
-                    const Divider(),
-                    Text(fermata.descrizione ?? ''),
-                  ],
+                    //type: MaterialType.transparency,
+                    child: toHeroContext.widget,
+                  )),
+              child: InkWell(
+                splashColor: Colors.red,
+                onTapDown: controller.getPosition,
+                onLongPress: () => controller.showContextMenu(fermata),
+                onTap: () =>
+                    Get.toNamed('/info', arguments: {'fermata': fermata}),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Utils.lighten(fermata.color).withOpacity(0.9),
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(12),
+                    ),
+                  ),
+                  //height: 115,
+                  padding: const EdgeInsets.all(8),
+                  //color: Utils.lighten(e.color),
+                  child: Column(
+                    children: [
+                      Text(
+                        fermata.toString(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const Divider(),
+                      Text(fermata.descrizione ?? ''),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        InkWell(
-          onTap: () =>
-              Get.to(() => MapPointPage(), arguments: {'fermata': fermata}),
-          //MapUtils.openMap(e.latitude, e.longitude),
-          borderRadius: const BorderRadius.vertical(
-            bottom: Radius.circular(12),
-          ),
-          child: Container(
-            width: double.maxFinite,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(12),
-              ),
-              color: Utils.lighten(fermata.color, 70),
+          InkWell(
+            onTap: () =>
+                Get.to(() => MapPointPage(), arguments: {'fermata': fermata}),
+
+            //MapUtils.openMap(e.latitude, e.longitude),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(12),
             ),
-            child: Row(
-              children: [
-                const Expanded(child: Text('Posizione')),
-                ReorderableGridDragStartListener(
-                  index: controller.fermate.indexOf(fermata),
-                  child: const Icon(Icons.reorder_sharp),
+            child: Container(
+              width: double.maxFinite,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(12),
                 ),
-              ],
+                color: Utils.lighten(fermata.color, 70),
+              ),
+              child: Row(
+                children: [
+                  const Expanded(child: Text('Posizione')),
+                  ReorderableGridDragStartListener(
+                    index: controller.fermate.indexOf(fermata),
+                    child: const Icon(Icons.reorder_sharp),
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

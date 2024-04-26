@@ -14,16 +14,18 @@ class StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget child;
   final double height;
 
-  StickyHeaderDelegate({
+  const StickyHeaderDelegate({
     required this.child,
     required this.height,
   });
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child;
-  }
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) =>
+      child;
 
   @override
   double get maxExtent => height;
@@ -32,9 +34,8 @@ class StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
   double get minExtent => height;
 
   @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
-  }
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      false;
 }
 
 class HomePage extends GetView<HomeController> {
@@ -112,6 +113,19 @@ class HomePage extends GetView<HomeController> {
                         );
                       },
                       itemCount: controller.fermate.length,
+                      proxyDecorator: (child, index, animation) {
+                        return Material(
+                          color: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: const BorderSide(
+                              color: Colors.grey,
+                              width: 1.5,
+                            ),
+                          ),
+                          child: child,
+                        );
+                      },
                       onReorder: (oldIndex, newIndex) {
                         final item = controller.fermate.removeAt(oldIndex);
                         controller.fermate.insert(newIndex, item);
