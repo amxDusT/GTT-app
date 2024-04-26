@@ -91,7 +91,7 @@ class MapPageController extends GetxController
       case 1:
         return 0.0;
       case 2:
-        return 0.0002;
+        return 0.00015;
       case 3:
         return 0.0001;
       default:
