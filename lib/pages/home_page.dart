@@ -3,40 +3,13 @@ import 'package:flutter_gtt/controllers/home_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
+import 'package:flutter_gtt/widgets/home/search_header_delegate.dart';
 import 'package:flutter_gtt/widgets/search/home_search_widget.dart';
 import 'package:flutter_gtt/widgets/home/drawer/drawer.dart';
 import 'package:flutter_gtt/widgets/home/favorite_card.dart';
 import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
 import 'package:get/get.dart';
 import 'package:reorderable_grid/reorderable_grid.dart';
-
-class StickyHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final Widget child;
-  final double height;
-
-  const StickyHeaderDelegate({
-    required this.child,
-    required this.height,
-  });
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) =>
-      child;
-
-  @override
-  double get maxExtent => height;
-
-  @override
-  double get minExtent => height;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      false;
-}
 
 class HomePage extends GetView<HomeController> {
   HomePage({super.key});
@@ -48,19 +21,52 @@ class HomePage extends GetView<HomeController> {
     return Scaffold(
       key: controller.scaffoldKey,
       endDrawer: HomeDrawer(),
-      appBar: AppBar(
+      /* appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Gtt Fermate"),
-      ),
+      ), */
       body: Obx(
         () {
           return CustomScrollView(
             slivers: [
+              /* SliverAppBar(
+                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                title: const Text("Gtt Fermate"),
+                snap: true,
+                expandedHeight: 120,
+                flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: const EdgeInsets.only(
+                    left: 10,
+                  ),
+                  expandedTitleScale: 1.0,
+                  collapseMode: CollapseMode.parallax,
+                  title: SearchStop(),
+                ),
+                floating: true,
+                pinned: true,
+              ), */
               // sticky sliver
               SliverPersistentHeader(
                 pinned: true,
-                floating: true,
-                delegate: StickyHeaderDelegate(child: SearchStop(), height: 90),
+                floating: false,
+                delegate: SearchHeaderDelegate(
+                  searchController: _searchController,
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  searchWidget: SearchStop(
+                    searchController: _searchController,
+                  ),
+                  title: const Text("Gtt Fermate"),
+                  maxHeight: 150,
+                  minHeight: 100,
+                  actions: [
+                    IconButton(
+                      icon: const Icon(Icons.menu),
+                      onPressed: () {
+                        controller.scaffoldKey.currentState?.openEndDrawer();
+                      },
+                    ),
+                  ],
+                ),
               ),
               if (_settingsController.isFavoritesRoutesShowing.value)
                 GetBuilder<RouteListController>(
