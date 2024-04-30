@@ -3,10 +3,12 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/bindings/home_bindings.dart';
 import 'package:flutter_gtt/bindings/info_bindings.dart';
+import 'package:flutter_gtt/bindings/intro_bindings.dart';
 import 'package:flutter_gtt/bindings/map_global_bindings.dart';
 import 'package:flutter_gtt/bindings/map_page_bindings.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
+import 'package:flutter_gtt/pages/intro/intro_page.dart';
 import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/pages/map/map_global.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
@@ -195,6 +197,11 @@ class Utils {
         page: () => MapPage(),
         binding: MapPageBindings(),
       ),
+      GetPage(
+        name: '/intro',
+        page: () => const IntroPage(),
+        binding: IntroBindings(),
+      )
     ];
   }
 }
