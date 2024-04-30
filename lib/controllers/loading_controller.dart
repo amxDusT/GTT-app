@@ -102,12 +102,17 @@ class LoadingController extends GetxController {
 
   /*
     check if hasnt been updated in the last $daysBeforeAutoUpdate days
-    and if the database is empty (by checking the agencies table)
   */
-  Future<bool> needToLoad() async {
-    return Storage.lastUpdate.isBefore(DateTime.now()
-            .subtract(const Duration(days: daysBeforeAutoUpdate))) ||
-        (await DatabaseCommands.instance.agencies).isEmpty;
+  bool needsAutoUpdate() {
+    return Storage.lastUpdate.isBefore(
+        DateTime.now().subtract(const Duration(days: daysBeforeAutoUpdate)));
+  }
+
+  /*
+  check if the database is empty (by checking the agencies table)
+  */
+  Future<bool> isFirstLoad() async {
+    return (await DatabaseCommands.instance.agencies).isEmpty;
   }
 
   Future<void> loadFromApi() async {
@@ -149,9 +154,16 @@ class LoadingController extends GetxController {
 
   void checkAndLoad() async {
     Duration duration = const Duration(milliseconds: 1000);
-    if (await needToLoad()) {
-      await loadFromApi();
-      duration = const Duration(milliseconds: 1);
+    bool isFirstLoad = await this.isFirstLoad();
+
+    bool needToLoad = needsAutoUpdate() || isFirstLoad;
+    if (needToLoad) {
+      if (isFirstLoad) {
+        await loadFromApi();
+        duration = const Duration(milliseconds: 1);
+      } else {
+        loadFromApi();
+      }
     }
     moveToHome(duration);
   }
