@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
@@ -122,8 +123,7 @@ class LoadingController extends GetxController {
     try {
       List<Agency> agencyList = await GttApi.getAgencies();
       UpdateUtils.update(agencyList);
-      //DatabaseCommands.instance.bulkInsert(agencyList);
-      //getAgencies(agencyList);
+
       List<gtt.Route> routeValues;
       List<gtt.Pattern> patternValues;
       List<Stop> stopValues;
@@ -135,10 +135,10 @@ class LoadingController extends GetxController {
       UpdateUtils.update(stopValues);
       UpdateUtils.update(patternValues);
       UpdateUtils.update(routeValues);
-      /* await DatabaseCommands.instance.bulkInsert(patternStopValues);
-      DatabaseCommands.instance.bulkInsert(stopValues);
-      DatabaseCommands.instance.bulkInsert(patternValues);
-      DatabaseCommands.instance.bulkInsert(routeValues); */
+
+      if (Get.isRegistered<RouteListController>()) {
+        Get.find<RouteListController>().getRoutes(routeValues);
+      }
     } on ApiException catch (e) {
       Utils.showSnackBar(e.message, title: 'Error ${e.statusCode}');
     } finally {

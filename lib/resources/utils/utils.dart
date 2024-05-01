@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/bindings/home_bindings.dart';
 import 'package:flutter_gtt/bindings/info_bindings.dart';
 import 'package:flutter_gtt/bindings/intro_bindings.dart';
+import 'package:flutter_gtt/bindings/loading_bindings.dart';
 import 'package:flutter_gtt/bindings/map_global_bindings.dart';
 import 'package:flutter_gtt/bindings/map_page_bindings.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
@@ -164,6 +165,7 @@ class Utils {
       GetPage(
         name: '/',
         page: () => LoadingPage(),
+        binding: LoadingBindings(),
       ),
       GetPage(
         name: '/home',
