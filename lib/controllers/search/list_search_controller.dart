@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
-import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
@@ -12,7 +12,11 @@ class ListSearchController extends GetxController {
   FocusNode? focusNode;
   @override
   void onInit() async {
-    routes = await DatabaseCommands.instance.routes;
+    routes = Get.find<RouteListController>()
+        .routesMap
+        .values
+        .expand((element) => element)
+        .toList();
     super.onInit();
   }
 
