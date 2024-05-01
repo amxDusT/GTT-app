@@ -38,7 +38,7 @@ class IntroPage extends GetView<IntroController> {
                   count: controller.pages.length,
                   currentIndex: controller.currentIndex.value,
                 ),
-                controller.currentIndex.value != 2
+                controller.currentIndex.value != controller.pages.length - 1
                     ? IconButton.filled(
                         onPressed: () {
                           controller.pageController.nextPage(
