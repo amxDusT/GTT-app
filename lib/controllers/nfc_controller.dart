@@ -37,7 +37,26 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
     _animationController.addListener(() {
       value.value = tween.evaluate(animation);
     });
+    isAvailable();
     super.onInit();
+  }
+
+  void isAvailable() async {
+    final available = await NfcManager.instance.isAvailable();
+    if (!available) {
+      Get.back(closeOverlays: true);
+      Utils.showSnackBar(
+        'NFC non attivo. Attivalo nelle impostazioni',
+        closePrevious: true,
+        duration: const Duration(seconds: 5),
+        mainButton: TextButton(
+          onPressed: () async {
+            await NfcManager.instance.openNfcSettings();
+          },
+          child: const Text("Impostazioni"),
+        ),
+      );
+    }
   }
 
   @override

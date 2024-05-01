@@ -30,7 +30,7 @@ environment:
 dependencies:
   convert: ^3.1.1
   cupertino_icons: ^1.0.2
-  file_picker: ^6.2.0
+  file_picker: ^8.0.3
   flutter:
     sdk: flutter
   flutter_colorpicker: ^1.0.3
@@ -56,8 +56,12 @@ dependencies:
   intl: ^0.18.1
   latlong2: ^0.9.0
   mqtt_client: ^10.0.0
-  nfc_manager: ^3.3.0
-  package_info_plus: ^5.0.1
+  #nfc_manager: ^3.4.0
+  nfc_manager:
+    git:
+      url: https://github.com/amxDusT/flutter-nfc-manager.git
+      ref: master
+  package_info_plus: ^8.0.0
   path: ^1.8.3
   reorderable_grid: ^1.0.10
   sliding_up_panel: ^2.0.0+1
