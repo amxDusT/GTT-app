@@ -19,25 +19,35 @@ class RouteWidget extends StatelessWidget {
         Text(
           '${MapUtils.isTram(marker.mqttData.vehicleNum) ? 'Tram' : 'Bus'} ${controller.routes[marker.mqttData.gtfsId]?.shortName ?? 'UNKOWN'} - ${marker.mqttData.vehicleNum}',
         ),
+        const SizedBox(height: 10),
         Text(
-          'Last update: ${Utils.dateToHourString(marker.mqttData.lastUpdate)}',
-          style: Get.textTheme.bodySmall,
+          Utils.dateToHourString(marker.mqttData.lastUpdate),
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[700],
+            fontWeight: FontWeight.bold,
+          ),
         ),
         /* Text(
             'next stop: ${controller.stopsMap[marker.mqttData.nextStop]?.name ?? 'UNKOWN'}'), */
-        TextButton(
-          onPressed: () =>
-              controller.followVehicle.value == marker.mqttData.vehicleNum
-                  ? controller.stopFollowingVehicle()
-                  : controller.followVehicleMarker(marker.mqttData),
-          style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-          ),
-          child: Obx(
-            () => Text(
-              controller.followVehicle.value == marker.mqttData.vehicleNum
-                  ? 'Smetti di seguire'
-                  : 'Segui',
+        SizedBox(
+          //color: Colors.blue,
+          width: 100,
+          height: 30,
+          child: TextButton(
+            onPressed: () =>
+                controller.followVehicle.value == marker.mqttData.vehicleNum
+                    ? controller.stopFollowingVehicle()
+                    : controller.followVehicleMarker(marker.mqttData),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
+            ),
+            child: Obx(
+              () => Text(
+                controller.followVehicle.value == marker.mqttData.vehicleNum
+                    ? 'Smetti di seguire'
+                    : 'Segui',
+              ),
             ),
           ),
         ),
