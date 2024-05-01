@@ -162,7 +162,7 @@ class HomeController extends GetxController {
                       child: InkWell(
                         onTap: () async {
                           await Get.defaultDialog(
-                              title: 'Choose custom color',
+                              title: 'Scegli colore personalizzato',
                               textCancel: 'Annulla',
                               textConfirm: 'Conferma',
                               onConfirm: () {
