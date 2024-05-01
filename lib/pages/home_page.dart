@@ -55,7 +55,7 @@ class HomePage extends GetView<HomeController> {
                   searchWidget: SearchStop(
                     searchController: _searchController,
                   ),
-                  title: const Text("Gtt Fermate"),
+                  title: const Text("GTT Fermate"),
                   maxHeight: 150,
                   minHeight: 100,
                   actions: [
