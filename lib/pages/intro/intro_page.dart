@@ -1,75 +1,83 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/intro/intro_controller.dart';
+import 'package:flutter_gtt/widgets/intro/back_forward_button.dart';
 import 'package:get/get.dart';
-
-import '../../controllers/intro/intro_controller.dart';
 
 class IntroPage extends GetView<IntroController> {
   const IntroPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView(
-              controller: controller.pageController,
-              onPageChanged: controller.changePage,
-              children: controller.pages,
+    return SafeArea(
+      child: Scaffold(
+        body: Column(
+          children: [
+            const SizedBox(height: 60),
+            Expanded(
+              child: PageView(
+                controller: controller.pageController,
+                onPageChanged: controller.changePage,
+                children: controller.pages,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Obx(
-            () => Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                controller.currentIndex.value != 0
-                    ? IconButton.filled(
-                        onPressed: () {
-                          controller.pageController.previousPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeIn,
-                          );
-                        },
-                        icon: const Icon(Icons.keyboard_arrow_left),
-                      )
-                    : const SizedBox(width: 48),
-                IntroDots(
-                  count: controller.pages.length,
-                  currentIndex: controller.currentIndex.value,
+            const SizedBox(height: 40),
+            Obx(
+              () => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  BackForwardButton(
+                    visible: controller.currentIndex.value != 0,
+                    onPressed: () {
+                      controller.pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOutQuad,
+                      );
+                    },
+                    direction: ButtonDirection.back,
+                  ),
+                  IntroDots(
+                    count: controller.pages.length,
+                    currentIndex: controller.currentIndex.value,
+                  ),
+                  BackForwardButton(
+                    visible: controller.currentIndex.value !=
+                        controller.pages.length - 1,
+                    onPressed: () {
+                      controller.pageController.nextPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeOutQuad,
+                      );
+                    },
+                    direction: ButtonDirection.forward,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              width: Get.width,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-                controller.currentIndex.value != controller.pages.length - 1
-                    ? IconButton.filled(
-                        onPressed: () {
-                          controller.pageController.nextPage(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeIn,
-                          );
-                        },
-                        icon: const Icon(Icons.keyboard_arrow_right),
-                      )
-                    : const SizedBox(width: 48),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Container(
-            width: Get.width,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(vertical: 15),
-              ),
-              onPressed: () {},
-              child: const Text(
-                'Get Started',
-                style: TextStyle(color: Colors.white),
+                onPressed: () {
+                  Get.offNamed('/home');
+                },
+                child: Obx(
+                  () => Text(
+                    controller.currentIndex.value == controller.pages.length - 1
+                        ? 'Comincia'
+                        : 'Salta',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-        ],
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

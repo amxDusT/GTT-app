@@ -21,30 +21,10 @@ class HomePage extends GetView<HomeController> {
     return Scaffold(
       key: controller.scaffoldKey,
       endDrawer: HomeDrawer(),
-      /* appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Gtt Fermate"),
-      ), */
       body: Obx(
         () {
           return CustomScrollView(
             slivers: [
-              /* SliverAppBar(
-                backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                title: const Text("Gtt Fermate"),
-                snap: true,
-                expandedHeight: 120,
-                flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: const EdgeInsets.only(
-                    left: 10,
-                  ),
-                  expandedTitleScale: 1.0,
-                  collapseMode: CollapseMode.parallax,
-                  title: SearchStop(),
-                ),
-                floating: true,
-                pinned: true,
-              ), */
               // sticky sliver
               SliverPersistentHeader(
                 pinned: true,
@@ -76,12 +56,12 @@ class HomePage extends GetView<HomeController> {
                           delegate: SliverChildListDelegate(
                             [
                               const Divider(
-                                indent: 10,
-                                endIndent: 10,
+                                indent: 12,
+                                endIndent: 12,
                               ),
                               SingleChildScrollView(
                                 padding:
-                                    const EdgeInsets.symmetric(horizontal: 4.0),
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 scrollDirection: Axis.horizontal,
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -98,8 +78,8 @@ class HomePage extends GetView<HomeController> {
                                 ),
                               ),
                               const Divider(
-                                indent: 10,
-                                endIndent: 10,
+                                indent: 12,
+                                endIndent: 12,
                               ),
                             ],
                           ),

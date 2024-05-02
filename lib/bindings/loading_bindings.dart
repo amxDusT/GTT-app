@@ -4,8 +4,9 @@ import 'package:get/get.dart';
 class LoadingBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(
-      () => LoadingController(),
+    Get.put(
+      LoadingController(),
+      permanent: true,
     );
   }
 }

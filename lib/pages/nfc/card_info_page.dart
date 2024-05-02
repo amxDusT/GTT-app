@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/models/smart_card/smart_card.dart';
 import 'package:flutter_gtt/widgets/card_info_widget.dart';
+import 'package:get/get.dart';
 
 class CardInfoPage extends StatelessWidget {
   final SmartCard smartCard;
@@ -15,12 +16,21 @@ class CardInfoPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         physics: const BouncingScrollPhysics(),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Informazioni carta:"),
+            const Text(
+              "Informazioni carta",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
             _infoCard(),
+            const SizedBox(height: 20),
+            const Text(
+              "Abbonamenti",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             Flexible(
               flex: 3,
               child: ListView.builder(
@@ -41,10 +51,10 @@ class CardInfoPage extends StatelessWidget {
   Widget _infoCard() {
     return Container(
       padding: const EdgeInsets.all(20),
-      height: 200,
-      decoration: const BoxDecoration(
-        color: Colors.lightBlue,
-        borderRadius: BorderRadius.all(Radius.circular(20)),
+      //height: 200,
+      decoration: BoxDecoration(
+        color: Get.theme.primaryColorLight,
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -68,7 +78,7 @@ class CardInfoPage extends StatelessWidget {
           ),
           Row(
             children: [
-              const Text("Contratti: "),
+              const Text("Contratti/Abbonamenti: "),
               Text(smartCard.allContracts.length.toString()),
             ],
           ),

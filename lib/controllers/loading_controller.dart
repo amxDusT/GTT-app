@@ -170,6 +170,11 @@ class LoadingController extends GetxController {
 
   void moveToHome(Duration duration) async {
     await Future.delayed(duration);
-    Get.offNamed('/home');
+    if (Storage.isFirstTime) {
+      Storage.setParam(StorageParam.isFirstTime, false.toString());
+      Get.offNamed('/intro');
+    } else {
+      Get.offNamed('/home');
+    }
   }
 }

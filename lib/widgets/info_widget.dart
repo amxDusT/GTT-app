@@ -57,6 +57,9 @@ class InfoWidget extends StatelessWidget {
     return Card(
       child: Obx(
         () => ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           onTap: () {
             if (_infoController.isSelecting.isTrue) {
               _infoController.onSelectedClick(vehicle);
@@ -82,14 +85,6 @@ class InfoWidget extends StatelessWidget {
           tileColor: _infoController.selectedRoutes.contains(vehicle)
               ? Get.theme.colorScheme.primary.withOpacity(0.2)
               : null,
-          // leading: _infoController.isSelecting.isTrue
-          //     ? Checkbox(
-          //         value: _infoController.selectedRoutes.contains(vehicle),
-          //         onChanged: (value) {
-          //           _infoController.onSelectedClick(vehicle);
-          //         },
-          //       )
-          //     : null,
           title: Text(
             '${vehicle.shortName} - ${vehicle.longName}',
             overflow: TextOverflow.ellipsis,

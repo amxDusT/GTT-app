@@ -33,8 +33,10 @@ class RouteListPage extends GetView<RouteListController> {
           body: GetBuilder<RouteListController>(
             builder: (controller) => CustomScrollView(
               slivers: [
-                const SliverAppBar(
-                  title: Text('Lista Veicoli'),
+                SliverAppBar(
+                  title: const Text('Linee'),
+                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+                  scrolledUnderElevation: 0,
                 ),
                 SliverList(
                   delegate: SliverChildListDelegate(

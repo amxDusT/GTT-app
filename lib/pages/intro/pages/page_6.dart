@@ -3,24 +3,23 @@ import 'package:flutter_gtt/pages/intro/pages/page_template.dart';
 import 'package:flutter_gtt/widgets/intro/custom_text.dart';
 import 'package:flutter_gtt/widgets/intro/intro_image.dart';
 
-class Page3 extends StatelessWidget {
-  const Page3({super.key});
+class Page6 extends StatelessWidget {
+  const Page6({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const PageTemplate(
-      title: 'Preferiti',
+      title: 'Informazioni biglietto',
       children: [
-        // add image
         IntroImage(
-          image: 'assets/images/intro_favorites.jpg',
-          height: 210,
+          image: 'assets/images/intro_nfc.jpg',
+          height: 230,
         ),
         CustomText(
-          'Puoi tenere premuta una fermata nei preferiti per modificarla.',
+          'Puoi visualizzare le informazioni del biglietto o della carta.',
         ),
         CustomText(
-          'Cliccando su \'Posizione\' verrai portato alla mappa con la fermata selezionata.\n Tenendolo premuto, potrai modificare la posizione della fermata nei preferiti.',
+          'Dopo aver cliccato il tasto \'Leggi\' appoggia il biglietto o la carta dietro il telefono.\n(Solo per dispositivi con NFC abilitato)',
         ),
       ],
     );

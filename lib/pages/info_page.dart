@@ -33,10 +33,11 @@ class InfoPage extends StatelessWidget {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            scrolledUnderElevation: 0,
             title: Obx(
               () => Text(
                 _infoController.isSelecting.isTrue
-                    ? '${_infoController.selectedRoutes.length} / ${maxRoutesInMap > _infoController.fermata.value.vehicles.length ? _infoController.fermata.value.vehicles.length : maxRoutesInMap}  veicoli'
+                    ? '${_infoController.selectedRoutes.length} / ${maxRoutesInMap > _infoController.fermata.value.vehicles.length ? _infoController.fermata.value.vehicles.length : maxRoutesInMap}  selezionate'
                     : _infoController.fermata.value.toString(),
               ),
             ),
@@ -51,7 +52,7 @@ class InfoPage extends StatelessWidget {
                       : Icons.select_all),
                   tooltip: _infoController.isSelecting.isTrue
                       ? 'Annulla'
-                      : 'Seleziona veicoli',
+                      : 'Seleziona linee',
                 ),
               ),
               Obx(

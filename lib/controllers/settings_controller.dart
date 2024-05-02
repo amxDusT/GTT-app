@@ -66,7 +66,7 @@ class SettingsController extends GetxController {
   }
 
   void resetData() async {
-    Get.offAllNamed('/home');
+    Get.until((route) => Get.currentRoute == '/home');
     Get.find<LoadingController>().loadFromApi();
   }
 
@@ -147,6 +147,10 @@ class SettingsController extends GetxController {
         ],
       ),
     );
+  }
+
+  void showTutorial() {
+    Get.offAllNamed('/intro');
   }
 
   void betaFeaturesInfo() {

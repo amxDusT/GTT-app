@@ -3,24 +3,23 @@ import 'package:flutter_gtt/pages/intro/pages/page_template.dart';
 import 'package:flutter_gtt/widgets/intro/custom_text.dart';
 import 'package:flutter_gtt/widgets/intro/intro_image.dart';
 
-class Page3 extends StatelessWidget {
-  const Page3({super.key});
+class Page5 extends StatelessWidget {
+  const Page5({super.key});
 
   @override
   Widget build(BuildContext context) {
     return const PageTemplate(
-      title: 'Preferiti',
+      title: 'Lista veicoli',
       children: [
-        // add image
         IntroImage(
-          image: 'assets/images/intro_favorites.jpg',
-          height: 210,
+          image: 'assets/images/intro_rlist.jpg',
+          height: 250,
         ),
         CustomText(
-          'Puoi tenere premuta una fermata nei preferiti per modificarla.',
+          'Puoi visualizzare, cercare o salvare le linee che ti interessano.',
         ),
         CustomText(
-          'Cliccando su \'Posizione\' verrai portato alla mappa con la fermata selezionata.\n Tenendolo premuto, potrai modificare la posizione della fermata nei preferiti.',
+          'Cliccando su una linea potrai visualizzarne i veicoli in tempo reale.',
         ),
       ],
     );
