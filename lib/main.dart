@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         Locale('it', 'IT'),
         Locale('en', 'US'),
       ],
-      title: 'Flutter Demo',
+      title: 'GTT App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
