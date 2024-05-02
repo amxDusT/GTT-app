@@ -76,6 +76,10 @@ class SettingsPage extends StatelessWidget {
         onTap: () => _settingsController.importFavorites(),
       ),
       ListTile(
+        title: const Text('Condividi app'),
+        onTap: () => _settingsController.shareApp(),
+      ),
+      ListTile(
         title: const Text('Informazioni app'),
         onTap: () => _settingsController.infoApp(),
       ),

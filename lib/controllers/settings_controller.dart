@@ -10,6 +10,7 @@ import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsController extends GetxController {
@@ -110,6 +111,13 @@ class SettingsController extends GetxController {
     } catch (e) {
       Utils.showSnackBar('Errore durante l\'importazione');
     }
+  }
+
+  void shareApp() {
+    Share.share(
+      'Sto usando questa app GTT, scaricala anche tu \nhttps://github.com/amxDusT/GTT-app/releases/latest',
+      subject: 'GTT app',
+    );
   }
 
   void infoApp() {
