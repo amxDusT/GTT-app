@@ -3,10 +3,13 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/bindings/home_bindings.dart';
 import 'package:flutter_gtt/bindings/info_bindings.dart';
+import 'package:flutter_gtt/bindings/intro_bindings.dart';
+import 'package:flutter_gtt/bindings/loading_bindings.dart';
 import 'package:flutter_gtt/bindings/map_global_bindings.dart';
 import 'package:flutter_gtt/bindings/map_page_bindings.dart';
 import 'package:flutter_gtt/pages/home_page.dart';
 import 'package:flutter_gtt/pages/info_page.dart';
+import 'package:flutter_gtt/pages/intro/intro_page.dart';
 import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/pages/map/map_global.dart';
 import 'package:flutter_gtt/pages/map/map_page.dart';
@@ -19,6 +22,10 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 
 class Utils {
+  static String getLocale() {
+    return Get.locale?.languageCode ?? 'it';
+  }
+
   static int getBytesFromPage(Uint8List page, int offset, int bytesnum) {
     final bytes = Uint8List.sublistView(page, offset, offset + bytesnum);
     int value = 0;
@@ -39,16 +46,16 @@ class Utils {
 
   static String dateToHourString(DateTime date, [checkSeconds = true]) {
     return checkSeconds && Storage.showSecondsInUpdates
-        ? DateFormat.Hms(Get.locale?.languageCode).format(date)
-        : DateFormat.Hm(Get.locale?.languageCode).format(date);
+        ? DateFormat.Hms(getLocale()).format(date)
+        : DateFormat.Hm(getLocale()).format(date);
   }
 
   static DateTime stringToDate(String date) {
-    return DateFormat('d MMMM, y H:mm', Get.locale?.languageCode).parse(date);
+    return DateFormat('d MMMM, y H:mm', getLocale()).parse(date);
   }
 
   static String dateToString(DateTime date) {
-    return DateFormat('d MMMM, y H:mm', Get.locale?.languageCode)
+    return DateFormat('d MMMM, y H:mm', getLocale())
         .format(date)
         .capitalizeFirst!;
   }
@@ -162,6 +169,7 @@ class Utils {
       GetPage(
         name: '/',
         page: () => LoadingPage(),
+        binding: LoadingBindings(),
       ),
       GetPage(
         name: '/home',
@@ -195,6 +203,11 @@ class Utils {
         page: () => MapPage(),
         binding: MapPageBindings(),
       ),
+      GetPage(
+        name: '/intro',
+        page: () => const IntroPage(),
+        binding: IntroBindings(),
+      )
     ];
   }
 }

@@ -93,21 +93,21 @@ class HomeController extends GetxController {
       position: relRectSize,
       items: [
         PopupMenuItem(
-          child: const Text("Elimina"),
-          onTap: () => _getDeleteConfirm(fermata),
+          child: const Text("Sposta in cima"),
+          onTap: () => moveOnTop(fermata),
         ),
         PopupMenuItem(
           child: const Text("Cambia Descrizione"),
           onTap: () => _changeDescription(fermata),
         ),
         PopupMenuItem(
-          child: const Text("Sposta in cima"),
-          onTap: () => moveOnTop(fermata),
-        ),
-        PopupMenuItem(
           child: const Text('Cambia Colore'),
           onTap: () => _changeColor(fermata),
-        )
+        ),
+        PopupMenuItem(
+          child: const Text("Elimina"),
+          onTap: () => _getDeleteConfirm(fermata),
+        ),
       ],
     );
   }
@@ -162,7 +162,7 @@ class HomeController extends GetxController {
                       child: InkWell(
                         onTap: () async {
                           await Get.defaultDialog(
-                              title: 'Choose custom color',
+                              title: 'Scegli colore personalizzato',
                               textCancel: 'Annulla',
                               textConfirm: 'Conferma',
                               onConfirm: () {

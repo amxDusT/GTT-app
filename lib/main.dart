@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
-import 'package:flutter_gtt/pages/loading_page.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
@@ -21,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       locale: const Locale('it'),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
@@ -33,14 +33,11 @@ class MyApp extends StatelessWidget {
         Locale('it', 'IT'),
         Locale('en', 'US'),
       ],
-      title: 'Flutter Demo',
+      title: 'GTT App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: LoadingPage(),
-
-      //home: TestingPage(),
     );
   }
 }

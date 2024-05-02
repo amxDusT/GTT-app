@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
@@ -102,12 +103,17 @@ class LoadingController extends GetxController {
 
   /*
     check if hasnt been updated in the last $daysBeforeAutoUpdate days
-    and if the database is empty (by checking the agencies table)
   */
-  Future<bool> needToLoad() async {
-    return Storage.lastUpdate.isBefore(DateTime.now()
-            .subtract(const Duration(days: daysBeforeAutoUpdate))) ||
-        (await DatabaseCommands.instance.agencies).isEmpty;
+  bool needsAutoUpdate() {
+    return Storage.lastUpdate.isBefore(
+        DateTime.now().subtract(const Duration(days: daysBeforeAutoUpdate)));
+  }
+
+  /*
+  check if the database is empty (by checking the agencies table)
+  */
+  Future<bool> isFirstLoad() async {
+    return (await DatabaseCommands.instance.agencies).isEmpty;
   }
 
   Future<void> loadFromApi() async {
@@ -117,8 +123,7 @@ class LoadingController extends GetxController {
     try {
       List<Agency> agencyList = await GttApi.getAgencies();
       UpdateUtils.update(agencyList);
-      //DatabaseCommands.instance.bulkInsert(agencyList);
-      //getAgencies(agencyList);
+
       List<gtt.Route> routeValues;
       List<gtt.Pattern> patternValues;
       List<Stop> stopValues;
@@ -130,10 +135,10 @@ class LoadingController extends GetxController {
       UpdateUtils.update(stopValues);
       UpdateUtils.update(patternValues);
       UpdateUtils.update(routeValues);
-      /* await DatabaseCommands.instance.bulkInsert(patternStopValues);
-      DatabaseCommands.instance.bulkInsert(stopValues);
-      DatabaseCommands.instance.bulkInsert(patternValues);
-      DatabaseCommands.instance.bulkInsert(routeValues); */
+
+      if (Get.isRegistered<RouteListController>()) {
+        Get.find<RouteListController>().getRoutes(routeValues);
+      }
     } on ApiException catch (e) {
       Utils.showSnackBar(e.message, title: 'Error ${e.statusCode}');
     } finally {
@@ -149,15 +154,27 @@ class LoadingController extends GetxController {
 
   void checkAndLoad() async {
     Duration duration = const Duration(milliseconds: 1000);
-    if (await needToLoad()) {
-      await loadFromApi();
-      duration = const Duration(milliseconds: 1);
+    bool isFirstLoad = await this.isFirstLoad();
+
+    bool needToLoad = needsAutoUpdate() || isFirstLoad;
+    if (needToLoad) {
+      if (isFirstLoad) {
+        await loadFromApi();
+        duration = const Duration(milliseconds: 1);
+      } else {
+        loadFromApi();
+      }
     }
     moveToHome(duration);
   }
 
   void moveToHome(Duration duration) async {
     await Future.delayed(duration);
-    Get.offNamed('/home');
+    if (Storage.isFirstTime) {
+      Storage.setParam(StorageParam.isFirstTime, false.toString());
+      Get.offNamed('/intro');
+    } else {
+      Get.offNamed('/home');
+    }
   }
 }

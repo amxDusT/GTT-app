@@ -10,6 +10,7 @@ import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsController extends GetxController {
@@ -66,7 +67,7 @@ class SettingsController extends GetxController {
   }
 
   void resetData() async {
-    Get.offAllNamed('/home');
+    Get.until((route) => Get.currentRoute == '/home');
     Get.find<LoadingController>().loadFromApi();
   }
 
@@ -112,6 +113,13 @@ class SettingsController extends GetxController {
     }
   }
 
+  void shareApp() {
+    Share.share(
+      'Sto usando questa app GTT, scaricala anche tu \nhttps://github.com/amxDusT/GTT-app/releases/latest',
+      subject: 'GTT app',
+    );
+  }
+
   void infoApp() {
     Get.defaultDialog(
       title: 'Informazioni app',
@@ -147,6 +155,10 @@ class SettingsController extends GetxController {
         ],
       ),
     );
+  }
+
+  void showTutorial() {
+    Get.offAllNamed('/intro');
   }
 
   void betaFeaturesInfo() {

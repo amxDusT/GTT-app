@@ -11,6 +11,7 @@ enum StorageParam {
   lastUpdate,
   isFavoritesRoutesShowing,
   showBetaFeatures,
+  isFirstTime,
 }
 
 class Storage {
@@ -20,32 +21,39 @@ class Storage {
   static bool showSecondsInUpdates = false;
   static DateTime lastUpdate = DateTime.now();
   static const _storage = FlutterSecureStorage();
-  static bool isFavoritesRoutesShowing = false;
+  static bool isFavoritesRoutesShowing = true;
   static bool showBetaFeatures = false;
-
+  static bool isFirstTime = true;
   static void loadSettings() async {
     chosenColor =
         stringToColor(await getParam(StorageParam.color)) ?? initialColor;
 
-    isFermataShowing =
-        bool.parse(await getParam(StorageParam.fermataMap) ?? 'true');
+    isFermataShowing = bool.parse(
+        await getParam(StorageParam.fermataMap) ?? isFermataShowing.toString());
 
     isRouteWithoutPassagesShowing = bool.parse(
-        await getParam(StorageParam.routeWithoutPassagesMap) ?? 'true');
+        await getParam(StorageParam.routeWithoutPassagesMap) ??
+            isRouteWithoutPassagesShowing.toString());
 
     showSecondsInUpdates = bool.parse(
-        await getParam(StorageParam.showSecondsInUpdates) ?? 'false');
+        await getParam(StorageParam.showSecondsInUpdates) ??
+            showSecondsInUpdates.toString());
 
     //very ugly
     lastUpdate = Utils.stringToDate(await getParam(StorageParam.lastUpdate) ??
         Utils.dateToString(DateTime.now()));
 
     isFavoritesRoutesShowing = bool.parse(
-      await getParam(StorageParam.isFavoritesRoutesShowing) ?? 'false',
+      await getParam(StorageParam.isFavoritesRoutesShowing) ??
+          isFavoritesRoutesShowing.toString(),
     );
 
-    showBetaFeatures =
-        bool.parse(await getParam(StorageParam.showBetaFeatures) ?? 'false');
+    showBetaFeatures = bool.parse(
+        await getParam(StorageParam.showBetaFeatures) ??
+            showBetaFeatures.toString());
+
+    isFirstTime = bool.parse(
+        await getParam(StorageParam.isFirstTime) ?? isFirstTime.toString());
   }
 
   static String colorToString(Color color) =>

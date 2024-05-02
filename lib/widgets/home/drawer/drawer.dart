@@ -9,7 +9,7 @@ class HomeDrawer extends StatelessWidget {
   };
   final Map<String, dynamic> elements = {
     'Leggi Biglietto/Carta': () => Get.toNamed('/nfc'),
-    'Mappa Bus/Tram': () => Get.toNamed('/routelist'),
+    'Linee': () => Get.toNamed('/routelist'),
     'Impostazioni': () => Get.toNamed('/settings'),
     //'Testing': () => Get.to(() => TestingPage()),
   };

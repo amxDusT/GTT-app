@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 class SearchStopsController extends GetxController {
   TextEditingController? _searchController;
   FocusNode? _focusNode;
+  final RxBool showLeadingIcon = false.obs;
+
   Future<List<Stop>> getStopsFromValue(String value) async {
     if (value.isEmpty) {
       return [];
@@ -22,19 +24,21 @@ class SearchStopsController extends GetxController {
     _searchController = controller;
   }
 
+  FocusNode? get focusNode => _focusNode;
   void setFocusNode(FocusNode node) {
     _focusNode = node;
     node.addListener(() {
       if (!node.hasFocus) {
         _searchController?.clear();
       }
+      showLeadingIcon.value = node.hasFocus;
     });
   }
 
   void onSubmitted([String? value]) async {
     value ??= _searchController?.text ?? '';
     _searchController?.clear();
-    _focusNode?.unfocus();
+    focusNode?.unfocus();
     if (value.isEmpty) return;
     List<Stop> stops = await getStopsFromValue(value);
 
@@ -52,6 +56,6 @@ class SearchStopsController extends GetxController {
   }
 
   void searchButton() {
-    _focusNode?.hasFocus ?? false ? onSubmitted() : _focusNode?.requestFocus();
+    focusNode?.hasFocus ?? false ? onSubmitted() : focusNode?.requestFocus();
   }
 }

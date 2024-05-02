@@ -42,13 +42,14 @@ class CardMapWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
+                  height: 40,
                   alignment: Alignment.topRight,
-                  padding: const EdgeInsets.all(5),
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 5,
+                  ),
                   child: IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () {
-                      //controller.popupController.
-
                       controller.popupController.togglePopup(marker);
                       controller.lastOpenedMarker = null;
                       if (marker is FermataMarker) {

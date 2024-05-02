@@ -6,12 +6,18 @@ import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 
 class SearchStop extends StatelessWidget {
-  SearchStop({super.key});
-  final _searchController = Get.find<SearchStopsController>();
+  final EdgeInsetsGeometry? padding;
+  const SearchStop({
+    super.key,
+    required this.searchController,
+    this.padding,
+  });
+  final SearchStopsController searchController;
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 18.0),
+      padding:
+          padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -33,20 +39,33 @@ class SearchStop extends StatelessWidget {
                       ));
             },
             builder: (context, controller, focusNode) {
-              _searchController.setTextController(controller);
-              _searchController.setFocusNode(focusNode);
-              return TextField(
-                controller: controller,
-                focusNode: focusNode,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderSide: Divider.createBorderSide(context)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  filled: true,
-                  labelText: 'Cerca fermata...',
+              searchController.setTextController(controller);
+              searchController.setFocusNode(focusNode);
+
+              return Obx(
+                () => TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                        borderSide: Divider.createBorderSide(context)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    filled: true,
+                    labelText: 'Cerca fermata...',
+                    prefixIcon: searchController.showLeadingIcon.isTrue
+                        ? IconButton(
+                            icon: const Icon(Icons.arrow_back),
+                            onPressed: () {
+                              if (focusNode.hasFocus) {
+                                focusNode.unfocus();
+                              }
+                            },
+                          )
+                        : null,
+                  ),
+                  keyboardType: TextInputType.text,
+                  onSubmitted: (value) => searchController.onSubmitted(value),
                 ),
-                keyboardType: TextInputType.text,
-                onSubmitted: (value) => _searchController.onSubmitted(value),
               );
             },
             loadingBuilder: (context) => const Center(
@@ -56,9 +75,9 @@ class SearchStop extends StatelessWidget {
             debounceDuration: const Duration(milliseconds: 400),
             onSelected: (stop) {
               // so it calls clear on the searchController
-              _searchController.onSubmitted(stop.code.toString());
+              searchController.onSubmitted(stop.code.toString());
             },
-            suggestionsCallback: _searchController.getStopsFromValue,
+            suggestionsCallback: searchController.getStopsFromValue,
           ),
         ],
       ),

@@ -13,6 +13,8 @@ class NfcPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Leggi Carta'),
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          scrolledUnderElevation: 0,
         ),
         body: Stack(
           alignment: Alignment.topCenter,
