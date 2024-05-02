@@ -22,6 +22,10 @@ import 'package:intl/intl.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 
 class Utils {
+  static String getLocale() {
+    return Get.locale?.languageCode ?? 'it';
+  }
+
   static int getBytesFromPage(Uint8List page, int offset, int bytesnum) {
     final bytes = Uint8List.sublistView(page, offset, offset + bytesnum);
     int value = 0;
@@ -42,16 +46,16 @@ class Utils {
 
   static String dateToHourString(DateTime date, [checkSeconds = true]) {
     return checkSeconds && Storage.showSecondsInUpdates
-        ? DateFormat.Hms(Get.locale?.languageCode).format(date)
-        : DateFormat.Hm(Get.locale?.languageCode).format(date);
+        ? DateFormat.Hms(getLocale()).format(date)
+        : DateFormat.Hm(getLocale()).format(date);
   }
 
   static DateTime stringToDate(String date) {
-    return DateFormat('d MMMM, y H:mm', Get.locale?.languageCode).parse(date);
+    return DateFormat('d MMMM, y H:mm', getLocale()).parse(date);
   }
 
   static String dateToString(DateTime date) {
-    return DateFormat('d MMMM, y H:mm', Get.locale?.languageCode)
+    return DateFormat('d MMMM, y H:mm', getLocale())
         .format(date)
         .capitalizeFirst!;
   }
