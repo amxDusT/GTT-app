@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/storage.dart';
@@ -10,7 +11,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Storage.loadSettings();
   await DatabaseCommands.instance.initialize();
-
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
   await FlutterDisplayMode.setHighRefreshRate();
 }
