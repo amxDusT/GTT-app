@@ -131,10 +131,12 @@ class InfoPage extends StatelessWidget {
                           opacity: 0.9,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: _infoController
-                                      .isSelecting.isTrue
-                                  ? Get.theme.colorScheme.primaryContainer
-                                  : Theme.of(context).colorScheme.background,
+                              backgroundColor:
+                                  _infoController.isSelecting.isTrue
+                                      ? Theme.of(context)
+                                          .colorScheme
+                                          .primaryContainer
+                                      : Theme.of(context).colorScheme.primary,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),

@@ -28,8 +28,12 @@ class RouteListController extends GetxController {
       favorites.remove(route);
       DatabaseCommands.instance.removeFavoriteRoute(route);
     } else {
-      favorites.add(route);
       DatabaseCommands.instance.addFavoriteRoute(route);
+      if (route is RouteWithDetails) {
+        getFavorites();
+      } else {
+        favorites.add(route);
+      }
     }
     update();
   }
