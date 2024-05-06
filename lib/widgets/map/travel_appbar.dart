@@ -25,7 +25,7 @@ class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
       leadingWidth: 50,
-      toolbarHeight: 180 + controller.additionalHeight.value,
+      toolbarHeight: controller.appBarHeight,
       title: Column(
         children: [
           ...controller.intermediateWithSpaces,

@@ -31,7 +31,6 @@ class MapTravelController extends GetxController {
   final Rx<DateTime> travelDate = DateTime.now().obs;
   final MapAddressController mapAddress = Get.find();
   final MapLocation mapLocation = Get.find<MapLocation>();
-  final double appBarHeight = 56.0;
   final RxList<Travel> lastTravels = <Travel>[].obs;
   final Rx<Travel?> lastTravel = Rx<Travel?>(null);
   final Map<String, Travel> lastTravelsMap = <String, Travel>{};
@@ -46,6 +45,7 @@ class MapTravelController extends GetxController {
     }
   }
 
+  double get appBarHeight => 180 + additionalHeight.value;
   RxBool get hasTravels => (isSearching.isTrue && lastTravels.isNotEmpty).obs;
   void switchAddresses() {
     final SimpleAddress tmp = fromAddress.value;
