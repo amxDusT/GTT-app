@@ -136,7 +136,7 @@ class InfoPage extends StatelessWidget {
                                       ? Theme.of(context)
                                           .colorScheme
                                           .primaryContainer
-                                      : Theme.of(context).colorScheme.primary,
+                                      : null,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
