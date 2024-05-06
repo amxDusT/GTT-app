@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart';
@@ -27,6 +26,9 @@ class UpdateUtils {
       default:
         throw 'Error, Object not found';
     }
+
+    /* _isolateMethod(elements, allElements);
+    return; */
     Set<dynamic> apiSet = elements.toSet();
     Set<dynamic> dbSet = allElements.toSet();
 
@@ -35,19 +37,26 @@ class UpdateUtils {
 
     DatabaseCommands.instance.bulkDelete(toDelete);
     DatabaseCommands.instance.bulkInsert(toInsertOrUpdate);
-    debugPrint(
+    /* debugPrint(
         'Elements updates in table ${elements[0].runtimeType}: ${toInsertOrUpdate.length}');
     debugPrint(
-        'Elements deleted in table ${elements[0].runtimeType}: ${toDelete.length}');
+        'Elements deleted in table ${elements[0].runtimeType}: ${toDelete.length}'); */
   }
 
-  /* static void _updateAll(
+  /* static void _isolateMethod(
+      List<dynamic> apiElements, List<dynamic> dbElements) {
+    _runIsolate(apiElements, dbElements);
+  }
+
+  static void _updateAll(
       SendPort port, List<dynamic> apiElements, List<dynamic> dbElements) {
     Set<dynamic> apiSet = apiElements.toSet();
     Set<dynamic> dbSet = dbElements.toSet();
 
     List<dynamic> toInsertOrUpdate = apiSet.difference(dbSet).toList();
+    port.send(toInsertOrUpdate);
     List<dynamic> toDelete = dbSet.difference(apiSet).toList();
+    port.send(toDelete);
     port.send('done');
   }
 
@@ -65,10 +74,19 @@ class UpdateUtils {
         _createIsolateFunction(receivePort.sendPort, apiElements, apiElements);
 
     await Isolate.run(closure);
-
+    bool isToAdd = true;
     receivePort.listen((message) {
-      print('Received: $message');
-      if (message == 'done') {
+      debugPrint('Received something');
+      if (message is List) {
+        if (isToAdd) {
+          DatabaseCommands.instance.bulkInsert(message);
+        } else {
+          DatabaseCommands.instance.bulkDelete(message);
+        }
+        isToAdd = !isToAdd;
+      }
+      if (message is String && message == 'done') {
+        debugPrint('Isolate done');
         receivePort.close();
       }
     });

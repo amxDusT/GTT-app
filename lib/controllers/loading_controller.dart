@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
@@ -129,7 +131,7 @@ class LoadingController extends GetxController {
       List<Stop> stopValues;
       List<gtt.PatternStop> patternStopValues;
       (routeValues, patternValues, stopValues, patternStopValues) =
-          await GttApi.routesByFeed();
+          await Isolate.run(() => GttApi.routesByFeed());
 
       UpdateUtils.update(patternStopValues);
       UpdateUtils.update(stopValues);
