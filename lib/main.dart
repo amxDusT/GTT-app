@@ -6,15 +6,18 @@ import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   Storage.loadSettings();
+
   await DatabaseCommands.instance.initialize();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  initializeDateFormatting('it_IT');
   runApp(const MyApp());
   await FlutterDisplayMode.setHighRefreshRate();
 }
