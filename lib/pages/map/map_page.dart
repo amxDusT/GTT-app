@@ -27,12 +27,14 @@ class MapPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Obx(() => Text(
-            'Map${_flutterMapController.routes.length == 1 ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}')),
+            'Map${_flutterMapController.routes.length == 1 && _flutterMapController.isPatternInitialized.isTrue ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}')),
         actions: [
           GetBuilder<RouteListController>(
             builder: (controller) => Obx(
-              () => _flutterMapController.routes.length == 1
+              () => _flutterMapController.routes.length == 1 &&
+                      _flutterMapController.isPatternInitialized.isTrue
                   ? IconButton(
                       icon: _flutterMapController.isPatternInitialized.isTrue &&
                               controller.favorites.contains(
@@ -165,7 +167,7 @@ class MapPage extends StatelessWidget {
 
                             return CardMapWidget(
                                 marker: marker,
-                                controller: _flutterMapController);
+                                mapPageController: _flutterMapController);
                           },
                         ),
                       ),
