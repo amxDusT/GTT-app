@@ -195,7 +195,7 @@ class HomeController extends GetxController {
         itemBuilder: (color, isCurrentColor, changeColor) =>
             HomeColorPicker(color, isCurrentColor, changeColor),
       ),
-      textCancel: 'Make Default',
+      textCancel: 'Rendi predefinito',
       textConfirm: 'Chiudi',
       onConfirm: () => Get.back(),
       onCancel: () => Storage.instance.setColor(fermata.color),
