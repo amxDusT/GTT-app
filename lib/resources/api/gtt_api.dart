@@ -69,6 +69,7 @@ class GttApi {
         return http.Response('Time out', 408);
       },
     );
+    await Future.delayed(const Duration(milliseconds: 1000));
     return response;
   }
 

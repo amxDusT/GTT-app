@@ -148,10 +148,14 @@ class HomeController extends GetxController {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
                       //border: Border.all(color: Utils.darken(lastColor)),
-                      color: Utils.lighten(lastColor),
+                      color: Storage.instance.isDarkMode
+                          ? Utils.darken(lastColor, 30)
+                          : Utils.lighten(lastColor),
                       boxShadow: [
                         BoxShadow(
-                          color: Utils.lighten(lastColor),
+                          color: Storage.instance.isDarkMode
+                              ? Utils.darken(lastColor, 30)
+                              : Utils.lighten(lastColor),
                           offset: const Offset(1, 2),
                           blurRadius: 5,
                         ),

@@ -35,7 +35,7 @@ class RouteListFavorite extends GetView<SettingsController> {
               height: 40,
               decoration: BoxDecoration(
                 color: controller.isDarkMode.isTrue
-                    ? Theme.of(context).colorScheme.inversePrimary
+                    ? Theme.of(context).colorScheme.primaryContainer
                     : Theme.of(context).colorScheme.primary,
                 shape: BoxShape.rectangle,
                 borderRadius: BorderRadius.circular(50),

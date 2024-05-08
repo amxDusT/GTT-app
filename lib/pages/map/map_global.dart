@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/widgets/map/map_global/panel_dragger.dart';
 import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_gtt/widgets/map/address_widget.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/circle_button.dart';
+import 'package:flutter_gtt/widgets/map/map_global/route_option.dart';
 import 'package:flutter_gtt/widgets/map/travel_appbar.dart';
 import 'package:flutter_gtt/widgets/search/map_search_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -48,6 +50,7 @@ class MapGlobal extends StatelessWidget {
             context: context,
             removeTop: true,
             child: SlidingUpPanel(
+              color: Theme.of(context).scaffoldBackgroundColor,
               controller: controller.travelController.panelController,
               renderPanelSheet: controller.travelController.isSearching.isTrue,
               minHeight: 80,
@@ -55,112 +58,75 @@ class MapGlobal extends StatelessWidget {
                   Get.height - controller.travelController.appBarHeight - 34,
               panelBuilder: (scrollController) => controller
                       .travelController.isSearching.isFalse
-                  ? Container()
-                  : SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      controller: scrollController,
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.only(top: 12, bottom: 6),
-                            width: 70,
-                            height: 5,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(3),
+                  ? const SizedBox()
+                  : Column(
+                      children: [
+                        if (controller
+                                .travelController.panelController.isAttached &&
+                            controller
+                                .travelController.panelController.isPanelOpen)
+                          const Divider(
+                            height: 1,
+                          ),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            controller: scrollController,
+                            child: Column(
+                              children: [
+                                const PanelDragger(),
+                                controller.travelController.lastTravels.isEmpty
+                                    ? const Center(
+                                        child: CircularProgressIndicator(),
+                                      )
+                                    : ListView.separated(
+                                        //controller: scrollController,
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        itemCount: controller.travelController
+                                                .lastTravelsMap.length +
+                                            1,
+                                        itemBuilder: (context, index) {
+                                          if (index == 0) {
+                                            return Container(
+                                              padding: const EdgeInsets.all(20),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'Strade possibili',
+                                                style: Get.textTheme.titleLarge!
+                                                    .copyWith(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            );
+                                          }
+
+                                          final vehicle = controller
+                                              .travelController
+                                              .lastTravelsMap
+                                              .keys
+                                              .elementAt(index - 1);
+
+                                          return RouteOption(
+                                              vehicleName: vehicle,
+                                              controller: controller);
+                                        },
+                                        separatorBuilder: (context, index) =>
+                                            const Divider(),
+                                      ),
+                                //const SizedBox(height: 150),
+                              ],
                             ),
                           ),
-                          controller.travelController.lastTravels.isEmpty
-                              ? const Center(
-                                  child: CircularProgressIndicator(),
-                                )
-                              : ListView.separated(
-                                  //controller: scrollController,
-                                  shrinkWrap: true,
-                                  physics: const NeverScrollableScrollPhysics(),
-                                  itemCount: controller.travelController
-                                          .lastTravelsMap.length +
-                                      1,
-                                  itemBuilder: (context, index) {
-                                    if (index == 0) {
-                                      return Container(
-                                        padding: const EdgeInsets.all(20),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Strade possibili',
-                                          style: Get.textTheme.titleLarge!
-                                              .copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      );
-                                    }
-
-                                    final vehicle = controller
-                                        .travelController.lastTravelsMap.keys
-                                        .elementAt(index - 1);
-
-                                    return ListTile(
-                                      title: Text(vehicle),
-                                      subtitle: Text(
-                                        '${(controller.travelController.lastTravelsMap[vehicle]!.duration / 60).toStringAsFixed(0)} min',
-                                      ),
-                                      onTap: () {
-                                        controller
-                                            .travelController.panelController
-                                            .close();
-                                        controller.travelController.lastTravel
-                                                .value =
-                                            controller.travelController
-                                                .lastTravelsMap[vehicle];
-                                        //controller.mapController.camera.
-                                        controller.animateCamera(
-                                            CameraFit.coordinates(
-                                          coordinates: [
-                                            controller
-                                                .travelController
-                                                .lastTravel
-                                                .value!
-                                                .legs
-                                                .first
-                                                .from
-                                                .position,
-                                            controller
-                                                .travelController
-                                                .lastTravel
-                                                .value!
-                                                .legs
-                                                .last
-                                                .to
-                                                .position,
-                                          ],
-                                          padding: EdgeInsets.only(
-                                            left: 20.0,
-                                            right: 20.0,
-                                            bottom: 100.0,
-                                            top: controller.travelController
-                                                    .appBarHeight +
-                                                50,
-                                          ),
-                                        ).fit(controller.mapController.camera));
-                                      },
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) => index !=
-                                          0
-                                      ? const Divider(
-                                          indent: 20,
-                                          endIndent: 20,
-                                        )
-                                      : const Divider() /* const SizedBox() */,
-                                ),
-                          const SizedBox(height: 150),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: controller
+                          .travelController.panelController.isAttached &&
+                      controller.travelController.panelController.isPanelOpen
+                  ? const BorderRadius.vertical(top: Radius.circular(0))
+                  : const BorderRadius.vertical(top: Radius.circular(20)),
               body: FlutterMap(
                 mapController: controller.mapController,
                 options: MapOptions(

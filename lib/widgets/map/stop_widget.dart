@@ -24,6 +24,7 @@ class StopWidget extends StatelessWidget {
               color: Colors.black,
               fontWeight: FontWeight.w500,
             ),
+            textAlign: TextAlign.center,
           ),
           MapInfoWidget(stop: marker.fermata),
         ],

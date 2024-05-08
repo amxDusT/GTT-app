@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/info_controller.dart';
+import 'package:flutter_gtt/fake/fake_data.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/info_widget.dart';
 import 'package:get/get.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class InfoPage extends StatelessWidget {
   final InfoController _infoController;
@@ -80,42 +82,44 @@ class InfoPage extends StatelessWidget {
                     physics: const AlwaysScrollableScrollPhysics(
                         parent: BouncingScrollPhysics()),
                     child: Obx(
-                      () => ConstrainedBox(
-                        constraints:
-                            BoxConstraints(minHeight: constraints.maxHeight),
-                        child: _infoController.isLoading.isTrue
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
-                            : ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                itemCount: _infoController
-                                        .fermata.value.vehicles.length +
-                                    1,
-                                itemBuilder: (context, index) {
-                                  if (index ==
-                                      _infoController
-                                          .fermata.value.vehicles.length) {
-                                    return Container(
+                      () {
+                        final routes = _infoController.isLoading.isTrue
+                            ? List.filled(5, FakeData().fakeRouteWithDetails)
+                            : _infoController.fermata.value.vehicles;
+                        return ConstrainedBox(
+                          constraints:
+                              BoxConstraints(minHeight: constraints.maxHeight),
+                          child: Skeletonizer(
+                            enabled: _infoController.isLoading.isTrue,
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              itemCount: routes.length + 1,
+                              itemBuilder: (context, index) {
+                                if (index == routes.length) {
+                                  return Skeleton.ignore(
+                                    child: Container(
                                       alignment: Alignment.center,
                                       padding: const EdgeInsets.only(
-                                          top: 10, bottom: 60),
+                                        top: 10,
+                                        bottom: 60,
+                                      ),
                                       child: Text(
                                         'Ultimo aggiornamento: ${Utils.dateToHourString(_infoController.lastUpdate.value)}',
                                       ),
-                                    );
-                                  }
-                                  return InfoWidget(
-                                    stop: _infoController.fermata.value,
-                                    vehicle: (_infoController.fermata.value
-                                        .vehicles[index] as RouteWithDetails),
+                                    ),
                                   );
-                                },
-                              ),
-                      ),
+                                }
+                                return InfoWidget(
+                                  stop: _infoController.fermata.value,
+                                  vehicle: (routes[index] as RouteWithDetails),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ),
                   Positioned(

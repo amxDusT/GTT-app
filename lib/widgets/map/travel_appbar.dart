@@ -13,6 +13,7 @@ class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      scrolledUnderElevation: 0,
       leading: Container(
         alignment: Alignment.topCenter,
         margin: const EdgeInsets.only(top: 8.0),

@@ -8,7 +8,7 @@ class MapInfoController extends GetxController {
   late Rx<StopWithDetails> fermata;
   final RxBool isLoading = false.obs;
 
-  List<String> get routes {
+  List<String> get routesNames {
     return fermata.value.vehicles.map((route) => route.shortName).toList();
   }
 

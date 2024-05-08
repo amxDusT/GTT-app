@@ -64,6 +64,7 @@ dependencies:
   path: ^1.8.3
   reorderable_grid: ^1.0.10
   share_plus: ^9.0.0
+  skeletonizer: ^1.1.2+1
   sliding_up_panel: ^2.0.0+1
   sqflite: ^2.3.0
   url_launcher: ^6.2.1
