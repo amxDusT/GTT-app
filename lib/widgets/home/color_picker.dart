@@ -19,7 +19,7 @@ class HomeColorPicker extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: color.value == Storage.chosenColor.value
+        border: color.value == Storage.instance.chosenColor.value
             ? Border.all(
                 color: Utils.darken(color, 30),
                 width: 2,

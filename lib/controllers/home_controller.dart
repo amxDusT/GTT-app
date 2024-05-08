@@ -198,8 +198,7 @@ class HomeController extends GetxController {
       textCancel: 'Make Default',
       textConfirm: 'Chiudi',
       onConfirm: () => Get.back(),
-      onCancel: () => Storage.setParam(
-          StorageParam.color, Storage.colorToString(fermata.color)),
+      onCancel: () => Storage.instance.setColor(fermata.color),
     );
   }
 

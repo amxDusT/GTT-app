@@ -10,7 +10,7 @@ import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Storage.loadSettings();
+  Storage.instance.loadSettings();
 
   await DatabaseCommands.instance.initialize();
   await SystemChrome.setPreferredOrientations([

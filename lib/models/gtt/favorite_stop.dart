@@ -26,7 +26,7 @@ class FavStop extends Stop {
     return FavStop(
       descrizione: descrizione,
       dateTime: dateTime ?? DateTime.now(),
-      color: color ?? Storage.chosenColor,
+      color: color ?? Storage.instance.chosenColor,
       gtfsId: stop.gtfsId,
       code: stop.code,
       name: stop.name,

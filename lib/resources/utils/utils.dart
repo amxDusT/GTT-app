@@ -45,7 +45,7 @@ class Utils {
   }
 
   static String dateToHourString(DateTime date, [checkSeconds = true]) {
-    return checkSeconds && Storage.showSecondsInUpdates
+    return checkSeconds && Storage.instance.showSecondsInUpdates
         ? DateFormat.Hms(getLocale()).format(date)
         : DateFormat.Hm(getLocale()).format(date);
   }

@@ -190,7 +190,7 @@ class MapPageController extends GetxController
     Set<Stop> stops = {};
     for (gtt.Route route in routeValues) {
       if (showMultiplePatterns &&
-          !Storage.isRouteWithoutPassagesShowing &&
+          !Storage.instance.isRouteWithoutPassagesShowing &&
           (route as gtt.RouteWithDetails).stoptimes.isEmpty) continue;
 
       _mqttController.addSubscription((route as gtt.RouteWithDetails).gtfsId);
@@ -222,7 +222,7 @@ class MapPageController extends GetxController
         uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
     */
     _mqttController.connect();
-    if (initialStop != null && Storage.isFermataShowing) {
+    if (initialStop != null && Storage.instance.isFermataShowing) {
       popupController.togglePopup(FermataMarker(fermata: initialStop));
     }
     isPatternInitialized.value = true;

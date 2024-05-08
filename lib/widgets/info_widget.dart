@@ -64,7 +64,7 @@ class InfoWidget extends StatelessWidget {
             if (_infoController.isSelecting.isTrue) {
               _infoController.onSelectedClick(vehicle);
               return;
-            } else if (!Storage.isRouteWithoutPassagesShowing &&
+            } else if (!Storage.instance.isRouteWithoutPassagesShowing &&
                 vehicle.stoptimes.isEmpty) {
               Utils.showSnackBar(
                 "Non ci sono passaggi per questo veicolo",

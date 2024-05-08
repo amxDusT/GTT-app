@@ -19,13 +19,14 @@ class SettingsController extends GetxController {
   - map api da mapbox invece di openstreetmap
   ''';
   final _homeController = Get.find<HomeController>();
-  final RxBool showBetaFeatures = Storage.showBetaFeatures.obs;
-  final RxBool showSecondsInUpdates = Storage.showSecondsInUpdates.obs;
-  final RxBool isFermataShowing = Storage.isFermataShowing.obs;
+  final RxBool showBetaFeatures = Storage.instance.showBetaFeatures.obs;
+  final RxBool showSecondsInUpdates = Storage.instance.showSecondsInUpdates.obs;
+  final RxBool isFermataShowing = Storage.instance.isFermataShowing.obs;
   final RxBool isRouteWithoutPassagesShowing =
-      Storage.isRouteWithoutPassagesShowing.obs;
+      Storage.instance.isRouteWithoutPassagesShowing.obs;
 
-  final RxBool isFavoritesRoutesShowing = Storage.isFavoritesRoutesShowing.obs;
+  final RxBool isFavoritesRoutesShowing =
+      Storage.instance.isFavoritesRoutesShowing.obs;
 
   final RxString version = ''.obs;
 
@@ -38,32 +39,31 @@ class SettingsController extends GetxController {
 
   void switchFermataShowing() {
     isFermataShowing.toggle();
-    Storage.setParam(
-        StorageParam.fermataMap, isFermataShowing.value.toString());
+    Storage.instance.setBool(StorageParam.fermataMap, isFermataShowing.value);
   }
 
   void switchRouteWithoutPassagesShowing() {
     isRouteWithoutPassagesShowing.toggle();
-    Storage.setParam(StorageParam.routeWithoutPassagesMap,
-        isRouteWithoutPassagesShowing.value.toString());
+    Storage.instance.setBool(StorageParam.routeWithoutPassagesMap,
+        isRouteWithoutPassagesShowing.value);
   }
 
   void switchShowSecondsInUpdates() {
     showSecondsInUpdates.toggle();
-    Storage.setParam(StorageParam.showSecondsInUpdates,
-        showSecondsInUpdates.value.toString());
+    Storage.instance
+        .setBool(StorageParam.showSecondsInUpdates, showSecondsInUpdates.value);
   }
 
   void switchFavoritesRoutesShowing() {
     isFavoritesRoutesShowing.toggle();
-    Storage.setParam(StorageParam.isFavoritesRoutesShowing,
-        isFavoritesRoutesShowing.value.toString());
+    Storage.instance.setBool(
+        StorageParam.isFavoritesRoutesShowing, isFavoritesRoutesShowing.value);
   }
 
   void switchBetaFeatures() {
     showBetaFeatures.toggle();
-    Storage.setParam(
-        StorageParam.showBetaFeatures, showBetaFeatures.value.toString());
+    Storage.instance
+        .setBool(StorageParam.showBetaFeatures, showBetaFeatures.value);
   }
 
   void resetData() async {

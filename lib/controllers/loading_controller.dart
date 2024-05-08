@@ -107,7 +107,7 @@ class LoadingController extends GetxController {
     check if hasnt been updated in the last $daysBeforeAutoUpdate days
   */
   bool needsAutoUpdate() {
-    return Storage.lastUpdate.isBefore(
+    return Storage.instance.lastUpdate.isBefore(
         DateTime.now().subtract(const Duration(days: daysBeforeAutoUpdate)));
   }
 
@@ -120,8 +120,7 @@ class LoadingController extends GetxController {
 
   Future<void> loadFromApi() async {
     isShowingMessage.value = true;
-    Storage.setParam(
-        StorageParam.lastUpdate, Utils.dateToString(DateTime.now()));
+    Storage.instance.setLastUpdate(DateTime.now());
     try {
       List<Agency> agencyList = await GttApi.getAgencies();
       UpdateUtils.update(agencyList);
@@ -172,8 +171,8 @@ class LoadingController extends GetxController {
 
   void moveToHome(Duration duration) async {
     await Future.delayed(duration);
-    if (Storage.isFirstTime) {
-      Storage.setParam(StorageParam.isFirstTime, false.toString());
+    if (Storage.instance.isFirstTime) {
+      Storage.instance.setBool(StorageParam.isFirstTime, false);
       Get.offNamed('/intro');
     } else {
       Get.offNamed('/home');

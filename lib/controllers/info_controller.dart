@@ -38,7 +38,7 @@ class InfoController extends GetxController {
   bool get canShowMap =>
       isSelecting.isFalse ||
       selectedRoutes.isNotEmpty &&
-          (Storage.isRouteWithoutPassagesShowing ||
+          (Storage.instance.isRouteWithoutPassagesShowing ||
               selectedRoutes.any((route) => route.stoptimes.isNotEmpty));
   void onLongPress(gtt.RouteWithDetails route) {
     isSelecting.value = true;
