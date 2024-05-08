@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_point_controller.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/map_utils.dart';
+import 'package:flutter_gtt/widgets/map/stop_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -53,9 +55,10 @@ class MapPointPage extends StatelessWidget {
                                 alignment: Alignment.topRight,
                                 padding: const EdgeInsets.all(5.0),
                                 child: InkWell(
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.clear,
                                     size: 20,
+                                    color: Colors.grey[600],
                                   ),
                                   onTap: () {
                                     _mapController.popupController
@@ -63,7 +66,7 @@ class MapPointPage extends StatelessWidget {
                                   },
                                 )),
                             if (marker is FermataMarker)
-                              Text('Fermata ${marker.fermata.name}'),
+                              StopWidget(marker: marker),
                           ],
                         ),
                       ),
@@ -83,10 +86,20 @@ class MapPointPage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          Theme.of(context).colorScheme.inversePrimary,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                     ),
-                    child: const Text('Apri in Google Maps'),
+                    child: Text(
+                      'Apri in Google Maps',
+                      style: TextStyle(
+                        color: Storage.instance.isDarkMode
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
                     onPressed: () => MapUtils.openMap(
                         _mapController.fermataLocation.latitude,
                         _mapController.fermataLocation.longitude),
