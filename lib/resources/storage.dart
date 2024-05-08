@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:get/get.dart';
 
 enum StorageParam {
   color,
@@ -12,6 +13,7 @@ enum StorageParam {
   isFavoritesRoutesShowing,
   showBetaFeatures,
   isFirstTime,
+  isDarkMode,
 }
 
 class Storage {
@@ -43,8 +45,12 @@ class Storage {
             showBetaFeatures.toString());
     params[StorageParam.isFirstTime] = bool.parse(
         await _getParam(StorageParam.isFirstTime) ?? isFirstTime.toString());
+
+    params[StorageParam.isDarkMode] = bool.parse(
+        await _getParam(StorageParam.isDarkMode) ?? isDarkMode.toString());
   }
 
+  bool get isDarkMode => params[StorageParam.isDarkMode] ?? Get.isDarkMode;
   Color get chosenColor => params[StorageParam.color] ?? initialColor;
   bool get isFermataShowing => params[StorageParam.fermataMap] ?? true;
   bool get isRouteWithoutPassagesShowing =>
@@ -107,7 +113,7 @@ class Storage {
       key != StorageParam.color && key != StorageParam.lastUpdate,
       'Invalid key',
     );
-    await _setParam(key, value.toString());
+    await _setParam(key, value);
   }
 
   Future<void> setLastUpdate(DateTime value) async {
@@ -128,7 +134,7 @@ class Storage {
     } else if (value is Color) {
       valueString = colorToString(value);
     } else {
-      throw Exception('Invalid value type');
+      throw Exception('Invalid value type ${value.runtimeType}');
     }
     params[key] = value;
     await _storage.write(key: key.toString(), value: valueString);

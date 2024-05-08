@@ -11,6 +11,13 @@ class SettingsPage extends StatelessWidget {
   List<Widget> getList() {
     return [
       ListTile(
+        title: const Text('Tema scuro'),
+        trailing: Obx(() => Switch(
+              value: _settingsController.isDarkMode.value,
+              onChanged: (value) => _settingsController.switchDarkMode(),
+            )),
+      ),
+      ListTile(
         title: const Text('Mostra linee preferite nella pagina iniziale'),
         trailing: Obx(() => Switch(
               value: _settingsController.isFavoritesRoutesShowing.value,

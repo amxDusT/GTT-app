@@ -19,6 +19,11 @@ class StopWidget extends StatelessWidget {
         children: [
           Text(
             '${marker.fermata.code} - ${marker.fermata.name}',
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.black,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           MapInfoWidget(stop: marker.fermata),
         ],

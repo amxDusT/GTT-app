@@ -71,7 +71,7 @@ class HomePage extends GetView<HomeController> {
                                     ...controller.favorites
                                         .map((route) => RouteListFavorite(
                                               route: route,
-                                              controller: controller,
+                                              routeListController: controller,
                                               hasRemoveIcon: false,
                                             )),
                                   ],
@@ -95,7 +95,7 @@ class HomePage extends GetView<HomeController> {
                         return HomeFavCard(
                           key: ValueKey(fermata.code),
                           fermata: fermata,
-                          controller: controller,
+                          homeController: controller,
                         );
                       },
                       itemCount: controller.fermate.length,

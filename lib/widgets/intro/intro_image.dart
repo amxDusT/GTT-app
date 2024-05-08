@@ -27,12 +27,12 @@ class IntroImage extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.grey.withOpacity(0.4),
                 blurRadius: 15,
                 offset: const Offset(10, 1),
               ),
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.grey.withOpacity(0.4),
                 blurRadius: 15,
                 offset: const Offset(-10, -1),
               ),

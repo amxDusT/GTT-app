@@ -18,6 +18,11 @@ class RouteWidget extends StatelessWidget {
       children: [
         Text(
           '${MapUtils.isTram(marker.mqttData.vehicleNum) ? 'Tram' : 'Bus'} ${controller.routes[marker.mqttData.gtfsId]?.shortName ?? 'UNKOWN'} - ${marker.mqttData.vehicleNum}',
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.black,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
@@ -32,7 +37,7 @@ class RouteWidget extends StatelessWidget {
             'next stop: ${controller.stopsMap[marker.mqttData.nextStop]?.name ?? 'UNKOWN'}'), */
         SizedBox(
           //color: Colors.blue,
-          width: 100,
+          width: 120,
           height: 30,
           child: TextButton(
             onPressed: () =>
@@ -47,6 +52,13 @@ class RouteWidget extends StatelessWidget {
                 controller.followVehicle.value == marker.mqttData.vehicleNum
                     ? 'Smetti di seguire'
                     : 'Segui',
+                style: TextStyle(
+                  color: controller.followVehicle.value ==
+                          marker.mqttData.vehicleNum
+                      ? Colors.red
+                      : Colors.green,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),

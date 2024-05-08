@@ -56,7 +56,14 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
                       children: [
                         const SizedBox(height: 8),
                         Text(
-                            '(${widget._mapInfoController.routes.join(', ')})'),
+                          '(${widget._mapInfoController.routes.join(', ')})',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[800],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ],
                     );
                   }
@@ -76,6 +83,7 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                         ),
@@ -90,8 +98,9 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
                               child: PassageTime(
                                   stoptime: stoptime,
                                   style: TextStyle(
-                                    color:
-                                        stoptime.realtime ? Colors.green : null,
+                                    color: stoptime.realtime
+                                        ? Colors.green
+                                        : Colors.grey[700],
                                     overflow: TextOverflow.ellipsis,
                                     fontSize: 14,
                                   )),

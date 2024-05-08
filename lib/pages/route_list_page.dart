@@ -34,6 +34,7 @@ class RouteListPage extends GetView<RouteListController> {
             builder: (controller) => CustomScrollView(
               slivers: [
                 SliverAppBar(
+                  pinned: true,
                   title: const Text('Linee'),
                   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                   scrolledUnderElevation: 0,
@@ -51,7 +52,8 @@ class RouteListPage extends GetView<RouteListController> {
                           children: [
                             ...controller.favorites.map((route) =>
                                 RouteListFavorite(
-                                    route: route, controller: controller)),
+                                    route: route,
+                                    routeListController: controller)),
                           ],
                         ),
                       ),

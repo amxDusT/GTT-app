@@ -18,7 +18,6 @@ class SettingsController extends GetxController {
   - mappa default senza tratte
   - map api da mapbox invece di openstreetmap
   ''';
-  final _homeController = Get.find<HomeController>();
   final RxBool showBetaFeatures = Storage.instance.showBetaFeatures.obs;
   final RxBool showSecondsInUpdates = Storage.instance.showSecondsInUpdates.obs;
   final RxBool isFermataShowing = Storage.instance.isFermataShowing.obs;
@@ -27,14 +26,23 @@ class SettingsController extends GetxController {
 
   final RxBool isFavoritesRoutesShowing =
       Storage.instance.isFavoritesRoutesShowing.obs;
-
+  final RxBool isDarkMode = Storage.instance.isDarkMode.obs;
   final RxString version = ''.obs;
 
   @override
   void onInit() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version.value = packageInfo.version;
+    if (isDarkMode.value != Get.isDarkMode) {
+      Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
+    }
     super.onInit();
+  }
+
+  void switchDarkMode() {
+    isDarkMode.toggle();
+    Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
+    Storage.instance.setBool(StorageParam.isDarkMode, isDarkMode.value);
   }
 
   void switchFermataShowing() {
@@ -71,12 +79,6 @@ class SettingsController extends GetxController {
     Get.find<LoadingController>().loadFromApi();
   }
 
-  /*  void _restoreFavorites() async {
-    for (var fermata in _homeController.fermate) {
-      DatabaseCommands.instance.insertStop(fermata);
-    }
-  } */
-
   Future<void> exportFavorites() async {
     String jsonResult = await DatabaseCommands.instance.exportFavorites;
 
@@ -107,7 +109,7 @@ class SettingsController extends GetxController {
 
       List<dynamic> jsonMap = json.decode(jsonResult);
       await DatabaseCommands.instance.importFavorites(jsonMap);
-      _homeController.getStops();
+      Get.find<HomeController>().getStops();
     } catch (e) {
       Utils.showSnackBar('Errore durante l\'importazione');
     }

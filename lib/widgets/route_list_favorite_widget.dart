@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
+import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
 import 'package:get/get.dart';
 
-class RouteListFavorite extends StatelessWidget {
+class RouteListFavorite extends GetView<SettingsController> {
   final gtt.Route route;
-  final RouteListController controller;
+  final RouteListController routeListController;
   final bool hasRemoveIcon;
   const RouteListFavorite({
     super.key,
     required this.route,
-    required this.controller,
+    required this.routeListController,
     this.hasRemoveIcon = true,
   });
 
@@ -23,24 +24,28 @@ class RouteListFavorite extends StatelessWidget {
           onTap: () => Get.toNamed('/mapBus', arguments: {
             'vehicles': [route]
           }),
-          child: Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.symmetric(
-                vertical: 8, horizontal: hasRemoveIcon ? 8 : 4),
-            padding: const EdgeInsets.all(5),
-            width: 40 +
-                (route.shortName.length > 2 ? route.shortName.length * 5 : 0),
-            height: 40,
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.primary,
-              shape: BoxShape.rectangle,
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: Text(
-              route.shortName,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
+          child: Obx(
+            () => Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.symmetric(
+                  vertical: 8, horizontal: hasRemoveIcon ? 8 : 4),
+              padding: const EdgeInsets.all(5),
+              width: 40 +
+                  (route.shortName.length > 2 ? route.shortName.length * 5 : 0),
+              height: 40,
+              decoration: BoxDecoration(
+                color: controller.isDarkMode.isTrue
+                    ? Theme.of(context).colorScheme.inversePrimary
+                    : Theme.of(context).colorScheme.primary,
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Text(
+                route.shortName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                ),
               ),
             ),
           ),
@@ -50,7 +55,7 @@ class RouteListFavorite extends StatelessWidget {
               right: 2,
               top: 2,
               child: GestureDetector(
-                onTap: () => controller.toggleFavorite(route),
+                onTap: () => routeListController.toggleFavorite(route),
                 child: Container(
                     alignment: Alignment.center,
                     width: 18,

@@ -9,10 +9,11 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 
 class CardMapWidget extends StatelessWidget {
-  final MapPageController controller;
+  final MapPageController mapPageController;
   final Marker marker;
+  final Color backgroundColor = Colors.yellow;
   const CardMapWidget(
-      {super.key, required this.marker, required this.controller});
+      {super.key, required this.marker, required this.mapPageController});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,7 @@ class CardMapWidget extends StatelessWidget {
           child: ClipPath(
             clipper: TriangleClipper(),
             child: Container(
-              color: Colors.yellow.withOpacity(0.9),
+              color: backgroundColor.withOpacity(0.9),
               //color: Colors.red,
               height: 10,
               width: 20,
@@ -34,7 +35,7 @@ class CardMapWidget extends StatelessWidget {
         Card(
           elevation: 0,
           margin: const EdgeInsets.all(10),
-          color: Colors.yellow.withOpacity(0.9),
+          color: backgroundColor.withOpacity(0.9),
           child: SizedBox(
             //height: 70,
             width: 150,
@@ -48,10 +49,10 @@ class CardMapWidget extends StatelessWidget {
                     vertical: 5,
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: Icon(Icons.close, color: Colors.grey[600]),
                     onPressed: () {
-                      controller.popupController.togglePopup(marker);
-                      controller.lastOpenedMarker = null;
+                      mapPageController.popupController.togglePopup(marker);
+                      mapPageController.lastOpenedMarker = null;
                       if (marker is FermataMarker) {
                         Get.delete<MapInfoController>(
                           tag:
@@ -66,7 +67,7 @@ class CardMapWidget extends StatelessWidget {
                 if (marker is VehicleMarker)
                   RouteWidget(
                     marker: marker as VehicleMarker,
-                    controller: controller,
+                    controller: mapPageController,
                   ),
                 const SizedBox(
                   height: 10,
