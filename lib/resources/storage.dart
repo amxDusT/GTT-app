@@ -18,9 +18,7 @@ class Storage {
   final _storage = const FlutterSecureStorage();
   static Storage? _instance;
   Map<StorageParam, dynamic> params = {};
-  Storage._() {
-    loadSettings();
-  }
+  Storage._();
   static Storage get instance => _instance ??= Storage._();
 
   Future<void> loadSettings() async {
