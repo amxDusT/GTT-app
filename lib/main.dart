@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
+      //debugShowCheckedModeBanner: false,
       locale: const Locale('it'),
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

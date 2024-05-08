@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_gtt/models/gtt/agency.dart';
 import 'package:flutter_gtt/models/gtt/pattern.dart';
 import 'package:flutter_gtt/models/gtt/route.dart';
@@ -69,7 +70,9 @@ class GttApi {
         return http.Response('Time out', 408);
       },
     );
-    await Future.delayed(const Duration(milliseconds: 1000));
+    if (kDebugMode) {
+      await Future.delayed(const Duration(milliseconds: 1000));
+    }
     return response;
   }
 
