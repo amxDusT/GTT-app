@@ -167,9 +167,12 @@ class MapPageController extends GetxController
 
     final bool showMultiplePatterns =
         Get.arguments['multiple-patterns'] ?? false;
-
+    final bool isOneRoute = routeValues.length == 1;
     // if opened from bus list
-    if (!showMultiplePatterns && routeValues.first is! gtt.RouteWithDetails) {
+    if (isOneRoute) {
+      if (showMultiplePatterns || routeValues.first is gtt.RouteWithDetails) {
+        isAppBarExpanded.value = false;
+      }
       routePatterns.addAll(
           await DatabaseCommands.instance.getPatterns(routeValues.first));
 
@@ -179,13 +182,16 @@ class MapPageController extends GetxController
                 .first;
         firstStop.putIfAbsent(pattern.code, () => firstStopValue);
       }
-      routeValues = [
-        gtt.RouteWithDetails.fromData(
-            route: routeValues.first,
-            stoptimes: [],
-            pattern: routePatterns.first)
-      ];
+      if (routeValues.first is! gtt.RouteWithDetails) {
+        routeValues = [
+          gtt.RouteWithDetails.fromData(
+              route: routeValues.first,
+              stoptimes: [],
+              pattern: routePatterns.first)
+        ];
+      }
     }
+
     int routeCount = 0; // limit to 'maxRoutesInMap' routes
     Set<Stop> stops = {};
     for (gtt.Route route in routeValues) {
@@ -227,6 +233,7 @@ class MapPageController extends GetxController
     }
     isPatternInitialized.value = true;
     _listenData();
+    await Future.delayed(const Duration(milliseconds: 100));
     lastView = _getCenterBounds();
     centerBounds();
   }
@@ -311,9 +318,10 @@ class MapPageController extends GetxController
     VehicleMarker oldMarker = allVehicles[payload.vehicleNum]!;
     if (lastOpenedMarker != null &&
         lastOpenedMarker is VehicleMarker &&
-        (lastOpenedMarker as VehicleMarker).point == oldMarker.point) {
-      popupController.showPopupsOnlyFor([VehicleMarker(mqttData: payload)]);
+        (lastOpenedMarker as VehicleMarker).mqttData.vehicleNum ==
+            oldMarker.mqttData.vehicleNum) {
       lastOpenedMarker = VehicleMarker(mqttData: payload);
+      popupController.showPopupsOnlyFor([lastOpenedMarker!]);
     }
     //follow vehicle
     if (followVehicle.value == payload.vehicleNum) {
@@ -416,4 +424,7 @@ class MapPageController extends GetxController
           .animate(allVehicles[followVehicle.value]!.mqttData.position);
     }
   }
+
+  RxBool isAppBarExpanded = true.obs;
+  void toggleAppBar() => isAppBarExpanded.toggle();
 }

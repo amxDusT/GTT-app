@@ -6,7 +6,7 @@ import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/widgets/map/map_global/panel_dragger.dart';
 import 'package:flutter_gtt/resources/utils/map_utils.dart';
-import 'package:flutter_gtt/widgets/map/address_widget.dart';
+import 'package:flutter_gtt/widgets/map/map_global/address_widget.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/circle_button.dart';
 import 'package:flutter_gtt/widgets/map/map_global/route_option.dart';

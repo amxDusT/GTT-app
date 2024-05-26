@@ -4,13 +4,13 @@ import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
 import 'package:flutter_gtt/widgets/map/card_map_widget.dart';
 import 'package:flutter_gtt/widgets/map/circle_button.dart';
+import 'package:flutter_gtt/widgets/map/route_appbar_info.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -31,6 +31,21 @@ class MapPage extends StatelessWidget {
         title: Obx(() => Text(
             'Map${_flutterMapController.routes.length == 1 && _flutterMapController.isPatternInitialized.isTrue ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}')),
         actions: [
+          Obx(
+            () {
+              if (_flutterMapController.routePatterns.isNotEmpty) {
+                return IconButton(
+                  icon: Icon(_flutterMapController.isAppBarExpanded.isTrue
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down),
+                  onPressed: () {
+                    _flutterMapController.toggleAppBar();
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
           GetBuilder<RouteListController>(
             builder: (controller) => Obx(
               () => _flutterMapController.routes.length == 1 &&
@@ -52,13 +67,8 @@ class MapPage extends StatelessWidget {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Obx(
-            () => Visibility(
-              visible: _flutterMapController.routePatterns.isNotEmpty,
-              child: _flutterMapController.routePatterns.isEmpty
-                  ? Container()
-                  : _buildPatternMenu(),
-            ),
+          RouteAppBarInfo(
+            mapController: _flutterMapController,
           ),
           Flexible(
             //flex: 3,
@@ -307,42 +317,6 @@ class MapPage extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildPatternMenu() {
-    if (_flutterMapController.isPatternInitialized.isFalse) {
-      return Container();
-    }
-    RouteWithDetails route = _flutterMapController.routes.values.first;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      //crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Linea ${route.shortName}'),
-        Text(route.longName),
-        Text(
-            '${_flutterMapController.firstStop[route.pattern.code]!.name} --> ${route.pattern.headsign}'),
-        DropdownMenu(
-          width: Get.width * 0.9,
-          initialSelection: _flutterMapController.isPatternInitialized.isTrue
-              ? _flutterMapController.routes.values.first.pattern
-              : null,
-          onSelected: (pattern) => pattern == null
-              ? null
-              : _flutterMapController.setCurrentPattern(pattern),
-          dropdownMenuEntries: (_flutterMapController.routePatterns
-              .map((pattern) => DropdownMenuEntry(
-                    value: pattern,
-                    label:
-                        '${pattern.directionId}:${pattern.code.split(':').last} - ${pattern.headsign}',
-                  ))
-              .toList()),
-        ),
-        const SizedBox(
-          height: 5,
-        )
-      ],
     );
   }
 }
