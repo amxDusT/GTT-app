@@ -6,7 +6,7 @@
             <data android:scheme="https" />
         </intent>
     </queries>
-
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
@@ -25,6 +25,7 @@
     <application
         android:label="flutter_gtt"
         android:name="${applicationName}"
+        android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
