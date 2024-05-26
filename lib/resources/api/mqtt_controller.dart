@@ -35,7 +35,6 @@ class MqttController {
 
     //print(shortName);
     _shortNames.add(shortName);
-    _client.clientIdentifier = '${_client.clientIdentifier}$shortName';
   }
 
   void connect() async {
