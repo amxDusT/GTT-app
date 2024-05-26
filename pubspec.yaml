@@ -33,7 +33,7 @@ dependencies:
   file_picker: ^8.0.3
   flutter:
     sdk: flutter
-  flutter_colorpicker: ^1.0.3
+  flutter_colorpicker: ^1.1.0
   flutter_compass:
     git:
       url: https://github.com/amxDusT/flutter_compass
@@ -43,9 +43,9 @@ dependencies:
     sdk: flutter
   flutter_map: ^6.0.1
   flutter_map_marker_popup: ^6.1.2
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^9.2.1
   flutter_typeahead: ^5.0.1
-  geolocator: ^11.0.0
+  geolocator: ^12.0.0
   get: ^4.6.6
   http: ^1.1.0
   icon_decoration: ^2.0.2
@@ -53,9 +53,9 @@ dependencies:
     git:
       url: https://github.com/amxDusT/flutter_install_plugin.git
       ref: master
-  intl: ^0.18.1
+  intl: ^0.19.0
   latlong2: ^0.9.0
-  mqtt_client: ^10.0.0
+  mqtt_client: ^10.2.1
   nfc_manager:
     git:
       url: https://github.com/amxDusT/flutter-nfc-manager.git
