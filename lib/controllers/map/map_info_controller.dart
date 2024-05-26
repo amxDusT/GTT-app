@@ -6,19 +6,10 @@ import 'package:get/get.dart';
 
 class MapInfoController extends GetxController {
   late Rx<StopWithDetails> fermata;
-  final RxBool isLoading = false.obs;
+  final RxBool isLoading = true.obs;
 
   List<String> get routesNames {
     return fermata.value.vehicles.map((route) => route.shortName).toList();
-  }
-
-  @override
-  void onInit() async {
-    if (Get.arguments['fermata'] != null) {
-      getFermata((Get.arguments['fermata'] as Stop).code);
-    }
-
-    super.onInit();
   }
 
   Future<void> getFermata(int fermataNum) async {
