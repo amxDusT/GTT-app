@@ -97,6 +97,8 @@ class InfoWidget extends StatelessWidget {
               child: Text(
                 vehicle.alerts.isEmpty ? "No alerts" : "Alerts",
                 textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: Get.textTheme.labelSmall!.copyWith(
                     color: vehicle.alerts.isEmpty
                         ? null
