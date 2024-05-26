@@ -11,12 +11,13 @@ import 'package:get/get.dart';
 class CardMapWidget extends StatelessWidget {
   final MapPageController mapPageController;
   final Marker marker;
-  final Color backgroundColor = Colors.yellow;
+  static const Color backgroundColor = const Color.fromARGB(229, 255, 235, 59);
   const CardMapWidget(
       {super.key, required this.marker, required this.mapPageController});
 
   @override
   Widget build(BuildContext context) {
+    //print('CardMapWidget build');
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -24,18 +25,21 @@ class CardMapWidget extends StatelessWidget {
           bottom: 1,
           child: ClipPath(
             clipper: TriangleClipper(),
-            child: Container(
-              color: backgroundColor.withOpacity(0.9),
-              //color: Colors.red,
+            child: const SizedBox(
               height: 10,
               width: 20,
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: backgroundColor,
+                ),
+              ),
             ),
           ),
         ),
         Card(
           elevation: 0,
           margin: const EdgeInsets.all(10),
-          color: backgroundColor.withOpacity(0.9),
+          color: backgroundColor,
           child: SizedBox(
             //height: 70,
             width: 150,
@@ -51,7 +55,8 @@ class CardMapWidget extends StatelessWidget {
                   child: IconButton(
                     icon: Icon(Icons.close, color: Colors.grey[600]),
                     onPressed: () {
-                      mapPageController.popupController.togglePopup(marker);
+                      mapPageController.popupController
+                          .hidePopupsOnlyFor([marker]);
                       mapPageController.lastOpenedMarker = null;
                       if (marker is FermataMarker) {
                         Get.delete<MapInfoController>(
