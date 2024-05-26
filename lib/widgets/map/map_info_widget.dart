@@ -51,9 +51,9 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
 
         Skeletonizer(
           enabled: widget._mapInfoController.isLoading.isTrue,
-          effect: ShimmerEffect(
-            baseColor: Colors.grey[500]!,
-            highlightColor: Colors.grey[400]!,
+          effect: const ShimmerEffect(
+            baseColor: Color.fromARGB(255, 204, 188, 41),
+            highlightColor: Colors.yellow,
           ),
           child: ListView.builder(
             shrinkWrap: true,
