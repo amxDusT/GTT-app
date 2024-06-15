@@ -142,7 +142,6 @@ class MapPageController extends GetxController
       List<FermataMarker> list = allStops
           .map((marker) => marker.copyWith(zoom: mapEvent.camera.zoom))
           .toList();
-      // TODO: check if works.
       allStops.value = list;
       allStops.refresh();
     }
@@ -233,7 +232,7 @@ class MapPageController extends GetxController
     }
     isPatternInitialized.value = true;
     _listenData();
-    await Future.delayed(const Duration(milliseconds: 100));
+    await Future.delayed(const Duration(milliseconds: 250));
     lastView = _getCenterBounds();
     centerBounds();
   }
@@ -360,16 +359,21 @@ class MapPageController extends GetxController
   void zoomOut() => _mapAnimation.animateZoom(isZoomIn: false);
 
   void setCurrentPattern(gtt.Pattern newPattern) async {
-    allStops.clear();
-    List<Stop> stopTemp =
-        await DatabaseCommands.instance.getStopsFromPattern(newPattern);
-    stopsMap = {for (var stop in stopTemp) stop.code: stop}.obs;
-    allStops.addAll(stopTemp.map((stop) => FermataMarker(fermata: stop)));
-    routes.update(routes.keys.first,
-        (value) => routes.values.first.copyWith(pattern: newPattern));
-    popupController.hideAllPopups();
+    if (routes.values.first.pattern != newPattern) {
+      stopFollowingVehicle();
+
+      List<Stop> stopTemp =
+          await DatabaseCommands.instance.getStopsFromPattern(newPattern);
+      stopsMap = {for (var stop in stopTemp) stop.code: stop}.obs;
+      allStops.value =
+          stopTemp.map((stop) => FermataMarker(fermata: stop)).toList();
+
+      routes.update(routes.keys.first,
+          (value) => routes.values.first.copyWith(pattern: newPattern));
+      popupController.hideAllPopups();
+    }
+
     centerBounds();
-    //mqttData.clear();
   }
 
   void centerUser() async {
