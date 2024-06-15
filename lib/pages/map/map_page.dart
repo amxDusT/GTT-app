@@ -28,8 +28,29 @@ class MapPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Obx(() => Text(
-            'Map${_flutterMapController.routes.length == 1 && _flutterMapController.isPatternInitialized.isTrue ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}')),
+        title: Obx(() {
+          final bool isSingleRoute = _flutterMapController.routes.length == 1 &&
+              _flutterMapController.isPatternInitialized.isTrue;
+          final textWidget = Text(
+              'Map${isSingleRoute ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}');
+
+          return isSingleRoute
+              ? GestureDetector(
+                  onTap: () => _flutterMapController.toggleAppBar(),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          child: textWidget,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : textWidget;
+        }),
         actions: [
           Obx(
             () {
@@ -70,8 +91,7 @@ class MapPage extends StatelessWidget {
           RouteAppBarInfo(
             mapController: _flutterMapController,
           ),
-          Flexible(
-            //flex: 3,
+          Expanded(
             child: FlutterMap(
               mapController: _flutterMapController.mapController,
               options: MapOptions(
