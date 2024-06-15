@@ -41,7 +41,6 @@ class SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     final defaultOp = defaultOpacity(shrinkOffset);
-    final inverseOpacity = 1.0 - defaultOp;
     final isSearching = searchController.focusNode?.hasFocus ?? false;
 
     return Stack(
@@ -60,8 +59,9 @@ class SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
               title: title,
               leading: leading,
               actions: [
-                Opacity(
-                  opacity: iconOpacity(defaultOp),
+                AnimatedOpacity(
+                  duration: const Duration(milliseconds: 200),
+                  opacity: defaultOp <= _defaultOpacityBreak ? 1.0 : 0,
                   child: firstAction,
                 ),
                 if (actions != null) ...actions!,
@@ -69,29 +69,23 @@ class SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
               elevation: 0,
             ),
           ),
-        Positioned(
-          right: isSearching ? 0 : inverseOpacity * 50,
-          left: isSearching ? 0 : inverseOpacity * 300,
-          bottom: 0,
-          child: Opacity(
-            opacity: isSearching ? 1.0 : childOpacity(defaultOp),
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 150),
+          right: isSearching || defaultOp > _defaultOpacityBreak ? 0 : 70,
+          left: isSearching || defaultOp > _defaultOpacityBreak ? 0 : 400,
+          bottom: isSearching || defaultOp > _defaultOpacityBreak ? 0 : 10,
+          child: AnimatedOpacity(
+            duration: const Duration(milliseconds: 200),
+            opacity: isSearching
+                ? 1.0
+                : defaultOp > _defaultOpacityBreak
+                    ? defaultOp
+                    : 0,
             child: searchWidget,
           ),
         ),
       ],
     );
-  }
-
-  double iconOpacity(double defaultOpacity) {
-    return defaultOpacity < _defaultOpacityBreak
-        ? defaultOpacity == 0
-            ? 1.0
-            : _defaultOpacityBreak - defaultOpacity
-        : 0;
-  }
-
-  double childOpacity(double defaultOpacity) {
-    return defaultOpacity < 0.2 ? 0.0 : defaultOpacity;
   }
 
   double defaultOpacity(double shrinkOffset) {
