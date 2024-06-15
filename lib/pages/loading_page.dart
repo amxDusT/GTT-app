@@ -20,7 +20,7 @@ class LoadingPage extends StatelessWidget {
             ),
           ),
           SizedBox(
-            width: MediaQuery.of(context).size.width * 0.7,
+            width: MediaQuery.sizeOf(context).width * 0.7,
             child: const LinearProgressIndicator(),
           ),
           Flexible(flex: 2, child: Container()),

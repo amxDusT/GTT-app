@@ -83,9 +83,9 @@ class _PageTemplateState extends State<PageTemplate> {
                       bottom: _scrollController.position.maxScrollExtent,
                       child: IconButton.filled(
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(
+                          backgroundColor: WidgetStateProperty.all(
                               Theme.of(context).primaryColor.withOpacity(0.4)),
-                          shape: MaterialStateProperty.all(
+                          shape: WidgetStateProperty.all(
                             const CircleBorder(),
                           ),
                         ),
