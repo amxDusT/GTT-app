@@ -70,48 +70,48 @@ class ChipPaper {
     //http://www.gtt.to.it/cms/biglietti-abbonamenti/biglietti/biglietti-carnet
     switch (_type) {
       case 284:
-        return "Tour 2 giorni";
+        return 'Tour 2 giorni';
       case 285:
-        return "Tour 3 giorni";
+        return 'Tour 3 giorni';
       case 288:
-        return "OLD Tour 2 giorni";
+        return 'OLD Tour 2 giorni';
       case 289:
-        return "OLD Tour 3 giorni";
+        return 'OLD Tour 3 giorni';
       case 300:
-        return "Extraurbano";
+        return 'Extraurbano';
       case 301:
-        return "Multicorsa extraurbano";
+        return 'Multicorsa extraurbano';
       case 302:
       case 304:
-        return "OLD City 100";
+        return 'OLD City 100';
       case 364:
-        return "Biglietto rete Urbana Ivrea e Dintorni";
+        return 'Biglietto rete Urbana Ivrea e Dintorni';
       case 370:
-        return "Carnet 5 corse rete Urbana Ivrea e Dintorni";
+        return 'Carnet 5 corse rete Urbana Ivrea e Dintorni';
       case 371:
-        return "Carnet 15 corse rete Urbana Ivrea e Dintorni";
+        return 'Carnet 15 corse rete Urbana Ivrea e Dintorni';
       case 375:
-        return "City 100";
+        return 'City 100';
       case 376:
-        return "Daily";
+        return 'Daily';
       case 303:
       case 305:
-        return "OLD Daily";
+        return 'OLD Daily';
       case 650:
       case 651:
-        return "OLD MultiCity";
+        return 'OLD MultiCity';
       case 658:
-        return "Multicity";
+        return 'Multicity';
       case 702:
       case 706:
-        return "Carnet 5 corse";
+        return 'Carnet 5 corse';
       case 701:
       case 705:
-        return "Carnet 15 corse";
+        return 'Carnet 15 corse';
       case 9521:
-        return "Sadem Aeroporto Torino";
+        return 'Sadem Aeroporto Torino';
       default:
-        return "Non riconosciuto";
+        return 'Non riconosciuto';
     }
   }
 

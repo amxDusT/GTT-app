@@ -56,7 +56,7 @@ enum CardFileType {
 
   EF_MISC(0x1B, lid: 0x3100, lidFile: 0x3150, numRec: 8);
   */
-  static const String DF1Hex = "315449432E494341D38012009101";
+  static const String DF1Hex = '315449432E494341D38012009101';
   final int sfi;
   static const int recSize = 29;
   final int numRec;

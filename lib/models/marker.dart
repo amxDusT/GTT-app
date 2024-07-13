@@ -95,8 +95,13 @@ class VehicleMarker extends Marker {
 class FermataMarker extends Marker {
   final Stop fermata;
   final double? zoom;
-  FermataMarker({required this.fermata, this.zoom})
-      : super(
+  final Color color;
+  static const Color defaultColor = Colors.red;
+  FermataMarker({
+    required this.fermata,
+    this.zoom,
+    this.color = defaultColor,
+  }) : super(
           height: getSize(
             zoom: zoom,
             minSize: markerMinSize,
@@ -120,15 +125,16 @@ class FermataMarker extends Marker {
                 minSize: fermataMarkerMinSize,
                 maxSize: fermataMarkerMaxSize,
               ),
-              color: Colors.red,
+              color: color,
             ),
           ),
         );
 
-  FermataMarker copyWith({double? zoom}) {
+  FermataMarker copyWith({double? zoom, Color? color}) {
     return FermataMarker(
       fermata: fermata,
       zoom: zoom ?? this.zoom,
+      color: color ?? this.color,
     );
   }
 

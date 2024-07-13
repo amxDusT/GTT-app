@@ -20,11 +20,11 @@ class DatabaseCommands {
   static const _favoritesTable = 'favorites_table';
 
   static const _agencyTable = 'agencies';
-  static const _routesTable = "routes";
-  static const _patternsTable = "patterns";
-  static const _stopsTable = "stops";
-  static const _patternStopsTable = "pattern_stops";
-  static const _favoritesVehiclesTable = "favorites_vehicles";
+  static const _routesTable = 'routes';
+  static const _patternsTable = 'patterns';
+  static const _stopsTable = 'stops';
+  static const _patternStopsTable = 'pattern_stops';
+  static const _favoritesVehiclesTable = 'favorites_vehicles';
 
   FutureOr<Database> get _dbInstance async => database ??= _init();
   DatabaseCommands._();
@@ -434,7 +434,7 @@ class DatabaseCommands {
         }
       }
       await batch.commit(noResult: true);
-      if (kDebugMode) print("finished $table");
+      if (kDebugMode) print('finished $table');
     });
   }
 
@@ -476,7 +476,7 @@ class DatabaseCommands {
         );
       }
       await batch.commit(noResult: true);
-      if (kDebugMode) print("finished $table");
+      if (kDebugMode) print('finished $table');
     });
   }
 

@@ -80,7 +80,7 @@ class AddressWidget extends StatelessWidget {
                                   padding: const EdgeInsets.only(left: 4.0),
                                   alignment: Alignment.center,
                                   width: 10.0,
-                                  child: const Text("\u2022"),
+                                  child: const Text('\u2022'),
                                 ),
                                 DistanceWidget(
                                   width: 50,

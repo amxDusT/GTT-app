@@ -59,10 +59,10 @@ class Contract {
       ? ticketCodes[code]!
       : isSubscription
           ? subscriptionCodes[code]!
-          : "Unknwon";
+          : 'Unknown';
   @override
   String toString() {
-    return "type: ${isTicket ? ticketCodes[code] : subscriptionCodes[code]}, endDate: ${_endDate.toString()}";
+    return 'type: ${isTicket ? ticketCodes[code] : subscriptionCodes[code]}, endDate: ${_endDate.toString()}';
   }
 }
 
@@ -179,7 +179,7 @@ class SmartCard {
 
   String get ticketName {
     if (hasTickets) {
-      return "${cardType.toString()} - ${tickets[0].typeName}";
+      return '${cardType.toString()} - ${tickets[0].typeName}';
     } else {
       return cardType.toString();
     }
@@ -190,7 +190,7 @@ class SmartCard {
   bool get hasSubscriptions => subscriptions.isNotEmpty;
 
   String get subscriptionName => hasSubscriptions
-      ? "$cardType - ${mainSubscription!.typeName}"
+      ? '$cardType - ${mainSubscription!.typeName}'
       : cardType.toString();
   String get startDateAsString =>
       DateFormat('MMMM d, y H:mm a').format(mainSubscription!._startDate);

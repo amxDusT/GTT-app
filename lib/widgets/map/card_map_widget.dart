@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 class CardMapWidget extends StatelessWidget {
   final MapPageController mapPageController;
   final Marker marker;
-  static const Color backgroundColor = const Color.fromARGB(229, 255, 235, 59);
+  static const Color backgroundColor = Color.fromARGB(229, 255, 235, 59);
   const CardMapWidget(
       {super.key, required this.marker, required this.mapPageController});
 
@@ -68,7 +68,10 @@ class CardMapWidget extends StatelessWidget {
                   ),
                 ),
                 if (marker is FermataMarker)
-                  StopWidget(marker: marker as FermataMarker),
+                  StopWidget(
+                    marker: marker as FermataMarker,
+                    controller: mapPageController,
+                  ),
                 if (marker is VehicleMarker)
                   RouteWidget(
                     marker: marker as VehicleMarker,

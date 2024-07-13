@@ -53,7 +53,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
           onPressed: () async {
             await NfcManager.instance.openNfcSettings();
           },
-          child: const Text("Impostazioni"),
+          child: const Text('Impostazioni'),
         ),
       );
     }

@@ -58,7 +58,7 @@ class InfoController extends GetxController {
     } else {
       if (selectedRoutes.length >= maxRoutesInMap) {
         Utils.showSnackBar(
-          "Puoi selezionare al massimo $maxRoutesInMap veicoli",
+          'Puoi selezionare al massimo $maxRoutesInMap veicoli',
           //title: "Attenzione",
           closePrevious: true,
         );
@@ -85,7 +85,7 @@ class InfoController extends GetxController {
       lastUpdate.value = DateTime.now();
       fermata = newFermata.obs;
     } on ApiException catch (e) {
-      Utils.showSnackBar(e.message, title: "Errore ${e.statusCode}");
+      Utils.showSnackBar(e.message, title: 'Errore ${e.statusCode}');
     } on Error {
       // probably related to GTT data not updated
       showErrorPopup();
@@ -97,7 +97,7 @@ class InfoController extends GetxController {
 
   void showErrorPopup() async {
     await Get.defaultDialog(
-      title: "Errore",
+      title: 'Errore',
       content: const Align(
         alignment: Alignment.topLeft,
         child: Padding(
@@ -105,19 +105,19 @@ class InfoController extends GetxController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Ooops... Problema nel risolvere la richiesta."),
+              Text('Ooops... Problema nel risolvere la richiesta.'),
               Text(
-                  "Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni."),
+                  'Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni.'),
             ],
           ),
         ),
       ),
-      textConfirm: "Aggiorna",
+      textConfirm: 'Aggiorna',
       onConfirm: () {
         Get.back();
         Get.put(SettingsController()).resetData();
       },
-      textCancel: "Annulla",
+      textCancel: 'Annulla',
     );
   }
 }

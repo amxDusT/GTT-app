@@ -28,7 +28,6 @@ class MapPageController extends GetxController
   static const double maxZoom = 18;
   static const List colors = [
     Colors.blue,
-    Colors.green,
     Colors.pinkAccent,
     Colors.brown,
     Colors.deepPurple,
@@ -227,8 +226,11 @@ class MapPageController extends GetxController
         uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
     */
     _mqttController.connect();
-    if (initialStop != null && Storage.instance.isFermataShowing) {
-      popupController.togglePopup(FermataMarker(fermata: initialStop));
+    if (initialStop != null) {
+      if (Storage.instance.isFermataShowing)
+        popupController.togglePopup(FermataMarker(fermata: initialStop));
+
+      setHighlightedStop(initialStop.code);
     }
     isPatternInitialized.value = true;
     _listenData();
@@ -399,7 +401,7 @@ class MapPageController extends GetxController
               onPressed: () async {
                 await Geolocator.openAppSettings();
               },
-              child: const Text("Impostazioni"),
+              child: const Text('Impostazioni'),
             ));
       } else {
         Utils.showSnackBar(
@@ -431,4 +433,18 @@ class MapPageController extends GetxController
 
   RxBool isAppBarExpanded = true.obs;
   void toggleAppBar() => isAppBarExpanded.toggle();
+
+  void setHighlightedStop(int stopCode) {
+    // change color with copyWith
+    final element = allStops
+        .firstWhereOrNull((element) => element.fermata.code == stopCode);
+
+    if (element != null) {
+      allStops[allStops.indexOf(element)] = element.copyWith(
+        color: element.color == FermataMarker.defaultColor
+            ? Colors.green
+            : FermataMarker.defaultColor,
+      );
+    }
+  }
 }

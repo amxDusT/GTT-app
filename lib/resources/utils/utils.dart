@@ -102,7 +102,7 @@ class Utils {
               onPressed: () async {
                 await Get.closeCurrentSnackbar();
               },
-              child: const Text("Chiudi"),
+              child: const Text('Chiudi'),
             ),
       ),
     );

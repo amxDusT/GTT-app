@@ -143,7 +143,4 @@ class Storage {
 
   Future<String?> _getParam(StorageParam key) async =>
       await _storage.read(key: key.toString());
-
-  Future<void> _clearParam(StorageParam key) async =>
-      await _storage.delete(key: key.toString());
 }

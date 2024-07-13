@@ -26,7 +26,7 @@ class MapInfoController extends GetxController {
 
   void showErrorPopup() async {
     await Get.defaultDialog(
-      title: "Errore",
+      title: 'Errore',
       content: const Align(
         alignment: Alignment.topLeft,
         child: Padding(
@@ -34,19 +34,19 @@ class MapInfoController extends GetxController {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text("Ooops... Problema nel risolvere la richiesta."),
+              Text('Ooops... Problema nel risolvere la richiesta.'),
               Text(
-                  "Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni."),
+                  'Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni.'),
             ],
           ),
         ),
       ),
-      textConfirm: "Aggiorna",
+      textConfirm: 'Aggiorna',
       onConfirm: () {
         Get.back();
         Get.put(SettingsController()).resetData();
       },
-      textCancel: "Annulla",
+      textCancel: 'Annulla',
     );
   }
 }

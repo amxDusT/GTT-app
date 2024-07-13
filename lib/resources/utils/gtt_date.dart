@@ -16,8 +16,8 @@ class GttDate {
 
   static DateTime getGttEpoch() {
     if (gttDate == null) {
-      String startingDate = "05/01/01 00:00:00";
-      final format = DateFormat("yy/MM/dd HH:mm:ss");
+      String startingDate = '05/01/01 00:00:00';
+      final format = DateFormat('yy/MM/dd HH:mm:ss');
       gttDate = format.parse(startingDate);
     }
     return gttDate!;
@@ -70,16 +70,16 @@ class GttDate {
 
   // Only for unit testing
   static String genDate() {
-    String dateStart = "05/01/01 00:00:00";
+    String dateStart = '05/01/01 00:00:00';
     final now = DateTime.now();
-    final format = DateFormat("yy/MM/dd HH:mm:ss");
+    final format = DateFormat('yy/MM/dd HH:mm:ss');
     DateTime d1 = format.parse(dateStart);
     Duration difference = now.difference(d1);
     int diffMinutes = difference.inMinutes % 60;
 
     String page = diffMinutes.toRadixString(16);
     for (int i = 0; i <= 8 - page.length; i++) {
-      page += "0";
+      page += '0';
     }
     return page;
   }

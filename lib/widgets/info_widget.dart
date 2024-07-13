@@ -67,7 +67,7 @@ class InfoWidget extends StatelessWidget {
             } else if (!Storage.instance.isRouteWithoutPassagesShowing &&
                 vehicle.stoptimes.isEmpty) {
               Utils.showSnackBar(
-                "Non ci sono passaggi per questo veicolo",
+                'Non ci sono passaggi per questo veicolo',
                 closePrevious: true,
               );
 
@@ -95,7 +95,7 @@ class InfoWidget extends StatelessWidget {
             child: GestureDetector(
               onTap: vehicle.alerts.isEmpty ? null : _openAlerts,
               child: Text(
-                vehicle.alerts.isEmpty ? "No alerts" : "Alerts",
+                vehicle.alerts.isEmpty ? 'No alerts' : 'Alerts',
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,

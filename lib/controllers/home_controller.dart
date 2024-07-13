@@ -93,11 +93,11 @@ class HomeController extends GetxController {
       position: relRectSize,
       items: [
         PopupMenuItem(
-          child: const Text("Sposta in cima"),
+          child: const Text('Sposta in cima'),
           onTap: () => moveOnTop(fermata),
         ),
         PopupMenuItem(
-          child: const Text("Cambia Descrizione"),
+          child: const Text('Cambia Descrizione'),
           onTap: () => _changeDescription(fermata),
         ),
         PopupMenuItem(
@@ -105,7 +105,7 @@ class HomeController extends GetxController {
           onTap: () => _changeColor(fermata),
         ),
         PopupMenuItem(
-          child: const Text("Elimina"),
+          child: const Text('Elimina'),
           onTap: () => _getDeleteConfirm(fermata),
         ),
       ],
@@ -208,10 +208,10 @@ class HomeController extends GetxController {
 
   void _getDeleteConfirm(FavStop fermata) {
     Get.defaultDialog(
-        title: "Elimina",
-        middleText: "Vuoi eliminare la fermata ${fermata.toString()}?",
-        textConfirm: "Elimina",
-        textCancel: "Annulla",
+        title: 'Elimina',
+        middleText: 'Vuoi eliminare la fermata ${fermata.toString()}?',
+        textConfirm: 'Elimina',
+        textCancel: 'Annulla',
         onConfirm: () {
           Get.back();
           deleteStop(fermata);
@@ -221,7 +221,7 @@ class HomeController extends GetxController {
   void _changeDescription(FavStop fermata) {
     descriptionController.value.text = fermata.descrizione ?? '';
     Get.defaultDialog(
-        title: "Elimina",
+        title: 'Elimina',
         content: Column(children: [
           const Text('Scrivi una breve descrizione'),
           Obx(
@@ -231,8 +231,8 @@ class HomeController extends GetxController {
             ),
           ),
         ]),
-        textConfirm: "Conferma",
-        textCancel: "Annulla",
+        textConfirm: 'Conferma',
+        textCancel: 'Annulla',
         onConfirm: () {
           Get.back();
 

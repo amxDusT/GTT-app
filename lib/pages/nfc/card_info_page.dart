@@ -21,14 +21,14 @@ class CardInfoPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              "Informazioni carta",
+              'Informazioni carta',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             _infoCard(),
             const SizedBox(height: 20),
             const Text(
-              "Abbonamenti",
+              'Abbonamenti',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Flexible(
@@ -60,25 +60,25 @@ class CardInfoPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text("Numero Carta: "),
+              const Text('Numero Carta: '),
               Text(smartCard.cardNumber.toString()),
             ],
           ),
           Row(
             children: [
-              const Text("Tipo Carta: "),
+              const Text('Tipo Carta: '),
               Text(smartCard.cardType.toString()),
             ],
           ),
           Row(
             children: [
-              const Text("Emessa il: "),
+              const Text('Emessa il: '),
               Text(smartCard.creationDate),
             ],
           ),
           Row(
             children: [
-              const Text("Contratti/Abbonamenti: "),
+              const Text('Contratti/Abbonamenti: '),
               Text(smartCard.allContracts.length.toString()),
             ],
           ),

@@ -51,7 +51,7 @@ class SearchTextField extends StatelessWidget {
                 .inputDecorationTheme
                 .fillColor
                 ?.withOpacity(0.7) ??
-            Get.theme.colorScheme.surfaceVariant.withOpacity(0.9),
+            Get.theme.colorScheme.surfaceContainerHighest.withOpacity(0.9),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40.0),
             borderSide: Divider.createBorderSide(context)),

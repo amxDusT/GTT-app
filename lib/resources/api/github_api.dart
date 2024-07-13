@@ -6,7 +6,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class GithubApi {
   static const String _releaseUrl =
-      "https://api.github.com/repos/amxDust/GTT-app/releases/latest";
+      'https://api.github.com/repos/amxDust/GTT-app/releases/latest';
 
   static Future<bool> checkVersion() async {
     // thx to https://stackoverflow.com/a/70136908

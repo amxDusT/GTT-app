@@ -19,7 +19,7 @@ class TicketInfoPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text("Informazioni biglietto:"),
+            const Text('Informazioni biglietto:'),
             _infoTicket(),
           ],
         ),
@@ -39,37 +39,37 @@ class TicketInfoPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text("Numero Biglietto: "),
+              const Text('Numero Biglietto: '),
               Text(ticket.cardNumber.toString()),
             ],
           ),
           Row(
             children: [
-              const Text("Tipo Biglietto: "),
+              const Text('Tipo Biglietto: '),
               Text(ticket.typeName),
             ],
           ),
           Row(
             children: [
-              const Text("Prima validazione il: "),
+              const Text('Prima validazione il: '),
               Text(ticket.firstValidationDate),
             ],
           ),
           Row(
             children: [
-              const Text("Ultima validazione il: "),
+              const Text('Ultima validazione il: '),
               Text(ticket.lastValidationDate),
             ],
           ),
           Row(
             children: [
-              const Text("Scade il: "),
+              const Text('Scade il: '),
               Text(ticket.expiredDate),
             ],
           ),
           Row(
             children: [
-              const Text("Minuti mancanti: "),
+              const Text('Minuti mancanti: '),
               Text(ticket.isExpired
                   ? 'Scaduto'
                   : ticket.remainingMinutes.toString()),
