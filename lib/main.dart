@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_gtt/resources/database.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -18,6 +20,10 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   initializeDateFormatting('it_IT');
+  await FMTCObjectBoxBackend().initialise(
+    maxDatabaseSize: 256000000,
+  );
+  await const FMTCStore(tileCacheName).manage.create();
   runApp(const MyApp());
   await FlutterDisplayMode.setHighRefreshRate();
 }

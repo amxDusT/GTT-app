@@ -5,6 +5,7 @@ import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
 import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_gtt/resources/utils/utils.dart';
 import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_gtt/widgets/map/circle_button.dart';
 import 'package:flutter_gtt/widgets/map/route_appbar_info.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -23,6 +25,7 @@ class MapPage extends StatelessWidget {
       : _flutterMapController = Get.find(
           tag: Get.arguments['vehicles'].map((route) => route.gtfsId).join(),
         );
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -122,10 +125,12 @@ class MapPage extends StatelessWidget {
                 TileLayer(
                   maxNativeZoom:
                       _settingsController.showBetaFeatures.isTrue ? 22 : 19,
-                  urlTemplate: _settingsController.showBetaFeatures.isTrue &&
-                          !kDebugMode
+                  urlTemplate: (_settingsController.showBetaFeatures.isTrue &&
+                          !kDebugMode)
                       ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey'
                       : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  tileProvider:
+                      const FMTCStore(tileCacheName).getTileProvider(),
                 ),
 
                 /*  TileLayer(

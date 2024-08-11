@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+const String tileCacheName = 'map_cache';
 const int daysBeforeAutoUpdate = 3;
 
 const double mapMaxZoom = 18;
