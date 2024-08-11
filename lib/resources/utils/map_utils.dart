@@ -6,6 +6,23 @@ import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MapUtils {
+  /// keep for each route, the list of signed stops
+  static final Map<String, Set<int>> _signedStops = {};
+
+  static void addSignedStop(String routeId, int signedStops) {
+    final stops = (_signedStops[routeId] ?? {})..add(signedStops);
+    _signedStops[routeId] = stops;
+  }
+
+  static void removeSignedStop(String routeId, int signedStops) {
+    final stops = (_signedStops[routeId] ?? {})..remove(signedStops);
+    _signedStops[routeId] = stops;
+  }
+
+  static Set<int> getSignedStops(String routeId) {
+    return _signedStops[routeId] ?? {};
+  }
+
   static Future<void> openMap(double latitude, double longitude) async {
     String googleUrl =
         'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';

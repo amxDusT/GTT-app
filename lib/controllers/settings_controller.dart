@@ -27,6 +27,7 @@ class SettingsController extends GetxController {
   final RxBool isFavoritesRoutesShowing =
       Storage.instance.isFavoritesRoutesShowing.obs;
   final RxBool isDarkMode = Storage.instance.isDarkMode.obs;
+  final RxBool isInitialHighlighted = Storage.instance.isInitialHighlighted.obs;
   final RxString version = ''.obs;
 
   @override
@@ -72,6 +73,12 @@ class SettingsController extends GetxController {
     showBetaFeatures.toggle();
     Storage.instance
         .setBool(StorageParam.showBetaFeatures, showBetaFeatures.value);
+  }
+
+  void switchInitialHighlighted() {
+    isInitialHighlighted.toggle();
+    Storage.instance
+        .setBool(StorageParam.isInitialHighlighted, isInitialHighlighted.value);
   }
 
   void resetData() async {

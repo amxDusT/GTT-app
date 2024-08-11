@@ -42,6 +42,16 @@ class SettingsPage extends StatelessWidget {
             )),
       ),
       ListTile(
+        title: const Text("'Segna' fermata iniziale"),
+        subtitle: const Text(
+            'Mostra la fermata iniziale di colore diverso nella mappa'),
+        trailing: Obx(() => Switch(
+              value: _settingsController.isInitialHighlighted.value,
+              onChanged: (value) =>
+                  _settingsController.switchInitialHighlighted(),
+            )),
+      ),
+      ListTile(
         title: const Text('Visualizza tratte senza passaggi'),
         subtitle: const Text(
             'Mostra tratte senza passaggi da \'Guarda sulla mappa\''),

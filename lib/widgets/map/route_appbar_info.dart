@@ -16,14 +16,21 @@ class _RouteAppBarInfoState extends State<RouteAppBarInfo>
     with SingleTickerProviderStateMixin {
   final _empty = const SizedBox.shrink();
   bool previousState = false;
-  late final AnimationController _animationController = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 300),
-  );
-  late final CurvedAnimation _curvedAnimation = CurvedAnimation(
-    parent: _animationController,
-    curve: Curves.easeInOut,
-  );
+  late final AnimationController _animationController;
+  late final CurvedAnimation _curvedAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _curvedAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   void dispose() {
@@ -59,88 +66,90 @@ class _RouteAppBarInfoState extends State<RouteAppBarInfo>
         sizeFactor: _curvedAnimation,
         child: SingleChildScrollView(
           physics: const NeverScrollableScrollPhysics(),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                route.longName.toUpperCase(),
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              const Text('Direzione:'),
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                    style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                        ),
-                    text: widget
-                        .mapController.firstStop[route.pattern.code]!.name,
-                    children: [
-                      const WidgetSpan(child: SizedBox(width: 10)),
-                      const WidgetSpan(
-                        alignment: PlaceholderAlignment.middle,
-                        child: Icon(
-                          Icons.arrow_right_alt,
-                        ),
-                      ),
-                      const WidgetSpan(child: SizedBox(width: 10)),
-                      TextSpan(
-                        text: route.pattern.headsign,
-                      ),
-                    ]),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              DropdownMenu(
-                enableSearch: false,
-                inputDecorationTheme: const InputDecorationTheme(
-                  constraints: BoxConstraints(
-                    maxHeight: 45,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 10,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              //crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  route.longName.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                width: Get.width * 0.9,
-                initialSelection:
-                    widget.mapController.isPatternInitialized.isTrue
-                        ? widget.mapController.routes.values.first.pattern
-                        : null,
-                onSelected: (pattern) => pattern == null
-                    ? null
-                    : widget.mapController.setCurrentPattern(pattern),
-                dropdownMenuEntries: widget.mapController.routePatterns
-                    .map((pattern) => DropdownMenuEntry(
-                          value: pattern,
-                          label:
-                              '${pattern.directionId}:${pattern.code.split(':').last} - ${pattern.headsign}',
-                          style: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              route.pattern == pattern
-                                  ? Theme.of(context).focusColor
-                                  : null,
-                            ),
+                const SizedBox(
+                  height: 5,
+                ),
+                const Text('Direzione:'),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                      style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ))
-                    .toList(),
-              ),
-              const SizedBox(
-                height: 10,
-              )
-            ],
+                      text: widget
+                          .mapController.firstStop[route.pattern.code]!.name,
+                      children: [
+                        const WidgetSpan(child: SizedBox(width: 10)),
+                        const WidgetSpan(
+                          alignment: PlaceholderAlignment.middle,
+                          child: Icon(
+                            Icons.arrow_right_alt,
+                          ),
+                        ),
+                        const WidgetSpan(child: SizedBox(width: 10)),
+                        TextSpan(
+                          text: route.pattern.headsign,
+                        ),
+                      ]),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                DropdownMenu(
+                  enableSearch: false,
+                  inputDecorationTheme: const InputDecorationTheme(
+                    constraints: BoxConstraints(
+                      maxHeight: 45,
+                    ),
+                    contentPadding: EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                  ),
+                  width: Get.width * 0.9,
+                  initialSelection:
+                      widget.mapController.isPatternInitialized.isTrue
+                          ? widget.mapController.routes.values.first.pattern
+                          : null,
+                  onSelected: (pattern) => pattern == null
+                      ? null
+                      : widget.mapController.setCurrentPattern(pattern),
+                  dropdownMenuEntries: widget.mapController.routePatterns
+                      .map((pattern) => DropdownMenuEntry(
+                            value: pattern,
+                            label:
+                                '${pattern.directionId}:${pattern.code.split(':').last} - ${pattern.headsign}',
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.all(
+                                route.pattern == pattern
+                                    ? Theme.of(context).focusColor
+                                    : null,
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                ),
+                const SizedBox(
+                  height: 10,
+                )
+              ],
+            ),
           ),
         ),
       );

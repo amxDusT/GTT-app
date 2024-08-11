@@ -62,7 +62,6 @@ class MapPageController extends GetxController
   final RxBool isLocationLoading = false.obs;
 
   final RxBool isPatternInitialized = false.obs;
-
   // for single route, for showing the direction
   final Map<String, Stop> firstStop = {};
 
@@ -206,15 +205,6 @@ class MapPageController extends GetxController
       }
       stops.addAll(tempStops);
 
-      /*for (var stop in stops) {
-        List<gtt.Route> routeValues =
-            await DatabaseCommands.instance.getRouteFromStop(stop);
-        uniqueStops
-            .add(StopWithDetails.fromStop(stop: stop, vehicles: routeValues));
-      }*/
-
-      // stopsTemp.addAll(await DatabaseCommands.instance.getStopsFromPattern(route.pattern));
-
       routes.putIfAbsent(route.gtfsId, () => route);
       routeIndex.putIfAbsent(route.gtfsId, () => routeIndex.length);
 
@@ -222,16 +212,24 @@ class MapPageController extends GetxController
     }
     stopsMap = {for (var stop in stops) stop.code: stop}.obs;
     allStops = stops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
-    /*allStops =
-        uniqueStops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
-    */
+
     _mqttController.connect();
     if (initialStop != null) {
       if (Storage.instance.isFermataShowing)
         popupController.togglePopup(FermataMarker(fermata: initialStop));
-
-      setHighlightedStop(initialStop.code);
+      if (Storage.instance.isInitialHighlighted)
+        setHighlightedStop(initialStop.code, false);
     }
+
+    for (final route in routes.values) {
+      final highlightedStops = MapUtils.getSignedStops(route.gtfsId);
+      for (final stop in highlightedStops) {
+        final isHighlighted = _isHighlighted(stopCode: stop);
+        if (isHighlighted != null && !isHighlighted)
+          setHighlightedStop(stop, false);
+      }
+    }
+
     isPatternInitialized.value = true;
     _listenData();
     await Future.delayed(const Duration(milliseconds: 250));
@@ -434,17 +432,39 @@ class MapPageController extends GetxController
   RxBool isAppBarExpanded = true.obs;
   void toggleAppBar() => isAppBarExpanded.toggle();
 
-  void setHighlightedStop(int stopCode) {
+  /// check if a stop is highlighted
+  /// either pass the stop or the stop code
+  bool? _isHighlighted({FermataMarker? stop, int? stopCode}) {
+    assert(
+        (stop != null || stopCode != null) &&
+            (stop == null || stopCode == null),
+        'O stop o stopCode bro');
+    if (stop != null) {
+      return stop.color == Colors.green;
+    } else {
+      final element = allStops
+          .firstWhereOrNull((element) => element.fermata.code == stopCode);
+      return element == null ? null : element.color == Colors.green;
+    }
+  }
+
+  void setHighlightedStop(int stopCode, [bool addToGlobal = true]) {
     // change color with copyWith
     final element = allStops
         .firstWhereOrNull((element) => element.fermata.code == stopCode);
 
-    if (element != null) {
-      allStops[allStops.indexOf(element)] = element.copyWith(
-        color: element.color == FermataMarker.defaultColor
-            ? Colors.green
-            : FermataMarker.defaultColor,
-      );
+    if (element == null) return;
+
+    final isHighlighted = _isHighlighted(stop: element)!;
+    allStops[allStops.indexOf(element)] = element.copyWith(
+      color: isHighlighted ? FermataMarker.defaultColor : Colors.green,
+    );
+    if (addToGlobal) {
+      for (final route in routes.values) {
+        isHighlighted
+            ? MapUtils.removeSignedStop(route.gtfsId, stopCode)
+            : MapUtils.addSignedStop(route.gtfsId, stopCode);
+      }
     }
   }
 }

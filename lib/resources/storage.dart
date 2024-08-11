@@ -14,6 +14,7 @@ enum StorageParam {
   showBetaFeatures,
   isFirstTime,
   isDarkMode,
+  isInitialHighlighted,
 }
 
 class Storage {
@@ -48,6 +49,10 @@ class Storage {
 
     params[StorageParam.isDarkMode] = bool.parse(
         await _getParam(StorageParam.isDarkMode) ?? isDarkMode.toString());
+
+    params[StorageParam.isInitialHighlighted] = bool.parse(
+        await _getParam(StorageParam.isInitialHighlighted) ??
+            isInitialHighlighted.toString());
   }
 
   bool get isDarkMode => params[StorageParam.isDarkMode] ?? Get.isDarkMode;
@@ -62,7 +67,8 @@ class Storage {
       params[StorageParam.isFavoritesRoutesShowing] ?? true;
   bool get showBetaFeatures => params[StorageParam.showBetaFeatures] ?? false;
   bool get isFirstTime => params[StorageParam.isFirstTime] ?? true;
-
+  bool get isInitialHighlighted =>
+      params[StorageParam.isInitialHighlighted] ?? true;
   static String dateToString(DateTime date) {
     return date.millisecondsSinceEpoch.toString();
   }
