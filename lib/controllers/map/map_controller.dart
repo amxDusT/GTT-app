@@ -224,6 +224,9 @@ class MapPageController extends GetxController
     for (final route in routes.values) {
       final highlightedStops = MapUtils.getSignedStops(route.gtfsId);
       for (final stop in highlightedStops) {
+        if (Storage.instance.isFermataShowing &&
+            initialStop != null &&
+            stop == initialStop.code) continue;
         final isHighlighted = _isHighlighted(stopCode: stop);
         if (isHighlighted != null && !isHighlighted)
           setHighlightedStop(stop, false);
@@ -367,7 +370,12 @@ class MapPageController extends GetxController
       stopsMap = {for (var stop in stopTemp) stop.code: stop}.obs;
       allStops.value =
           stopTemp.map((stop) => FermataMarker(fermata: stop)).toList();
-
+      final highlightedStops = MapUtils.getSignedStops(routes.keys.first);
+      for (final stopCode in highlightedStops) {
+        final isHighlighted = _isHighlighted(stopCode: stopCode);
+        if (isHighlighted != null && !isHighlighted)
+          setHighlightedStop(stopCode, false);
+      }
       routes.update(routes.keys.first,
           (value) => routes.values.first.copyWith(pattern: newPattern));
       popupController.hideAllPopups();
