@@ -14,6 +14,9 @@ class MqttController {
   final StreamController<MqttVehicle> _payloadStreamController =
       StreamController<MqttVehicle>();
   final uuid = const Uuid();
+  bool _connected = false;
+
+  bool get connected => _connected;
   MqttController() {
     final clientId = uuid.v1().substring(0, 10);
     _client = MqttServerClient.withPort(
@@ -37,8 +40,17 @@ class MqttController {
     _shortNames.add(shortName);
   }
 
+  void disconnect() {
+    _subscription?.cancel();
+    _client.disconnect();
+    _connected = false;
+  }
+
   void connect() async {
     await _client.connect();
+    if (_client.connectionStatus!.state == MqttConnectionState.connected) {
+      _connected = true;
+    }
     for (String shortName in _shortNames) {
       _client.subscribe('/$shortName/#', MqttQos.atMostOnce);
     }
