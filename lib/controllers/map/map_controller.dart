@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:flutter_gtt/controllers/app_status_controller.dart';
 import 'package:flutter_gtt/controllers/map/map_animation.dart';
 import 'package:flutter_gtt/controllers/map/map_location.dart';
 import 'package:flutter_gtt/exceptions/map_location_exception.dart';
@@ -37,7 +38,7 @@ class MapPageController extends GetxController
   MapController mapController = MapController();
   PopupController popupController = PopupController();
   late MapAnimation _mapAnimation;
-
+  late AppStatusController _appStatusController;
   // used for deleting animations that are not finished yet when closing the page
   final List<AnimationController> _activeAnimations = [];
 
@@ -150,7 +151,17 @@ class MapPageController extends GetxController
     super.onInit();
     currentRoute = Get.rawRoute;
     _mapAnimation = MapAnimation(controller: mapController, vsync: this);
-    //onMapReady();
+    _appStatusController = Get.find<AppStatusController>();
+
+    _appStatusController.simpleLifecycleStateStream.listen((state) {
+      if (state == SimpleLifecycleState.paused && _mqttController.connected) {
+        _mqttController.disconnect();
+      } else if (state == SimpleLifecycleState.resumed) {
+        if (!_mqttController.connected) {
+          _mqttController.connect();
+        }
+      }
+    });
     _onMapReady();
   }
 
