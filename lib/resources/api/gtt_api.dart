@@ -112,7 +112,8 @@ class GttApi {
 
   static (List<Route>, List<Pattern>, List<Stop>, List<PatternStop>)
       _processData(String body) {
-    final Map<String, dynamic> js = json.decode(utf8.decode(body.codeUnits));
+    final Map<String, dynamic> js =
+        json.decode(utf8.decode(body.codeUnits, allowMalformed: true));
     final List<Route> routes = [];
     final List<Pattern> patterns = [];
     final Set<Stop> stops = {};
