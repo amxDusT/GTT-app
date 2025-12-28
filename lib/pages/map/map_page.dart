@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_controller.dart';
 import 'package:flutter_gtt/controllers/route_list_controller.dart';
 import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/utils/map_utils.dart';
@@ -127,8 +126,9 @@ class MapPage extends StatelessWidget {
                   maxNativeZoom:
                       _settingsController.showBetaFeatures.isTrue ? 22 : 19,
                   urlTemplate: (_settingsController.showBetaFeatures.isTrue &&
-                          !kDebugMode)
-                      ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey'
+                          !kDebugMode &&
+                          mapboxApiKey.isNotEmpty)
+                      ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey'
                       : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   tileProvider:
                       const FMTCStore(tileCacheName).getTileProvider(),

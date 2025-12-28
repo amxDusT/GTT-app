@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 const String tileCacheName = 'map_cache';
 const int daysBeforeAutoUpdate = 3;
 
+const mapboxApiKey = String.fromEnvironment('MAPBOX_API_KEY', defaultValue: '');
+
 const double mapMaxZoom = 18;
 const double mapMinZoom = 12;
 const double markerMinSize = 10;

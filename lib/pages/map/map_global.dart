@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
-import 'package:flutter_gtt/ignored.dart';
 import 'package:flutter_gtt/models/marker.dart';
+import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/widgets/map/map_global/panel_dragger.dart';
 import 'package:flutter_gtt/resources/utils/map_utils.dart';
 import 'package:flutter_gtt/widgets/map/map_global/address_widget.dart';
@@ -142,9 +142,9 @@ class MapGlobal extends StatelessWidget {
                 children: [
                   TileLayer(
                     maxNativeZoom: 22,
-                    urlTemplate: kDebugMode
+                    urlTemplate: kDebugMode || mapboxApiKey.isEmpty
                         ? 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-                        : 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$apiKey',
+                        : 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey',
                   ),
                   /* TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
