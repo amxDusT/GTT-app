@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:flutter_gtt/firebase_options.dart';
+import 'package:flutter_gtt/resources/analytics.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
@@ -38,6 +39,7 @@ void main() async {
   };
   await const FMTCStore(tileCacheName).manage.create();
   runApp(const MyApp());
+  await Analytics.instance.logAppOpen();
   await FlutterDisplayMode.setHighRefreshRate();
 }
 

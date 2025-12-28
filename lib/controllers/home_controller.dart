@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
 import 'package:flutter_gtt/models/gtt/stop.dart';
+import 'package:flutter_gtt/resources/analytics.dart';
 import 'package:flutter_gtt/resources/database.dart';
 import 'package:flutter_gtt/resources/globals.dart';
 import 'package:flutter_gtt/resources/storage.dart';
@@ -56,6 +57,12 @@ class HomeController extends GetxController {
   }
 
   void deleteStop(FavStop fermata) {
+    Analytics.instance.logEvent(
+      name: 'delete_favorite_stop',
+      parameters: {
+        'stop_id': fermata.code,
+      },
+    );
     DatabaseCommands.instance.deleteStop(fermata);
     getStops();
   }
@@ -80,6 +87,12 @@ class HomeController extends GetxController {
       if (stop is FavStop) {
         fermate.add(stop);
       } else {
+        Analytics.instance.logEvent(
+          name: 'add_favorite_stop',
+          parameters: {
+            'stop_id': stop.code,
+          },
+        );
         fermate.add(FavStop.fromStop(stop: stop));
       }
     }

@@ -10,6 +10,7 @@ import 'package:flutter_gtt/models/gtt/stop.dart';
 import 'package:flutter_gtt/models/marker.dart';
 import 'package:flutter_gtt/models/mqtt_data.dart';
 import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:flutter_gtt/resources/analytics.dart';
 import 'package:flutter_gtt/resources/api/gtt_api.dart';
 import 'package:flutter_gtt/resources/api/mqtt_controller.dart';
 import 'package:flutter_gtt/resources/database.dart';
@@ -176,6 +177,10 @@ class MapPageController extends GetxController
     final bool showMultiplePatterns =
         Get.arguments['multiple-patterns'] ?? false;
     final bool isOneRoute = routeValues.length == 1;
+    Analytics.instance.logEvent(name: 'open_map_page', parameters: {
+      'number_of_routes': routeValues.length,
+      'routes': routeValues.map((e) => e.shortName).join(','),
+    });
     // if opened from bus list
     if (isOneRoute) {
       if (showMultiplePatterns || routeValues.first is gtt.RouteWithDetails) {
