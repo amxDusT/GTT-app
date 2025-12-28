@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "102279235096",
+    "project_id": "gtt-app-40686",
+    "storage_bucket": "gtt-app-40686.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102279235096:android:9c6e6c269701e4658f656d",
+        "android_client_info": {
+          "package_name": "com.example.flutter_gtt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqyxsdPXKsMcoHsGi19viMhDw39ZWWoXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102279235096:android:af0323a220681d928f656d",
+        "android_client_info": {
+          "package_name": "com.example.flutter_gtt.test"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqyxsdPXKsMcoHsGi19viMhDw39ZWWoXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
