@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/widgets/home/drawer/drawer_tile.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/widgets/home/drawer/drawer_tile.dart';
 import 'package:get/get.dart';
 
 class HomeDrawer extends StatelessWidget {

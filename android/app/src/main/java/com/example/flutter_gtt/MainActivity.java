@@ -1,4 +1,4 @@
-package com.example.flutter_gtt;
+package it.amxdust.torinomobility;
 
 import io.flutter.embedding.android.FlutterActivity;
 

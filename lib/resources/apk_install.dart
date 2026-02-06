@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter_gtt/exceptions/api_exception.dart';
-import 'package:flutter_gtt/resources/api/github_api.dart';
+import 'package:torino_mobility/exceptions/api_exception.dart';
+import 'package:torino_mobility/resources/api/github_api.dart';
 import 'package:http/http.dart' as http;
 import 'package:install_plugin/install_plugin.dart';
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/info_controller.dart';
-import 'package:flutter_gtt/fake/fake_data.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_gtt/widgets/info_widget.dart';
+import 'package:torino_mobility/controllers/info_controller.dart';
+import 'package:torino_mobility/fake/fake_data.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/widgets/info_widget.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 

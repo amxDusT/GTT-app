@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
-import 'package:flutter_gtt/fake/fake_data.dart';
-import 'package:flutter_gtt/widgets/map/distance_icon.dart';
+import 'package:torino_mobility/controllers/map/map_global_controller.dart';
+import 'package:torino_mobility/fake/fake_data.dart';
+import 'package:torino_mobility/widgets/map/distance_icon.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';

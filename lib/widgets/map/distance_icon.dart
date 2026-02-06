@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/map/address.dart';
+import 'package:torino_mobility/models/map/address.dart';
 
 class DistanceWidget extends StatelessWidget {
   final AddressWithDetails address;

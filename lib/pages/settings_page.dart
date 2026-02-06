@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/loading_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
+import 'package:torino_mobility/controllers/loading_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
 import 'package:get/get.dart';
 
 class SettingsPage extends StatelessWidget {

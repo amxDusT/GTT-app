@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/resources/my_date_picker/date_picker.dart';
-import 'package:flutter_gtt/resources/my_date_picker/time_picker.dart';
+import 'package:torino_mobility/resources/my_date_picker/date_picker.dart';
+import 'package:torino_mobility/resources/my_date_picker/time_picker.dart';
 
 class DustDateTimePicker extends StatefulWidget {
   final DateTime initialDate;

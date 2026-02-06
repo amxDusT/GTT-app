@@ -1,7 +1,7 @@
-import 'package:flutter_gtt/models/gtt/pattern.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/gtt/stoptime.dart';
-import 'package:flutter_gtt/models/map/address.dart';
+import 'package:torino_mobility/models/gtt/pattern.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/gtt/stoptime.dart';
+import 'package:torino_mobility/models/map/address.dart';
 import 'package:latlong2/latlong.dart';
 
 class FakeData {

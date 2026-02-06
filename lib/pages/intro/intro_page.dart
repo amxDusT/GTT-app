@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/intro/intro_controller.dart';
-import 'package:flutter_gtt/widgets/intro/back_forward_button.dart';
+import 'package:torino_mobility/controllers/intro/intro_controller.dart';
+import 'package:torino_mobility/widgets/intro/back_forward_button.dart';
 import 'package:get/get.dart';
 
 class IntroPage extends GetView<IntroController> {

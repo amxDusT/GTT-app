@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_travel_controller.dart';
-import 'package:flutter_gtt/controllers/search/search_controller.dart';
-import 'package:flutter_gtt/models/map/address.dart';
-import 'package:flutter_gtt/resources/debouncer.dart';
-import 'package:flutter_gtt/widgets/map/distance_icon.dart';
-import 'package:flutter_gtt/widgets/search/search_textfield.dart';
+import 'package:torino_mobility/controllers/map/map_travel_controller.dart';
+import 'package:torino_mobility/controllers/search/search_controller.dart';
+import 'package:torino_mobility/models/map/address.dart';
+import 'package:torino_mobility/resources/debouncer.dart';
+import 'package:torino_mobility/widgets/map/distance_icon.dart';
+import 'package:torino_mobility/widgets/search/search_textfield.dart';
 import 'package:get/get.dart';
 
 class MapSearchPage extends StatelessWidget {

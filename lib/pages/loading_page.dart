@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/loading_controller.dart';
+import 'package:torino_mobility/controllers/loading_controller.dart';
 import 'package:get/get.dart';
 
 class LoadingPage extends StatelessWidget {

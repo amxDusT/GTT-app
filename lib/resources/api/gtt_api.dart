@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_gtt/models/gtt/agency.dart';
-import 'package:flutter_gtt/models/gtt/pattern.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/models/map/travel.dart';
-import 'package:flutter_gtt/models/map/address.dart';
-import 'package:flutter_gtt/exceptions/api_exception.dart';
+import 'package:torino_mobility/models/gtt/agency.dart';
+import 'package:torino_mobility/models/gtt/pattern.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/models/map/travel.dart';
+import 'package:torino_mobility/models/map/address.dart';
+import 'package:torino_mobility/exceptions/api_exception.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 

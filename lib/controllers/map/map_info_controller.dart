@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/api/gtt_api.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/api/gtt_api.dart';
 import 'package:get/get.dart';
 
 class MapInfoController extends GetxController {

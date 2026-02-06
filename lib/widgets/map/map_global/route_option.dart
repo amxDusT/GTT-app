@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_global_controller.dart';
+import 'package:torino_mobility/controllers/map/map_global_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
 
 class RouteOption extends StatelessWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/nfc_controller.dart';
+import 'package:torino_mobility/controllers/nfc_controller.dart';
 import 'package:get/get.dart';
 
 class NfcPage extends StatelessWidget {

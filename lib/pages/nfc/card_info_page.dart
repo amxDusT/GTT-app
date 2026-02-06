@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/smart_card/smart_card.dart';
-import 'package:flutter_gtt/widgets/card_info_widget.dart';
+import 'package:torino_mobility/models/smart_card/smart_card.dart';
+import 'package:torino_mobility/widgets/card_info_widget.dart';
 import 'package:get/get.dart';
 
 class CardInfoPage extends StatelessWidget {

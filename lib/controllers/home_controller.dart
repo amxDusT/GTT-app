@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/analytics.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_gtt/widgets/home/color_picker.dart';
+import 'package:torino_mobility/models/gtt/favorite_stop.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/analytics.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/widgets/home/color_picker.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {

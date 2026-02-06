@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/smart_card/chip_paper.dart';
+import 'package:torino_mobility/models/smart_card/chip_paper.dart';
 
 class TicketInfoPage extends StatelessWidget {
   final ChipPaper ticket;

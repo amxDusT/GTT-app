@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/smart_card/smart_card.dart';
+import 'package:torino_mobility/models/smart_card/smart_card.dart';
 
 class CardInfoWidget extends StatelessWidget {
   final Contract contract;

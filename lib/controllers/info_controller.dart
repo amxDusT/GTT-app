@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
-import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/api/gtt_api.dart';
-import 'package:flutter_gtt/exceptions/api_exception.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/models/gtt/route.dart' as gtt;
+import 'package:torino_mobility/controllers/home_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/api/gtt_api.dart';
+import 'package:torino_mobility/exceptions/api_exception.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class InfoController extends GetxController {

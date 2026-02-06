@@ -1,25 +1,25 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/bindings/home_bindings.dart';
-import 'package:flutter_gtt/bindings/info_bindings.dart';
-import 'package:flutter_gtt/bindings/intro_bindings.dart';
-import 'package:flutter_gtt/bindings/loading_bindings.dart';
-import 'package:flutter_gtt/bindings/map_global_bindings.dart';
-import 'package:flutter_gtt/bindings/map_page_bindings.dart';
-import 'package:flutter_gtt/pages/home_page.dart';
-import 'package:flutter_gtt/pages/info_page.dart';
-import 'package:flutter_gtt/pages/intro/intro_page.dart';
-import 'package:flutter_gtt/pages/loading_page.dart';
-import 'package:flutter_gtt/pages/map/map_global.dart';
-import 'package:flutter_gtt/pages/map/map_page.dart';
-import 'package:flutter_gtt/pages/nfc/nfc_page.dart';
-import 'package:flutter_gtt/pages/route_list_page.dart';
-import 'package:flutter_gtt/pages/settings_page.dart';
-import 'package:flutter_gtt/resources/storage.dart';
+import 'package:torino_mobility/bindings/home_bindings.dart';
+import 'package:torino_mobility/bindings/info_bindings.dart';
+import 'package:torino_mobility/bindings/intro_bindings.dart';
+import 'package:torino_mobility/bindings/loading_bindings.dart';
+import 'package:torino_mobility/bindings/map_global_bindings.dart';
+import 'package:torino_mobility/bindings/map_page_bindings.dart';
+import 'package:torino_mobility/pages/home_page.dart';
+import 'package:torino_mobility/pages/info_page.dart';
+import 'package:torino_mobility/pages/intro/intro_page.dart';
+import 'package:torino_mobility/pages/loading_page.dart';
+import 'package:torino_mobility/pages/map/map_global.dart';
+import 'package:torino_mobility/pages/map/map_page.dart';
+import 'package:torino_mobility/pages/nfc/nfc_page.dart';
+import 'package:torino_mobility/pages/route_list_page.dart';
+import 'package:torino_mobility/pages/settings_page.dart';
+import 'package:torino_mobility/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 
 class Utils {
   static String getLocale() {

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 //import 'package:convert/convert.dart';
-import 'package:flutter_gtt/models/smart_card/card_files.dart';
+import 'package:torino_mobility/models/smart_card/card_files.dart';
 import 'package:nfc_manager/platform_tags.dart';
 
 class ApduUtils {

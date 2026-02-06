@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
-import 'package:flutter_gtt/pages/map/map_point_page.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/controllers/home_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/models/gtt/favorite_stop.dart';
+import 'package:torino_mobility/pages/map/map_point_page.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:reorderable_grid/reorderable_grid.dart';
 

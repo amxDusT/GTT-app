@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/search/search_controller.dart';
-import 'package:flutter_gtt/pages/map/map_search_page.dart';
-import 'package:flutter_gtt/widgets/search/search_textfield.dart';
+import 'package:torino_mobility/controllers/search/search_controller.dart';
+import 'package:torino_mobility/pages/map/map_search_page.dart';
+import 'package:torino_mobility/widgets/search/search_textfield.dart';
 import 'package:get/get.dart';
 
 class SearchAddress extends StatelessWidget {

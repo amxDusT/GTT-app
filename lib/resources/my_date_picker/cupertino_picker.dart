@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/resources/debouncer.dart';
+import 'package:torino_mobility/resources/debouncer.dart';
 
 class DustCupertinoPicker extends StatefulWidget {
   final double itemHeight;

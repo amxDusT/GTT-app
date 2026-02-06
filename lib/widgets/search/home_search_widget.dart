@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
+import 'package:torino_mobility/controllers/home_controller.dart';
+import 'package:torino_mobility/controllers/search/home_search_controller.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
 

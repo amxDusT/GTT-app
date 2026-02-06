@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter_gtt/controllers/map/map_animation.dart';
-import 'package:flutter_gtt/controllers/map/map_location.dart';
-import 'package:flutter_gtt/models/map/address.dart';
-import 'package:flutter_gtt/resources/api/geocoder_api.dart';
-import 'package:flutter_gtt/resources/utils/map_utils.dart';
+import 'package:torino_mobility/controllers/map/map_animation.dart';
+import 'package:torino_mobility/controllers/map/map_location.dart';
+import 'package:torino_mobility/models/map/address.dart';
+import 'package:torino_mobility/resources/api/geocoder_api.dart';
+import 'package:torino_mobility/resources/utils/map_utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:geolocator/geolocator.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/pages/intro/pages/page_template.dart';
-import 'package:flutter_gtt/widgets/intro/custom_text.dart';
-import 'package:flutter_gtt/widgets/intro/intro_image.dart';
+import 'package:torino_mobility/pages/intro/pages/page_template.dart';
+import 'package:torino_mobility/widgets/intro/custom_text.dart';
+import 'package:torino_mobility/widgets/intro/intro_image.dart';
 
 class Page4 extends StatelessWidget {
   const Page4({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/controllers/search/list_search_controller.dart';
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
-import 'package:flutter_gtt/widgets/route_list_tile_widget.dart';
+import 'package:torino_mobility/controllers/route_list_controller.dart';
+import 'package:torino_mobility/controllers/search/list_search_controller.dart';
+import 'package:torino_mobility/models/gtt/route.dart' as gtt;
+import 'package:torino_mobility/widgets/route_list_tile_widget.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class SearchRoute extends StatelessWidget {

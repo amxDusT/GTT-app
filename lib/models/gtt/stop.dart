@@ -1,9 +1,9 @@
-import 'package:flutter_gtt/controllers/loading_controller.dart';
-import 'package:flutter_gtt/models/gtt/stoptime.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/gtt/pattern.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/controllers/loading_controller.dart';
+import 'package:torino_mobility/models/gtt/stoptime.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/gtt/pattern.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class StopWithDetails extends Stop {
