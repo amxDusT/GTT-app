@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/gen/assets.gen.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/pages/intro/pages/page_template.dart';
 import 'package:torino_mobility/widgets/intro/custom_text.dart';
@@ -12,8 +13,8 @@ class Page6 extends StatelessWidget {
     return PageTemplate(
       title: l10n.introTicketTitle,
       children: [
-        const IntroImage(
-          image: 'assets/images/intro_nfc.jpg',
+        IntroImage(
+          image: Assets.images.introNfc.path,
           height: 230,
         ),
         CustomText(

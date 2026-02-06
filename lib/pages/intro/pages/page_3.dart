@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/gen/assets.gen.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/pages/intro/pages/page_template.dart';
 import 'package:torino_mobility/widgets/intro/custom_text.dart';
@@ -13,8 +14,8 @@ class Page3 extends StatelessWidget {
       title: l10n.introFavoritesTitle,
       children: [
         // add image
-        const IntroImage(
-          image: 'assets/images/intro_favorites.jpg',
+        IntroImage(
+          image: Assets.images.introFavorites.path,
           height: 210,
         ),
         CustomText(

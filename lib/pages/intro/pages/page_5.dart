@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/gen/assets.gen.dart';
 import 'package:torino_mobility/pages/intro/pages/page_template.dart';
 import 'package:torino_mobility/widgets/intro/custom_text.dart';
 import 'package:torino_mobility/widgets/intro/intro_image.dart';
@@ -8,17 +9,17 @@ class Page5 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PageTemplate(
+    return PageTemplate(
       title: 'Lista veicoli',
       children: [
         IntroImage(
-          image: 'assets/images/intro_rlist.jpg',
+          image: Assets.images.introRlist.path,
           height: 250,
         ),
-        CustomText(
+        const CustomText(
           'Puoi visualizzare, cercare o salvare le linee che ti interessano.',
         ),
-        CustomText(
+        const CustomText(
           'Cliccando su una linea potrai visualizzarne i veicoli in tempo reale.',
         ),
       ],
