@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/loading_controller.dart';
 import 'package:get/get.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 
 class LoadingPage extends StatelessWidget {
   LoadingPage({super.key});
   final LoadingController _loadingController = Get.put(LoadingController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,10 +15,10 @@ class LoadingPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Flexible(flex: 2, child: Container()),
-          const Center(
+          Center(
             child: Text(
-              'GTT APP',
-              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+              l10n.appTitle,
+              style: const TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(
@@ -27,9 +29,9 @@ class LoadingPage extends StatelessWidget {
           Obx(
             () => Visibility(
               visible: _loadingController.isShowingMessage.isTrue,
-              child: const Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Text('Scarico i dati GTT per la prima volta..'),
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(l10n.loadingFirstDownload),
               ),
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/smart_card/chip_paper.dart';
 
 class TicketInfoPage extends StatelessWidget {
@@ -9,7 +10,7 @@ class TicketInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Biglietto ${ticket.cardNumber}'),
+        title: Text(l10n.ticketTitle(ticket.cardNumber.toString())),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -19,7 +20,7 @@ class TicketInfoPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Informazioni biglietto:'),
+            Text(l10n.ticketInfoHeading),
             _infoTicket(),
           ],
         ),
@@ -39,39 +40,39 @@ class TicketInfoPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('Numero Biglietto: '),
+              Text(l10n.ticketNumberLabel),
               Text(ticket.cardNumber.toString()),
             ],
           ),
           Row(
             children: [
-              const Text('Tipo Biglietto: '),
+              Text(l10n.ticketTypeLabel),
               Text(ticket.typeName),
             ],
           ),
           Row(
             children: [
-              const Text('Prima validazione il: '),
+              Text(l10n.ticketFirstValidationLabel),
               Text(ticket.firstValidationDate),
             ],
           ),
           Row(
             children: [
-              const Text('Ultima validazione il: '),
+              Text(l10n.ticketLastValidationLabel),
               Text(ticket.lastValidationDate),
             ],
           ),
           Row(
             children: [
-              const Text('Scade il: '),
+              Text(l10n.ticketExpiresLabel),
               Text(ticket.expiredDate),
             ],
           ),
           Row(
             children: [
-              const Text('Minuti mancanti: '),
+              Text(l10n.ticketMinutesRemainingLabel),
               Text(ticket.isExpired
-                  ? 'Scaduto'
+                  ? l10n.ticketExpiredLabel
                   : ticket.remainingMinutes.toString()),
             ],
           ),

@@ -23,6 +23,7 @@ import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 
 class MapPageController extends GetxController
     with GetTickerProviderStateMixin {
@@ -121,7 +122,7 @@ class MapPageController extends GetxController
         if (followVehicle.value != 0 &&
             vehicle.mqttData.vehicleNum == followVehicle.value) {
           stopFollowingVehicle();
-          Utils.showSnackBar('Il veicolo che stavi seguendo è stato rimosso');
+          Utils.showSnackBar(l10n.followedVehicleRemoved);
         }
         if (lastOpenedMarker != null &&
             lastOpenedMarker is VehicleMarker &&
@@ -423,7 +424,7 @@ class MapPageController extends GetxController
               onPressed: () async {
                 await Geolocator.openAppSettings();
               },
-              child: const Text('Impostazioni'),
+              child: Text(l10n.settings),
             ));
       } else {
         Utils.showSnackBar(

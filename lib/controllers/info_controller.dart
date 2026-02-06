@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
@@ -97,27 +98,26 @@ class InfoController extends GetxController {
 
   void showErrorPopup() async {
     await Get.defaultDialog(
-      title: 'Errore',
-      content: const Align(
+      title: l10n.errorTitle,
+      content: Align(
         alignment: Alignment.topLeft,
         child: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Ooops... Problema nel risolvere la richiesta.'),
-              Text(
-                  'Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni.'),
+              Text(l10n.genericErrorMessage),
+              Text(l10n.retryOrUpdateDataMessage),
             ],
           ),
         ),
       ),
-      textConfirm: 'Aggiorna',
+      textConfirm: l10n.update,
       onConfirm: () {
         Get.back();
         Get.put(SettingsController()).resetData();
       },
-      textCancel: 'Annulla',
+      textCancel: l10n.cancel,
     );
   }
 }

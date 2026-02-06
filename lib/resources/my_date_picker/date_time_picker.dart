@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/resources/my_date_picker/date_picker.dart';
 import 'package:torino_mobility/resources/my_date_picker/time_picker.dart';
 
@@ -70,9 +71,9 @@ class _DustDateTimePickerState extends State<DustDateTimePicker> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text(
-            'Scegli la data e l\'ora',
-            style: TextStyle(
+          Text(
+            l10n.chooseDateTimeTitle,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -119,7 +120,7 @@ class _DustDateTimePickerState extends State<DustDateTimePicker> {
                   widget.onSubmittedDate!(widget.initialDate);
                 }
               },
-              child: const Text('Reimposta ora attuale'),
+              child: Text(l10n.resetCurrentTime),
             ),
           Flexible(flex: 2, child: Container()),
           Row(
@@ -134,7 +135,7 @@ class _DustDateTimePickerState extends State<DustDateTimePicker> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('Annulla'),
+                child: Text(l10n.cancel),
               ),
               FilledButton(
                 style: FilledButton.styleFrom(
@@ -148,7 +149,7 @@ class _DustDateTimePickerState extends State<DustDateTimePicker> {
                     widget.onSubmittedDate!(selectedDateNotifier.value);
                   }
                 },
-                child: const Text('Imposta'),
+                child: Text(l10n.set),
               ),
             ],
           ),

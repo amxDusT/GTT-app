@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/map/map_point_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/resources/storage.dart';
@@ -16,7 +17,7 @@ class MapPointPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Fermata ${_mapController.initialFermata.name}'),
+          title: Text(l10n.stopTitle(_mapController.initialFermata.name)),
         ),
         body: FlutterMap(
           mapController: _mapController.mapController,

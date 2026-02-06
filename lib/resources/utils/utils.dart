@@ -7,6 +7,7 @@ import 'package:torino_mobility/bindings/intro_bindings.dart';
 import 'package:torino_mobility/bindings/loading_bindings.dart';
 import 'package:torino_mobility/bindings/map_global_bindings.dart';
 import 'package:torino_mobility/bindings/map_page_bindings.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/pages/home_page.dart';
 import 'package:torino_mobility/pages/info_page.dart';
 import 'package:torino_mobility/pages/intro/intro_page.dart';
@@ -102,7 +103,7 @@ class Utils {
               onPressed: () async {
                 await Get.closeCurrentSnackbar();
               },
-              child: const Text('Chiudi'),
+              child: Text(l10n.close),
             ),
       ),
     );

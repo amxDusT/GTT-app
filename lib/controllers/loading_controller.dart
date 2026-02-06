@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/agency.dart';
 import 'package:torino_mobility/models/gtt/pattern.dart' as gtt;
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
@@ -40,17 +41,17 @@ class LoadingController extends GetxController {
     RxBool isDownloading = false.obs;
     await Get.defaultDialog(
       barrierDismissible: false,
-      title: 'Nuova versione disponibile (${infoApp['version']})',
+      title: l10n.updateAvailableTitle(infoApp['version']),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('È disponibile una nuova versione dell\'app'),
+          Text(l10n.updateAvailableBody),
           const SizedBox(height: 10),
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              '  Novità:',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              l10n.whatsNewTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(
@@ -69,9 +70,9 @@ class LoadingController extends GetxController {
           ),
         ],
       ),
-      middleText: 'Scarica la nuova versione',
-      textConfirm: 'Scarica',
-      textCancel: 'Annulla',
+      middleText: l10n.downloadNewVersion,
+      textConfirm: l10n.download,
+      textCancel: l10n.cancel,
       /*cancel: TextButton(
         style: TextButton.styleFrom(
           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -90,7 +91,7 @@ class LoadingController extends GetxController {
           Get.back();
         },
         child: Text(
-          'Annulla',
+          l10n.cancel,
           style: TextStyle(color: Get.theme.colorScheme.secondary),
         ),
       ),*/
@@ -141,7 +142,10 @@ class LoadingController extends GetxController {
         Get.find<RouteListController>().getRoutes(routeValues);
       }
     } on ApiException catch (e) {
-      Utils.showSnackBar(e.message, title: 'Error ${e.statusCode}');
+      Utils.showSnackBar(
+        e.message,
+        title: l10n.errorWithCode(e.statusCode),
+      );
     } finally {
       isShowingMessage.value = false;
     }

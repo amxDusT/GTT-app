@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/nfc_controller.dart';
 import 'package:get/get.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 
 class NfcPage extends StatelessWidget {
   final NfcController _nfcController;
@@ -12,7 +13,7 @@ class NfcPage extends StatelessWidget {
       tag: 'NFCPage',
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Leggi Carta'),
+          title: Text(l10n.readCardTitle),
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           scrolledUnderElevation: 0,
         ),
@@ -41,8 +42,8 @@ class NfcPage extends StatelessWidget {
                       child: Center(
                         child: Text(
                           _nfcController.isReading.isTrue
-                              ? 'Sto leggendo..'
-                              : 'Leggi',
+                              ? l10n.nfcReading
+                              : l10n.nfcRead,
                           style: const TextStyle(
                               color: Colors.white, fontSize: 16),
                         ),
@@ -70,7 +71,7 @@ class NfcPage extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Annulla',
+                    l10n.cancel,
                     style: TextStyle(color: Get.theme.colorScheme.secondary),
                   ),
                 ),

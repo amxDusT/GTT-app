@@ -141,6 +141,7 @@ class MapGlobal extends StatelessWidget {
                 ),
                 children: [
                   TileLayer(
+                    userAgentPackageName: 'it.amxdust.torino_mobility',
                     maxNativeZoom: 22,
                     urlTemplate: kDebugMode || mapboxApiKey.isEmpty
                         ? 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'

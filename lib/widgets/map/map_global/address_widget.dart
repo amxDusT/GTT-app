@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/map/map_global_controller.dart';
 import 'package:torino_mobility/fake/fake_data.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/widgets/map/distance_icon.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -109,7 +110,7 @@ class AddressWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(0.0),
                             ),
                           ),
-                          child: const Text('Indicazioni'),
+                          child: Text(l10n.directionsLabel),
                         ),
                         TextButton(
                           onPressed: () {},
@@ -119,7 +120,7 @@ class AddressWidget extends StatelessWidget {
                               borderRadius: BorderRadius.circular(0.0),
                             ),
                           ),
-                          child: const Text('Fermate vicine'),
+                          child: Text(l10n.nearbyStopsLabel),
                         ),
                       ],
                     ),

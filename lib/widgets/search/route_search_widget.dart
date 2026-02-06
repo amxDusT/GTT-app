@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/controllers/search/list_search_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/widgets/route_list_tile_widget.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -38,7 +39,7 @@ class SearchRoute extends StatelessWidget {
                       borderSide: Divider.createBorderSide(context)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12),
                   filled: true,
-                  labelText: 'Cerca veicolo...',
+                  labelText: l10n.searchVehicle,
                 ),
                 keyboardType: TextInputType.text,
                 onSubmitted: (value) => searchController.onSearch(value),

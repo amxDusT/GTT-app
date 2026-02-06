@@ -122,7 +122,7 @@ class MapPage extends StatelessWidget {
               ),
               children: [
                 TileLayer(
-                  userAgentPackageName: 'com.amxdust.flutter_gtt',
+                  userAgentPackageName: 'it.amxdust.torino_mobility',
                   maxNativeZoom:
                       _settingsController.showBetaFeatures.isTrue ? 22 : 19,
                   urlTemplate: (_settingsController.showBetaFeatures.isTrue &&

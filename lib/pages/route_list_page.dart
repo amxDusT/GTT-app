@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/controllers/search/list_search_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/widgets/search/route_search_widget.dart';
 import 'package:torino_mobility/widgets/route_list_favorite_widget.dart';
 import 'package:torino_mobility/widgets/route_list_tile_widget.dart';
@@ -35,7 +36,7 @@ class RouteListPage extends GetView<RouteListController> {
               slivers: [
                 SliverAppBar(
                   pinned: true,
-                  title: const Text('Linee'),
+                  title: Text(l10n.routesTitle),
                   backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                   scrolledUnderElevation: 0,
                 ),

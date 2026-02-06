@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/favorite_stop.dart';
 import 'package:torino_mobility/pages/map/map_point_page.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
@@ -93,7 +94,7 @@ class HomeFavCard extends GetView<SettingsController> {
                 ),
                 child: Row(
                   children: [
-                    const Expanded(child: Text('Posizione')),
+                    Expanded(child: Text(l10n.positionLabel)),
                     ReorderableGridDragStartListener(
                       index: homeController.fermate.indexOf(fermata),
                       child: const Icon(Icons.reorder_sharp),

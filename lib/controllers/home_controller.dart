@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/favorite_stop.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:torino_mobility/resources/analytics.dart';
@@ -106,19 +107,19 @@ class HomeController extends GetxController {
       position: relRectSize,
       items: [
         PopupMenuItem(
-          child: const Text('Sposta in cima'),
+          child: Text(l10n.moveToTop),
           onTap: () => moveOnTop(fermata),
         ),
         PopupMenuItem(
-          child: const Text('Cambia Descrizione'),
+          child: Text(l10n.changeDescription),
           onTap: () => _changeDescription(fermata),
         ),
         PopupMenuItem(
-          child: const Text('Cambia Colore'),
+          child: Text(l10n.changeColor),
           onTap: () => _changeColor(fermata),
         ),
         PopupMenuItem(
-          child: const Text('Elimina'),
+          child: Text(l10n.delete),
           onTap: () => _getDeleteConfirm(fermata),
         ),
       ],
@@ -128,7 +129,7 @@ class HomeController extends GetxController {
   void _changeColor(FavStop fermata) {
     Color lastColor = fermata.color;
     Get.defaultDialog(
-      title: 'Scegli un colore',
+      title: l10n.chooseColorTitle,
       content: BlockPicker(
         pickerColor: fermata.color,
         onColorChanged: (color) {
@@ -179,9 +180,9 @@ class HomeController extends GetxController {
                       child: InkWell(
                         onTap: () async {
                           await Get.defaultDialog(
-                              title: 'Scegli colore personalizzato',
-                              textCancel: 'Annulla',
-                              textConfirm: 'Conferma',
+                              title: l10n.chooseColorTitle,
+                              textCancel: l10n.cancel,
+                              textConfirm: l10n.confirm,
                               onConfirm: () {
                                 fermata = fermata.copyWith(color: lastColor);
                                 updateStop(fermata);
@@ -221,10 +222,10 @@ class HomeController extends GetxController {
 
   void _getDeleteConfirm(FavStop fermata) {
     Get.defaultDialog(
-        title: 'Elimina',
-        middleText: 'Vuoi eliminare la fermata ${fermata.toString()}?',
-        textConfirm: 'Elimina',
-        textCancel: 'Annulla',
+        title: l10n.delete,
+        middleText: l10n.deleteStopQuestion(fermata.toString()),
+        textConfirm: l10n.delete,
+        textCancel: l10n.cancel,
         onConfirm: () {
           Get.back();
           deleteStop(fermata);
@@ -234,9 +235,9 @@ class HomeController extends GetxController {
   void _changeDescription(FavStop fermata) {
     descriptionController.value.text = fermata.descrizione ?? '';
     Get.defaultDialog(
-        title: 'Elimina',
+        title: l10n.delete,
         content: Column(children: [
-          const Text('Scrivi una breve descrizione'),
+          Text(l10n.enterShortDescription),
           Obx(
             () => TextField(
               maxLines: 2,
@@ -244,8 +245,8 @@ class HomeController extends GetxController {
             ),
           ),
         ]),
-        textConfirm: 'Conferma',
-        textCancel: 'Annulla',
+        textConfirm: l10n.confirm,
+        textCancel: l10n.cancel,
         onConfirm: () {
           Get.back();
 

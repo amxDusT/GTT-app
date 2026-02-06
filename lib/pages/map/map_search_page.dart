@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/map/map_travel_controller.dart';
 import 'package:torino_mobility/controllers/search/search_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/map/address.dart';
 import 'package:torino_mobility/resources/debouncer.dart';
 import 'package:torino_mobility/widgets/map/distance_icon.dart';
@@ -39,7 +40,7 @@ class MapSearchPage extends StatelessWidget {
                 useControllerFocus: true,
                 searchController: searchController,
                 autofocus: true,
-                labelText: 'Cerca indirizzo...',
+                labelText: l10n.searchAddress,
                 onPrefixPressed: () {
                   //TODO:Check if makes sense
                   controller.text = _initialText;
