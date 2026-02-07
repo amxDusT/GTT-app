@@ -6,6 +6,9 @@
   "@close": {},
   "@settings": {},
   "@followedVehicleRemoved": {},
+  "@welcomeTitle": {},
+  "@welcomeDescription": {},
+  "@welcomeDecription2": {},
   "@settingsDarkThemeTitle": {},
   "@settingsShowSecondsTitle": {},
   "@settingsShowStopOnMapTitle": {},
@@ -175,16 +178,34 @@
   "@introTicketTitle": {},
   "@introTicketDescription": {},
   "@introTicketDescription2": {},
+  "@introHomeTitle": {},
+  "@introHomeDescription": {},
+  "@introHomeDescription2": {},
+  "@introVehicleListTitle": {},
+  "@introVehicleListDescription": {},
+  "@introVehicleListDescription2": {},
   "@searchStop": {},
   "@searchVehicle": {},
   "@searchAddress": {},
+  "@makeDefault": {},
+  "@selectMaxVehicles": {
+    "placeholders": {
+      "maxRoutesInMap": {
+        "type": "int"
+      }
+    }
+  },
 
+  
 
   "appTitle": "Torino Mobility",
   "stopsTitle": "Stops",
   "close": "Close",
   "settings": "Settings",
   "followedVehicleRemoved": "The vehicle you were following has been removed",
+  "welcomeTitle": "Welcome!",
+  "welcomeDescription": "With this app, you can view the schedules of public transport in Turin,\n save your favorite stops, see real-time lines, and much more!", 
+  "welcomeDecription2": "Here's a brief tutorial to help you understand how it works.",
   "settingsDarkThemeTitle": "Dark theme",
   "settingsShowFavoriteRoutesTitle": "Show favorite lines on home",
   "settingsShowSecondsTitle": "Show seconds since last update",
@@ -258,7 +279,7 @@
   "ticketExpiredLabel": "Expired",
   "stopTitle": "Stop {stopName}",
   "viewOnMap": "View on map",
-  "routesTitle": "Routes",
+  "routesTitle": "Lines",
   "directionLabel": "Direction:",
   "readTicketOrCard": "Read Ticket/Card",
   "defaultMap": "Default Map",
@@ -292,7 +313,15 @@
   "introTicketTitle": "Ticket information",
   "introTicketDescription": "You can view the information of the ticket or card.",
   "introTicketDescription2": "After pressing \"Read\" place the ticket or card on the back of the phone.\n(Only for devices with NFC enabled)",
+  "introHomeTitle": "Home Page",
+  "introHomeDescription": "You can search for stops by name or number.",
+  "introHomeDescription2": "You can click on the star icon to add or remove a stop from favorites.",
+  "introVehicleListTitle": "Vehicle List",
+  "introVehicleListDescription": "You can view, search, or save the lines you are interested in.",
+  "introVehicleListDescription2": "By tapping on a line you can view its vehicles in real time.",
   "searchStop": "Search stop...",
   "searchVehicle": "Search vehicle...",
-  "searchAddress": "Search address..."
+  "searchAddress": "Search address...",
+  "makeDefault": "Make default",
+  "selectMaxVehicles": "You can select up to {maxRoutesInMap} vehicles"
 }

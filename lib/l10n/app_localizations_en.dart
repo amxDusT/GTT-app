@@ -25,6 +25,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'The vehicle you were following has been removed';
 
   @override
+  String get welcomeTitle => 'Welcome!';
+
+  @override
+  String get welcomeDescription =>
+      'With this app, you can view the schedules of public transport in Turin,\n save your favorite stops, see real-time lines, and much more!';
+
+  @override
+  String get welcomeDecription2 =>
+      'Here\'s a brief tutorial to help you understand how it works.';
+
+  @override
   String get settingsDarkThemeTitle => 'Dark theme';
 
   @override
@@ -273,7 +284,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewOnMap => 'View on map';
 
   @override
-  String get routesTitle => 'Routes';
+  String get routesTitle => 'Lines';
 
   @override
   String get directionLabel => 'Direction:';
@@ -385,6 +396,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'After pressing \"Read\" place the ticket or card on the back of the phone.\n(Only for devices with NFC enabled)';
 
   @override
+  String get introHomeTitle => 'Home Page';
+
+  @override
+  String get introHomeDescription =>
+      'You can search for stops by name or number.';
+
+  @override
+  String get introHomeDescription2 =>
+      'You can click on the star icon to add or remove a stop from favorites.';
+
+  @override
+  String get introVehicleListTitle => 'Vehicle List';
+
+  @override
+  String get introVehicleListDescription =>
+      'You can view, search, or save the lines you are interested in.';
+
+  @override
+  String get introVehicleListDescription2 =>
+      'By tapping on a line you can view its vehicles in real time.';
+
+  @override
   String get searchStop => 'Search stop...';
 
   @override
@@ -392,4 +425,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchAddress => 'Search address...';
+
+  @override
+  String get makeDefault => 'Make default';
+
+  @override
+  String selectMaxVehicles(int maxRoutesInMap) {
+    return 'You can select up to $maxRoutesInMap vehicles';
+  }
 }

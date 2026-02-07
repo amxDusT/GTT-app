@@ -9,7 +9,7 @@ class AppLocalizationsIt extends AppLocalizations {
   AppLocalizationsIt([String locale = 'it']) : super(locale);
 
   @override
-  String get appTitle => 'Torino Mobility';
+  String get appTitle => 'MobiliTO';
 
   @override
   String get stopsTitle => 'Fermate';
@@ -23,6 +23,17 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get followedVehicleRemoved =>
       'Il veicolo che stavi seguendo è stato rimosso';
+
+  @override
+  String get welcomeTitle => 'Benvenuto!';
+
+  @override
+  String get welcomeDescription =>
+      'Con questa app potrai visualizzare gli orari dei mezzi pubblici di Torino,\n salvare le tue fermate preferite, vedere le linee in tempo reale e molto altro!';
+
+  @override
+  String get welcomeDecription2 =>
+      'Ecco un breve tutorial per aiutarti a capire come funziona.';
 
   @override
   String get settingsDarkThemeTitle => 'Tema scuro';
@@ -387,6 +398,28 @@ class AppLocalizationsIt extends AppLocalizations {
       'Dopo aver cliccato il tasto \'Leggi\' appoggia il biglietto o la carta dietro il telefono.\n(Solo per dispositivi con NFC abilitato)';
 
   @override
+  String get introHomeTitle => 'Pagina iniziale';
+
+  @override
+  String get introHomeDescription =>
+      'Puoi cercare le fermate per nome o numero.';
+
+  @override
+  String get introHomeDescription2 =>
+      'Puoi cliccare sull\'icona a forma di stella per aggiungere o togliere una fermata ai preferiti.';
+
+  @override
+  String get introVehicleListTitle => 'Lista veicoli';
+
+  @override
+  String get introVehicleListDescription =>
+      'Puoi visualizzare, cercare o salvare le linee che ti interessano.';
+
+  @override
+  String get introVehicleListDescription2 =>
+      'Cliccando su una linea potrai visualizzarne i veicoli in tempo reale.';
+
+  @override
   String get searchStop => 'Cerca fermata...';
 
   @override
@@ -394,4 +427,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get searchAddress => 'Cerca indirizzo...';
+
+  @override
+  String get makeDefault => 'Rendi predefinito';
+
+  @override
+  String selectMaxVehicles(int maxRoutesInMap) {
+    return 'Puoi selezionare al massimo $maxRoutesInMap veicoli';
+  }
 }

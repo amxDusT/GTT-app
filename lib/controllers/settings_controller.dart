@@ -120,9 +120,11 @@ class SettingsController extends GetxController {
   }
 
   void shareApp() {
-    Share.share(
-      l10n.shareAppMessage,
-      subject: l10n.shareAppSubject,
+    SharePlus.instance.share(
+      ShareParams(
+        text: l10n.shareAppMessage,
+        subject: l10n.shareAppSubject,
+      ),
     );
   }
 

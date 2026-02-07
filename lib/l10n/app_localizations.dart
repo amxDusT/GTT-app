@@ -128,6 +128,24 @@ abstract class AppLocalizations {
   /// **'The vehicle you were following has been removed'**
   String get followedVehicleRemoved;
 
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome!'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'With this app, you can view the schedules of public transport in Turin,\n save your favorite stops, see real-time lines, and much more!'**
+  String get welcomeDescription;
+
+  /// No description provided for @welcomeDecription2.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s a brief tutorial to help you understand how it works.'**
+  String get welcomeDecription2;
+
   /// No description provided for @settingsDarkThemeTitle.
   ///
   /// In en, this message translates to:
@@ -569,7 +587,7 @@ abstract class AppLocalizations {
   /// No description provided for @routesTitle.
   ///
   /// In en, this message translates to:
-  /// **'Routes'**
+  /// **'Lines'**
   String get routesTitle;
 
   /// No description provided for @directionLabel.
@@ -770,6 +788,42 @@ abstract class AppLocalizations {
   /// **'After pressing \"Read\" place the ticket or card on the back of the phone.\n(Only for devices with NFC enabled)'**
   String get introTicketDescription2;
 
+  /// No description provided for @introHomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home Page'**
+  String get introHomeTitle;
+
+  /// No description provided for @introHomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can search for stops by name or number.'**
+  String get introHomeDescription;
+
+  /// No description provided for @introHomeDescription2.
+  ///
+  /// In en, this message translates to:
+  /// **'You can click on the star icon to add or remove a stop from favorites.'**
+  String get introHomeDescription2;
+
+  /// No description provided for @introVehicleListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle List'**
+  String get introVehicleListTitle;
+
+  /// No description provided for @introVehicleListDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You can view, search, or save the lines you are interested in.'**
+  String get introVehicleListDescription;
+
+  /// No description provided for @introVehicleListDescription2.
+  ///
+  /// In en, this message translates to:
+  /// **'By tapping on a line you can view its vehicles in real time.'**
+  String get introVehicleListDescription2;
+
   /// No description provided for @searchStop.
   ///
   /// In en, this message translates to:
@@ -787,6 +841,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search address...'**
   String get searchAddress;
+
+  /// No description provided for @makeDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Make default'**
+  String get makeDefault;
+
+  /// No description provided for @selectMaxVehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'You can select up to {maxRoutesInMap} vehicles'**
+  String selectMaxVehicles(int maxRoutesInMap);
 }
 
 class _AppLocalizationsDelegate

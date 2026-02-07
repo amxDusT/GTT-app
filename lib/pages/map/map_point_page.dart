@@ -32,7 +32,8 @@ class MapPointPage extends StatelessWidget {
           children: [
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              //userAgentPackageName: 'com.example.app',
+              userAgentPackageName: 'it.amxdust.torino_mobility',
+              maxNativeZoom: 19,
             ),
             PopupMarkerLayer(
               options: PopupMarkerLayerOptions(

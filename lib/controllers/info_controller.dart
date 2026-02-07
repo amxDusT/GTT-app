@@ -59,7 +59,7 @@ class InfoController extends GetxController {
     } else {
       if (selectedRoutes.length >= maxRoutesInMap) {
         Utils.showSnackBar(
-          'Puoi selezionare al massimo $maxRoutesInMap veicoli',
+          l10n.selectMaxVehicles(maxRoutesInMap),
           //title: "Attenzione",
           closePrevious: true,
         );

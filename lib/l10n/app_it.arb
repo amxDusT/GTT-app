@@ -1,11 +1,14 @@
 {
   "@@locale": "it",
-  "appTitle": "Torino Mobility",
+  "appTitle": "MobiliTO",
+  
   "stopsTitle": "Fermate",
   "close": "Chiudi",
   "settings": "Impostazioni",
   "followedVehicleRemoved": "Il veicolo che stavi seguendo è stato rimosso",
-
+  "welcomeTitle": "Benvenuto!",
+  "welcomeDescription": "Con questa app potrai visualizzare gli orari dei mezzi pubblici di Torino,\n salvare le tue fermate preferite, vedere le linee in tempo reale e molto altro!", 
+  "welcomeDecription2": "Ecco un breve tutorial per aiutarti a capire come funziona.",
   "settingsDarkThemeTitle": "Tema scuro",
   "settingsShowFavoriteRoutesTitle": "Mostra linee preferite nella pagina iniziale",
   "settingsShowSecondsTitle": "Mostra secondi dall'ultimo aggiornamento",
@@ -202,7 +205,15 @@
   "introTicketTitle": "Informazioni biglietto",
   "introTicketDescription": "Puoi visualizzare le informazioni del biglietto o della carta.",
   "introTicketDescription2": "Dopo aver cliccato il tasto 'Leggi' appoggia il biglietto o la carta dietro il telefono.\n(Solo per dispositivi con NFC abilitato)",
+  "introHomeTitle": "Pagina iniziale",
+  "introHomeDescription": "Puoi cercare le fermate per nome o numero.",
+  "introHomeDescription2": "Puoi cliccare sull'icona a forma di stella per aggiungere o togliere una fermata ai preferiti.",
+  "introVehicleListTitle": "Lista veicoli",
+  "introVehicleListDescription": "Puoi visualizzare, cercare o salvare le linee che ti interessano.",
+  "introVehicleListDescription2": "Cliccando su una linea potrai visualizzarne i veicoli in tempo reale.",
   "searchStop": "Cerca fermata...",
   "searchVehicle": "Cerca veicolo...",
-  "searchAddress": "Cerca indirizzo..."
+  "searchAddress": "Cerca indirizzo...",
+  "makeDefault": "Rendi predefinito",
+  "selectMaxVehicles": "Puoi selezionare al massimo {maxRoutesInMap} veicoli"
 }

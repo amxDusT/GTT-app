@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/gen/assets.gen.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/pages/intro/pages/page_template.dart';
 import 'package:torino_mobility/widgets/intro/custom_text.dart';
 import 'package:torino_mobility/widgets/intro/intro_image.dart';
@@ -9,19 +10,18 @@ class Page2 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PageTemplate(
-      title: 'Pagina iniziale',
+      title: l10n.introHomeTitle,
       children: [
         IntroImage(
           image: Assets.images.introHome.path,
           height: 250,
           width: 250,
         ),
-        const CustomText(
-          'Puoi cercare le fermate per nome o numero.',
-          type: CustomTextType.body,
+        CustomText(
+          l10n.introHomeDescription,
         ),
-        const CustomText(
-          'Puoi cliccare sull\'icona a forma di stella per aggiungere o togliere una fermata ai preferiti.',
+        CustomText(
+          l10n.introHomeDescription2,
         ),
       ],
     );

@@ -213,8 +213,8 @@ class HomeController extends GetxController {
         itemBuilder: (color, isCurrentColor, changeColor) =>
             HomeColorPicker(color, isCurrentColor, changeColor),
       ),
-      textCancel: 'Rendi predefinito',
-      textConfirm: 'Chiudi',
+      textCancel: l10n.makeDefault,
+      textConfirm: l10n.close,
       onConfirm: () => Get.back(),
       onCancel: () => Storage.instance.setColor(fermata.color),
     );

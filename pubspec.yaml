@@ -25,6 +25,7 @@ dependencies:
       url: https://github.com/amxDusT/flutter_compass
       ref: master
   flutter_displaymode: ^0.6.0
+  flutter_launcher_icons: ^0.14.4
   flutter_localizations:
     sdk: flutter
   flutter_map: ^6.0.1
