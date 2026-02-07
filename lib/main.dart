@@ -49,7 +49,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      locale: const Locale('en'),
       //debugShowCheckedModeBanner: false,
       builder: (context, child) {
         Get.put(LocalizationService(context));
