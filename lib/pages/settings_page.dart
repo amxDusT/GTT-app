@@ -78,11 +78,6 @@ class SettingsPage extends StatelessWidget {
         title: Text(l10n.settingsRefreshDataTitle),
         onTap: () => _settingsController.resetData(),
       ),
-      if (kDebugMode)
-        ListTile(
-          title: Text(l10n.settingsDownloadReleaseTitle),
-          onTap: () async => await Get.find<LoadingController>().checkVersion(),
-        ),
       ListTile(
         title: Text(l10n.settingsBackupFavoritesTitle),
         onTap: () => _settingsController.exportFavorites(),
