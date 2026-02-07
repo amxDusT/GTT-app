@@ -1,0 +1,2 @@
+json_key_file("~/.android/amxdust/service-account.json") 
+package_name("it.amxdust.torinomobility") 
