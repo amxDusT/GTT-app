@@ -163,9 +163,7 @@ class LoadingController extends GetxController {
         Stop stop = entry.value;
         FavStop favStop = FavStop.fromStop(
           stop: stop,
-          color: Storage.instance.isDarkMode
-              ? Utils.darken(colors[i], 30)
-              : Utils.lighten(colors[i]),
+          color: colors[i],
           descrizione: descriptions[i],
         );
         return DatabaseCommands.instance.insertStop(favStop);
