@@ -65,10 +65,10 @@ android {
             storePassword = keyStoreProperties.getProperty("storePassword")
         }
         getByName("debug") {
-            keyAlias = "androiddebugkey"
-            keyPassword = "android"
-            storeFile = file(expandPath("~/.android/debug.keystore"))
-            storePassword = "android"
+            keyAlias = keyStoreProperties.getProperty("keyAlias")
+            keyPassword = keyStoreProperties.getProperty("keyPassword")
+            storeFile = file(expandPath(keyStoreProperties.getProperty("storeFile")))
+            storePassword = keyStoreProperties.getProperty("storePassword")
         }
     }
 
