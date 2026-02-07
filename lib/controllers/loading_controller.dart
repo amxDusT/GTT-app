@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/agency.dart';
+import 'package:torino_mobility/models/gtt/favorite_stop.dart';
 import 'package:torino_mobility/models/gtt/pattern.dart' as gtt;
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/models/gtt/stop.dart';
@@ -170,7 +171,31 @@ class LoadingController extends GetxController {
         loadFromApi();
       }
     }
+    if (isFirstLoad) await _addSomeFavorites();
     moveToHome(duration);
+  }
+
+  Future<void> _addSomeFavorites() async {
+    const stopCodes = [40, 472, 31];
+    final stops =
+        await Future.wait(stopCodes.map((code) => GttApi.getStop(code)));
+    const colors = [Colors.red, Colors.green, Colors.blue];
+    const descriptions = ['home > gym', 'work', 'friend\'s house'];
+
+    await Future.wait(
+      stops.asMap().entries.map((entry) {
+        int i = entry.key;
+        Stop stop = entry.value;
+        FavStop favStop = FavStop.fromStop(
+          stop: stop,
+          color: Storage.instance.isDarkMode
+              ? Utils.darken(colors[i], 30)
+              : Utils.lighten(colors[i]),
+          descrizione: descriptions[i],
+        );
+        return DatabaseCommands.instance.insertStop(favStop);
+      }),
+    );
   }
 
   void moveToHome(Duration duration) async {
