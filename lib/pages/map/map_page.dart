@@ -1,5 +1,7 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:http/io_client.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
@@ -122,17 +124,21 @@ class MapPage extends StatelessWidget {
               ),
               children: [
                 TileLayer(
-                  userAgentPackageName: 'it.amxdust.torino_mobility',
-                  maxNativeZoom:
-                      _settingsController.showBetaFeatures.isTrue ? 22 : 19,
-                  urlTemplate: (_settingsController.showBetaFeatures.isTrue &&
-                          !kDebugMode &&
-                          mapboxApiKey.isNotEmpty)
-                      ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey'
-                      : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  tileProvider:
-                      const FMTCStore(tileCacheName).getTileProvider(),
-                ),
+                    userAgentPackageName: 'it.amxdust.torino_mobility',
+                    maxNativeZoom:
+                        _settingsController.showBetaFeatures.isTrue ? 22 : 19,
+                    urlTemplate: (_settingsController.showBetaFeatures.isTrue &&
+                            mapboxApiKey.isNotEmpty)
+                        ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey'
+                        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    tileProvider:
+                        const FMTCStore(tileCacheName).getTileProvider(
+                      httpClient: IOClient(
+                        HttpClient()
+                          ..userAgent = null
+                          ..connectionTimeout = const Duration(seconds: 5),
+                      ),
+                    )),
 
                 /*  TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
