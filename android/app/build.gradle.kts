@@ -10,15 +10,24 @@ plugins {
 
 val localProperties = Properties()
 val localPropertiesFile = rootProject.file("local.properties")
+val keyStoreProperties = Properties()
+val keyStorePropertiesFile = rootProject.file("key.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
+if (keyStorePropertiesFile.exists()) {
+    keyStoreProperties.load(keyStorePropertiesFile.inputStream())
+}
 
+val homePath : String = System.getProperty("user.home")
+fun expandPath(path: String): String {
+    return path.replace("~", homePath).replace("\$HOME", homePath)
+}
 val flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
 val flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0"
 
 android {
-    namespace = "com.example.flutter_gtt"
+    namespace = "it.amxdust.torinomobility"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -36,10 +45,9 @@ android {
             java.srcDir("src/main/kotlin")
         }
     }
-
+    
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.flutter_gtt"
+        applicationId = "it.amxdust.torinomobility"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdk = flutter.minSdkVersion
@@ -49,11 +57,26 @@ android {
         multiDexEnabled = true
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = keyStoreProperties.getProperty("keyAlias")
+            keyPassword = keyStoreProperties.getProperty("keyPassword")
+            storeFile = file(expandPath(keyStoreProperties.getProperty("storeFile")))
+            storePassword = keyStoreProperties.getProperty("storePassword")
+        }
+        getByName("debug") {
+            keyAlias = keyStoreProperties.getProperty("keyAlias")
+            keyPassword = keyStoreProperties.getProperty("keyPassword")
+            storeFile = file(expandPath(keyStoreProperties.getProperty("storeFile")))
+            storePassword = keyStoreProperties.getProperty("storePassword")
+        }
+    }
+
     buildTypes {
         getByName("release") {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 }

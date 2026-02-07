@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/pages/intro/pages/page_template.dart';
-import 'package:flutter_gtt/widgets/intro/custom_text.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/pages/intro/pages/page_template.dart';
+import 'package:torino_mobility/widgets/intro/custom_text.dart';
 
 class Page1 extends StatelessWidget {
   const Page1({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const PageTemplate(
-      title: 'Benvenuto!',
+    return PageTemplate(
+      title: l10n.welcomeTitle,
       children: [
         CustomText(
-          'Con questa app potrai visualizzare gli orari dei mezzi pubblici di Torino,\n salvare le tue fermate preferite, vedere le linee in tempo reale e molto altro!',
-          type: CustomTextType.body,
+          l10n.welcomeDescription,
         ),
         CustomText(
-          'Ecco un breve tutorial per aiutarti a capire come funziona',
+          l10n.welcomeDecription2,
         ),
       ],
     );

@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/widgets/home/drawer/drawer_tile.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/widgets/home/drawer/drawer_tile.dart';
 import 'package:get/get.dart';
 
 class HomeDrawer extends StatelessWidget {
-  final Map<String, dynamic> beta = {
-    'Mappa Default': () => Get.toNamed('/map'),
-  };
-  final Map<String, dynamic> elements = {
-    'Leggi Biglietto/Carta': () => Get.toNamed('/nfc'),
-    'Linee': () => Get.toNamed('/routelist'),
-    'Impostazioni': () => Get.toNamed('/settings'),
-    //'Testing': () => Get.to(() => TestingPage()),
-  };
   final _divider = const Divider(
     height: 8,
     indent: 5,
@@ -23,6 +15,14 @@ class HomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic> beta = {
+      l10n.defaultMap: () => Get.toNamed('/map'),
+    };
+    final Map<String, dynamic> elements = {
+      l10n.readTicketOrCard: () => Get.toNamed('/nfc'),
+      l10n.routesTitle: () => Get.toNamed('/routelist'),
+      l10n.settings: () => Get.toNamed('/settings'),
+    };
     return Drawer(
       //backgroundColor: Colors.grey,
       width: context.width * 0.6,

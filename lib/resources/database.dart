@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_gtt/models/gtt/agency.dart';
-import 'package:flutter_gtt/models/gtt/favorite_stop.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/models/gtt/pattern.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/storage.dart';
+import 'package:torino_mobility/models/gtt/agency.dart';
+import 'package:torino_mobility/models/gtt/favorite_stop.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/models/gtt/pattern.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/storage.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 

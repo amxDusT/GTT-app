@@ -1,28 +1,29 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
-import 'package:flutter_gtt/controllers/app_status_controller.dart';
-import 'package:flutter_gtt/controllers/map/map_animation.dart';
-import 'package:flutter_gtt/controllers/map/map_location.dart';
-import 'package:flutter_gtt/exceptions/map_location_exception.dart';
-import 'package:flutter_gtt/models/gtt/pattern.dart' as gtt;
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/models/mqtt_data.dart';
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
-import 'package:flutter_gtt/resources/analytics.dart';
-import 'package:flutter_gtt/resources/api/gtt_api.dart';
-import 'package:flutter_gtt/resources/api/mqtt_controller.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/map_utils.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/controllers/app_status_controller.dart';
+import 'package:torino_mobility/controllers/map/map_animation.dart';
+import 'package:torino_mobility/controllers/map/map_location.dart';
+import 'package:torino_mobility/exceptions/map_location_exception.dart';
+import 'package:torino_mobility/models/gtt/pattern.dart' as gtt;
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/models/marker.dart';
+import 'package:torino_mobility/models/mqtt_data.dart';
+import 'package:torino_mobility/models/gtt/route.dart' as gtt;
+import 'package:torino_mobility/resources/analytics.dart';
+import 'package:torino_mobility/resources/api/gtt_api.dart';
+import 'package:torino_mobility/resources/api/mqtt_controller.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/map_utils.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 
 class MapPageController extends GetxController
     with GetTickerProviderStateMixin {
@@ -121,7 +122,7 @@ class MapPageController extends GetxController
         if (followVehicle.value != 0 &&
             vehicle.mqttData.vehicleNum == followVehicle.value) {
           stopFollowingVehicle();
-          Utils.showSnackBar('Il veicolo che stavi seguendo è stato rimosso');
+          Utils.showSnackBar(l10n.followedVehicleRemoved);
         }
         if (lastOpenedMarker != null &&
             lastOpenedMarker is VehicleMarker &&
@@ -423,7 +424,7 @@ class MapPageController extends GetxController
               onPressed: () async {
                 await Geolocator.openAppSettings();
               },
-              child: const Text('Impostazioni'),
+              child: Text(l10n.settings),
             ));
       } else {
         Utils.showSnackBar(

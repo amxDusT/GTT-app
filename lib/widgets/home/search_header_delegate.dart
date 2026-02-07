@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
+import 'package:torino_mobility/controllers/search/home_search_controller.dart';
 
 class SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget searchWidget;

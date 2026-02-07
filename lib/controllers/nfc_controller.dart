@@ -1,13 +1,14 @@
 import 'package:convert/convert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gtt/models/smart_card/card_files.dart';
-import 'package:flutter_gtt/models/smart_card/chip_paper.dart';
-import 'package:flutter_gtt/models/smart_card/smart_card.dart';
-import 'package:flutter_gtt/pages/nfc/card_info_page.dart';
-import 'package:flutter_gtt/pages/nfc/ticket_info_page.dart';
-import 'package:flutter_gtt/resources/utils/apdu_utils.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/models/smart_card/card_files.dart';
+import 'package:torino_mobility/models/smart_card/chip_paper.dart';
+import 'package:torino_mobility/models/smart_card/smart_card.dart';
+import 'package:torino_mobility/pages/nfc/card_info_page.dart';
+import 'package:torino_mobility/pages/nfc/ticket_info_page.dart';
+import 'package:torino_mobility/resources/utils/apdu_utils.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:nfc_manager/platform_tags.dart';
@@ -46,14 +47,14 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
     if (!available) {
       Get.back(closeOverlays: true);
       Utils.showSnackBar(
-        'NFC non attivo. Attivalo nelle impostazioni',
+        l10n.nfcNotAvailable,
         closePrevious: true,
         duration: const Duration(seconds: 5),
         mainButton: TextButton(
           onPressed: () async {
             await NfcManager.instance.openNfcSettings();
           },
-          child: const Text('Impostazioni'),
+          child: Text(l10n.settings),
         ),
       );
     }
@@ -73,7 +74,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
       try {
         await _handleResponse(tag);
       } on PlatformException {
-        Utils.showSnackBar('Hai rimosso la carta troppo presto. Riprova');
+        Utils.showSnackBar(l10n.nfcCardRemovedTooSoon);
       } finally {
         stopReading();
       }
@@ -99,7 +100,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
     } else if (nfcaTag != null) {
       await _handleNfcA(nfcaTag);
     } else {
-      Utils.showSnackBar('Carta non supportata');
+      Utils.showSnackBar(l10n.nfcCardUnsupported);
     }
   }
 
@@ -109,7 +110,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
         atqa.length != 2 ||
         atqa[0] != 0x44 ||
         atqa[1] != 0x00) {
-      Utils.showSnackBar('Biglietto non supportato');
+      Utils.showSnackBar(l10n.nfcTicketUnsupported);
       return;
     }
 
@@ -145,7 +146,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
       //   'rides': chip.remainingRides,
       // });
     } else {
-      Utils.showSnackBar('Hai rimosso il biglietto troppo presto. Riprova');
+      Utils.showSnackBar(l10n.nfcTicketRemovedTooSoon);
     }
   }
 
@@ -203,7 +204,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
     if (list.length == 15 && list[1][0] != 0) {
       if (list[2][1] == 0) {
         //empty smartcard
-        Utils.showSnackBar('Carta vuota');
+        Utils.showSnackBar(l10n.nfcEmptyCard);
         //Get.snackbar('Error', 'Card is empty(?)');
         return;
       }
@@ -211,7 +212,7 @@ class NfcController extends GetxController with GetTickerProviderStateMixin {
       /// all goood
     } else {
       //invalid
-      Utils.showSnackBar('Carta non supportata');
+      Utils.showSnackBar(l10n.nfcCardUnsupported);
       return;
     }
     _readData(list);

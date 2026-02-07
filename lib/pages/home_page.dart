@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/widgets/home/search_header_delegate.dart';
-import 'package:flutter_gtt/widgets/search/home_search_widget.dart';
-import 'package:flutter_gtt/widgets/home/drawer/drawer.dart';
-import 'package:flutter_gtt/widgets/home/favorite_card.dart';
-import 'package:flutter_gtt/widgets/route_list_favorite_widget.dart';
+import 'package:torino_mobility/controllers/home_controller.dart';
+import 'package:torino_mobility/controllers/route_list_controller.dart';
+import 'package:torino_mobility/controllers/search/home_search_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/widgets/home/search_header_delegate.dart';
+import 'package:torino_mobility/widgets/search/home_search_widget.dart';
+import 'package:torino_mobility/widgets/home/drawer/drawer.dart';
+import 'package:torino_mobility/widgets/home/favorite_card.dart';
+import 'package:torino_mobility/widgets/route_list_favorite_widget.dart';
 import 'package:get/get.dart';
 import 'package:reorderable_grid/reorderable_grid.dart';
 
@@ -35,7 +36,7 @@ class HomePage extends GetView<HomeController> {
                   searchWidget: SearchStop(
                     searchController: _searchController,
                   ),
-                  title: const Text('GTT Fermate'),
+                  title: Text(l10n.stopsTitle),
                   maxHeight: 150,
                   minHeight: 100,
                   actions: [

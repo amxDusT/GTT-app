@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_address.dart';
-import 'package:flutter_gtt/controllers/map/map_location.dart';
-import 'package:flutter_gtt/models/map/address.dart';
-import 'package:flutter_gtt/resources/api/geocoder_api.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/controllers/map/map_address.dart';
+import 'package:torino_mobility/controllers/map/map_location.dart';
+import 'package:torino_mobility/models/map/address.dart';
+import 'package:torino_mobility/resources/api/geocoder_api.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 

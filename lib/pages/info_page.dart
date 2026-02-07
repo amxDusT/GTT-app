@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/info_controller.dart';
-import 'package:flutter_gtt/fake/fake_data.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_gtt/widgets/info_widget.dart';
+import 'package:torino_mobility/controllers/info_controller.dart';
+import 'package:torino_mobility/fake/fake_data.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/widgets/info_widget.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -39,7 +40,13 @@ class InfoPage extends StatelessWidget {
             title: Obx(
               () => Text(
                 _infoController.isSelecting.isTrue
-                    ? '${_infoController.selectedRoutes.length} / ${maxRoutesInMap > _infoController.fermata.value.vehicles.length ? _infoController.fermata.value.vehicles.length : maxRoutesInMap}  selezionate'
+                    ? l10n.selectedRoutesCount(
+                        _infoController.selectedRoutes.length,
+                        maxRoutesInMap >
+                                _infoController.fermata.value.vehicles.length
+                            ? _infoController.fermata.value.vehicles.length
+                            : maxRoutesInMap,
+                      )
                     : _infoController.fermata.value.toString(),
               ),
             ),
@@ -53,8 +60,8 @@ class InfoPage extends StatelessWidget {
                       ? Icons.close
                       : Icons.select_all),
                   tooltip: _infoController.isSelecting.isTrue
-                      ? 'Annulla'
-                      : 'Seleziona linee',
+                      ? l10n.cancel
+                      : l10n.selectRoutes,
                 ),
               ),
               Obx(
@@ -66,8 +73,8 @@ class InfoPage extends StatelessWidget {
                       ? Icons.star
                       : Icons.star_outline),
                   tooltip: _infoController.isSaved.isTrue
-                      ? 'Rimuovi dalla home'
-                      : 'Salva in home',
+                      ? l10n.removeFromHome
+                      : l10n.saveToHome,
                 ),
               ),
             ],
@@ -106,7 +113,11 @@ class InfoPage extends StatelessWidget {
                                         bottom: 60,
                                       ),
                                       child: Text(
-                                        'Ultimo aggiornamento: ${Utils.dateToHourString(_infoController.lastUpdate.value)}',
+                                        l10n.lastUpdate(
+                                          Utils.dateToHourString(
+                                            _infoController.lastUpdate.value,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   );
@@ -159,7 +170,7 @@ class InfoPage extends StatelessWidget {
                                 'fermata': _infoController.fermata.value,
                               });
                             },
-                            child: const Text('Guarda sulla mappa'),
+                            child: Text(l10n.viewOnMap),
                           ),
                         );
                       },

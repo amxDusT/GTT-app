@@ -1,4 +1,4 @@
-import 'package:flutter_gtt/resources/utils/map_utils.dart';
+import 'package:torino_mobility/resources/utils/map_utils.dart';
 import 'package:latlong2/latlong.dart';
 
 class Pattern {

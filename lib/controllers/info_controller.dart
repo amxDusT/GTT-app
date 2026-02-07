@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
-import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/api/gtt_api.dart';
-import 'package:flutter_gtt/exceptions/api_exception.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/models/gtt/route.dart' as gtt;
+import 'package:torino_mobility/controllers/home_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/api/gtt_api.dart';
+import 'package:torino_mobility/exceptions/api_exception.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class InfoController extends GetxController {
@@ -58,7 +59,7 @@ class InfoController extends GetxController {
     } else {
       if (selectedRoutes.length >= maxRoutesInMap) {
         Utils.showSnackBar(
-          'Puoi selezionare al massimo $maxRoutesInMap veicoli',
+          l10n.selectMaxVehicles(maxRoutesInMap),
           //title: "Attenzione",
           closePrevious: true,
         );
@@ -97,27 +98,26 @@ class InfoController extends GetxController {
 
   void showErrorPopup() async {
     await Get.defaultDialog(
-      title: 'Errore',
-      content: const Align(
+      title: l10n.errorTitle,
+      content: Align(
         alignment: Alignment.topLeft,
         child: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Ooops... Problema nel risolvere la richiesta.'),
-              Text(
-                  'Riprova, o prova ad aggiornare i dati di GTT nelle impostazioni.'),
+              Text(l10n.genericErrorMessage),
+              Text(l10n.retryOrUpdateDataMessage),
             ],
           ),
         ),
       ),
-      textConfirm: 'Aggiorna',
+      textConfirm: l10n.update,
       onConfirm: () {
         Get.back();
         Get.put(SettingsController()).resetData();
       },
-      textCancel: 'Annulla',
+      textCancel: l10n.cancel,
     );
   }
 }

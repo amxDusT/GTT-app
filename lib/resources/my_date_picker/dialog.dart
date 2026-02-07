@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/resources/my_date_picker/date_time_picker.dart';
+import 'package:torino_mobility/resources/my_date_picker/date_time_picker.dart';
 
 Future<void> showDateTimePickerDialog({
   required BuildContext context,

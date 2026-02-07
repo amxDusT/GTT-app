@@ -3,21 +3,18 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/home_controller.dart';
-import 'package:flutter_gtt/controllers/loading_controller.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/controllers/home_controller.dart';
+import 'package:torino_mobility/controllers/loading_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SettingsController extends GetxController {
-  final String betaFeatures = '''
-  - mappa default senza tratte
-  - map api da mapbox invece di openstreetmap
-  ''';
   final RxBool showBetaFeatures = Storage.instance.showBetaFeatures.obs;
   final RxBool showSecondsInUpdates = Storage.instance.showSecondsInUpdates.obs;
   final RxBool isFermataShowing = Storage.instance.isFermataShowing.obs;
@@ -123,25 +120,27 @@ class SettingsController extends GetxController {
   }
 
   void shareApp() {
-    Share.share(
-      'Sto usando questa app GTT, scaricala anche tu \nhttps://github.com/amxDusT/GTT-app/releases/latest',
-      subject: 'GTT app',
+    SharePlus.instance.share(
+      ShareParams(
+        text: l10n.shareAppMessage,
+        subject: l10n.shareAppSubject,
+      ),
     );
   }
 
   void infoApp() {
     Get.defaultDialog(
-      title: 'Informazioni app',
-      textCancel: 'Chiudi',
+      title: l10n.settingsInfoTitle,
+      textCancel: l10n.close,
       content: Column(
         children: [
-          Text('Versione: $version'),
-          const Text('Sviluppato da: Kevin Kolaveri'),
+          Text(l10n.settingsVersion(version.value)),
+          Text(l10n.developedBy('Kevin Kolaveri')),
           Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              const Text('Github: '),
+              Text(l10n.githubLabel),
               InkWell(
                 onTap: () async {
                   String url = 'https://github.com/amxDusT/GTT-app/';
@@ -172,22 +171,21 @@ class SettingsController extends GetxController {
 
   void betaFeaturesInfo() {
     Get.defaultDialog(
-      title: 'Beta features',
-      textCancel: 'Chiudi',
+      title: l10n.settingsBetaFeaturesTitle,
+      textCancel: l10n.close,
       content: Column(
         children: [
-          const Text('Funzionalità in fase di test:',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(l10n.betaFeaturesHeading,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
           SizedBox(
             height: 150,
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              child: Text(betaFeatures),
+              child: Text(l10n.betaFeaturesList),
             ),
           ),
-          const Text(
-              'ATTENZIONE! Queste funzionalità non sono ancora completamente testate e potrebbero non funzionare correttamente.',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(l10n.betaFeaturesWarning,
+              style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:flutter_gtt/controllers/info_controller.dart';
+import 'package:torino_mobility/controllers/info_controller.dart';
 import 'package:get/get.dart';
 
 class InfoBindings extends Bindings {

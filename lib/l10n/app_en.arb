@@ -1,0 +1,327 @@
+
+{
+  "@@locale": "en",
+  "@appTitle": {},
+  "@stopsTitle": {},
+  "@close": {},
+  "@settings": {},
+  "@followedVehicleRemoved": {},
+  "@welcomeTitle": {},
+  "@welcomeDescription": {},
+  "@welcomeDecription2": {},
+  "@settingsDarkThemeTitle": {},
+  "@settingsShowSecondsTitle": {},
+  "@settingsShowStopOnMapTitle": {},
+  "@settingsShowStopOnMapSubtitle": {},
+  "@settingsShowFavoriteRoutesTitle": {},
+  "@settingsHighlightInitialStopTitle": {},
+  "@settingsHighlightInitialStopSubtitle": {},
+  "@settingsShowRoutesWithoutPassagesTitle": {},
+  "@settingsShowRoutesWithoutPassagesSubtitle": {},
+  "@settingsBetaFeaturesTitle": {},
+  "@settingsBetaFeaturesSubtitle": {},
+  "@settingsShowTutorialTitle": {},
+  "@settingsRefreshDataTitle": {},
+  "@settingsDownloadReleaseTitle": {},
+  "@settingsBackupFavoritesTitle": {},
+  "@settingsRestoreFavoritesTitle": {},
+  "@settingsShareAppTitle": {},
+  "@settingsInfoTitle": {},
+  "@settingsPageTitle": {},
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@errorWithCode": {
+    "placeholders": {
+      "code": {
+        "type": "int"
+      }
+    }
+  },
+  "@shareAppMessage": {},
+  "@shareAppSubject": {},
+  "@developedBy": {
+    "placeholders": {
+      "developer": {
+        "type": "String"
+      }
+    }
+  },
+  "@githubLabel": {},
+  "@betaFeaturesHeading": {},
+  "@betaFeaturesWarning": {},
+  "@betaFeaturesList": {},
+  "@moveToTop": {},
+  "@changeDescription": {},
+  "@changeColor": {},
+  "@delete": {},
+  "@chooseColorTitle": {},
+  "@deleteStopQuestion": {
+    "placeholders": {
+      "stop": {
+        "type": "String"
+      }
+    }
+  },
+  "@enterShortDescription": {},
+  "@confirm": {},
+  "@cancel": {},
+  "@selectedRoutesCount": {
+    "placeholders": {
+      "selected": {
+        "type": "int"      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "@selectRoutes": {},
+  "@saveToHome": {},
+  "@removeFromHome": {},
+  "@lastUpdate": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "@update": {},
+  "@errorTitle": {},
+  "@genericErrorMessage": {},
+  "@retryOrUpdateDataMessage": {},  
+  "@invalidAddress": {},
+  "@stopNotFound": {},
+  "@nfcNotAvailable": {},
+  "@nfcCardUnsupported": {},
+  "@nfcTicketUnsupported": {},
+  "@nfcTicketRemovedTooSoon": {},
+  "@nfcCardRemovedTooSoon": {},
+  "@nfcEmptyCard": {},
+  "@readCardTitle": {},
+  "@cardTitle": {
+    "placeholders": {
+      "cardNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "@cardInfoHeading": {},
+  "@subscriptionsHeading": {},
+  "@cardNumberLabel": {}, 
+  "@cardTypeLabel": {},
+  "@cardIssuedOnLabel": {},
+  "@contractsLabel": {},
+  "@ticketTitle": {
+    "placeholders": {
+      "cardNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "@ticketInfoHeading": {},
+  "@ticketNumberLabel": {},
+  "@ticketTypeLabel": {},
+  "@ticketFirstValidationLabel": {},
+  "@ticketLastValidationLabel": {},
+  "@ticketExpiresLabel": {},
+  "@ticketMinutesRemainingLabel": {},
+  "@ticketExpiredLabel": {},
+  "@stopTitle": {
+    "placeholders": {
+      "stopName": {
+        "type": "String"
+      }
+    }
+  },
+  "@viewOnMap": {},
+  "@routesTitle": {},
+  "@directionLabel": {},
+  "@readTicketOrCard": {},
+  "@defaultMap": {},
+  "@loadingFirstDownload": {},
+  "@updateAvailableTitle": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "@updateAvailableBody": {},
+  "@whatsNewTitle": {},
+  "@downloadNewVersion": {},
+  "@download": {},
+  "@contractExpiredSuffix": {},
+  "@contractNotActivatedSuffix": {},
+  "@startLabel": {},
+  "@endLabel": {},  
+  "@directionsLabel": {},
+  "@nearbyStopsLabel": {},
+  "@positionLabel": {},
+  "@chooseDateTimeTitle": {},
+  "@resetCurrentTime": {},
+  "@set": {},
+  "@nfcReading": {},
+  "@nfcRead": {},
+  "@locationServiceDisabled": {},
+  "@locationPermissionDenied": {},
+  "@locationPermissionDeniedForever": {},
+  "@introStopTitle": {},
+  "@introStopDescription": {},
+  "@introStopDescription2": {},
+  "@introFavoritesTitle": {},
+  "@introFavoritesDescription": {},
+  "@introFavoritesDescription2": {},
+  "@introTicketTitle": {},
+  "@introTicketDescription": {},
+  "@introTicketDescription2": {},
+  "@introHomeTitle": {},
+  "@introHomeDescription": {},
+  "@introHomeDescription2": {},
+  "@introVehicleListTitle": {},
+  "@introVehicleListDescription": {},
+  "@introVehicleListDescription2": {},
+  "@searchStop": {},
+  "@searchVehicle": {},
+  "@searchAddress": {},
+  "@makeDefault": {},
+  "@selectMaxVehicles": {
+    "placeholders": {
+      "maxRoutesInMap": {
+        "type": "int"
+      }
+    }
+  },
+
+  
+
+  "appTitle": "Torino Mobility",
+  "stopsTitle": "Stops",
+  "close": "Close",
+  "settings": "Settings",
+  "followedVehicleRemoved": "The vehicle you were following has been removed",
+  "welcomeTitle": "Welcome!",
+  "welcomeDescription": "With this app, you can view the schedules of public transport in Turin,\n save your favorite stops, see real-time lines, and much more!", 
+  "welcomeDecription2": "Here's a brief tutorial to help you understand how it works.",
+  "settingsDarkThemeTitle": "Dark theme",
+  "settingsShowFavoriteRoutesTitle": "Show favorite lines on home",
+  "settingsShowSecondsTitle": "Show seconds since last update",
+  "settingsShowStopOnMapTitle": "Show stop on map",
+  "settingsShowStopOnMapSubtitle": "Show the initial stop popup on the map",
+  "settingsHighlightInitialStopTitle": "Highlight initial stop",
+  "settingsHighlightInitialStopSubtitle": "Show the initial stop in a different color on the map",
+  "settingsShowRoutesWithoutPassagesTitle": "Show routes without passages",
+  "settingsShowRoutesWithoutPassagesSubtitle": "Show routes without passages from \"View on map\"",
+  "settingsBetaFeaturesTitle": "Beta features",
+  "settingsBetaFeaturesSubtitle": "Tap for information",
+  "settingsShowTutorialTitle": "Show tutorial",
+  "settingsRefreshDataTitle": "Refresh GTT data",
+  "settingsDownloadReleaseTitle": "Download release",
+  "settingsBackupFavoritesTitle": "Local favorites backup",
+  "settingsRestoreFavoritesTitle": "Restore favorites",
+  "settingsShareAppTitle": "Share app",
+  "settingsInfoTitle": "App info",
+  "settingsPageTitle": "Settings",
+  "settingsVersion": "Version: {version}",
+  "shareAppMessage": "I'm using this GTT app, download it too \nhttps://github.com/amxDusT/GTT-app/releases/latest",
+  "shareAppSubject": "GTT app",
+  "developedBy": "Developed by: {developer}",
+  "githubLabel": "Github: ",
+  "betaFeaturesHeading": "Features in testing:",
+  "betaFeaturesWarning": "WARNING! These features are not fully tested and may not work correctly.",
+  "betaFeaturesList": "- default map without routes\n- map API from Mapbox instead of OpenStreetMap",
+  "moveToTop": "Move to top",
+  "changeDescription": "Change description",
+  "changeColor": "Change color",
+  "delete": "Delete",
+  "chooseColorTitle": "Choose a color",
+  "deleteStopQuestion": "Do you want to delete stop {stop}?",
+  "enterShortDescription": "Write a short description",
+  "confirm": "Confirm",
+  "cancel": "Cancel",
+  "selectedRoutesCount": "{selected} / {total} selected",
+  "selectRoutes": "Select routes",
+  "saveToHome": "Save to home",
+  "removeFromHome": "Remove from home",
+  "lastUpdate": "Last update: {time}",
+  "update": "Update",
+  "errorWithCode": "Error {code}",
+  "errorTitle": "Error",
+  "genericErrorMessage": "Oops... Problem while processing the request.",
+  "retryOrUpdateDataMessage": "Try again, or refresh GTT data in settings.",
+  "invalidAddress": "Invalid address",
+  "stopNotFound": "The stop does not exist",
+  "nfcNotAvailable": "NFC is off. Enable it in settings",
+  "nfcCardUnsupported": "Card not supported",
+  "nfcTicketUnsupported": "Ticket not supported",
+  "nfcTicketRemovedTooSoon": "You removed the ticket too soon. Try again",
+  "nfcCardRemovedTooSoon": "You removed the card too soon. Try again",
+  "nfcEmptyCard": "Empty card",
+  "readCardTitle": "Read Card",
+  "cardTitle": "Card {cardNumber}",
+  "cardInfoHeading": "Card information",
+  "subscriptionsHeading": "Subscriptions",
+  "cardNumberLabel": "Card number: ",
+  "cardTypeLabel": "Card type: ",
+  "cardIssuedOnLabel": "Issued on: ",
+  "contractsLabel": "Contracts/Subscriptions: ",
+  "ticketTitle": "Ticket {cardNumber}",
+  "ticketInfoHeading": "Ticket info:",
+  "ticketNumberLabel": "Ticket number: ",
+  "ticketTypeLabel": "Ticket type: ",
+  "ticketFirstValidationLabel": "First validation on: ",
+  "ticketLastValidationLabel": "Last validation on: ",
+  "ticketExpiresLabel": "Expires on: ",
+  "ticketMinutesRemainingLabel": "Minutes remaining: ",
+  "ticketExpiredLabel": "Expired",
+  "stopTitle": "Stop {stopName}",
+  "viewOnMap": "View on map",
+  "routesTitle": "Lines",
+  "directionLabel": "Direction:",
+  "readTicketOrCard": "Read Ticket/Card",
+  "defaultMap": "Default Map",
+  "loadingFirstDownload": "Downloading GTT data for the first time...",
+  "updateAvailableTitle": "New version available ({version})",
+  "updateAvailableBody": "A new version of the app is available",
+  "whatsNewTitle": "What's new:",
+  "downloadNewVersion": "Download the new version",
+  "download": "Download",
+  "contractExpiredSuffix": "- Expired",
+  "contractNotActivatedSuffix": "(Not activated)",
+  "startLabel": "Start: ",
+  "endLabel": "End: ",
+  "directionsLabel": "Directions",
+  "nearbyStopsLabel": "Nearby stops",
+  "positionLabel": "Position",
+  "chooseDateTimeTitle": "Choose date and time",
+  "resetCurrentTime": "Reset to current time",
+  "set": "Set",
+  "nfcReading": "Reading...",
+  "nfcRead": "Read",
+  "locationServiceDisabled": "Location service disabled",
+  "locationPermissionDenied": "Permission denied",
+  "locationPermissionDeniedForever": "Permission denied. Enable location permissions in device settings",
+  "introStopTitle": "Stop",
+  "introStopDescription": "You can view the lines serving the selected stop and their schedules.",
+  "introStopDescription2": "By tapping on a line you can view its vehicles in real time.\nYou can see multiple lines at the same time by selecting them and tapping \"View on map\".",
+  "introFavoritesTitle": "Favorites",
+  "introFavoritesDescription": "Long-press a stop in favorites to edit it.",
+  "introFavoritesDescription2": "By tapping \"Position\" you go to the map with the selected stop. Long-pressing lets you change its position in favorites.",
+  "introTicketTitle": "Ticket information",
+  "introTicketDescription": "You can view the information of the ticket or card.",
+  "introTicketDescription2": "After pressing \"Read\" place the ticket or card on the back of the phone.\n(Only for devices with NFC enabled)",
+  "introHomeTitle": "Home Page",
+  "introHomeDescription": "You can search for stops by name or number.",
+  "introHomeDescription2": "You can click on the star icon to add or remove a stop from favorites.",
+  "introVehicleListTitle": "Vehicle List",
+  "introVehicleListDescription": "You can view, search, or save the lines you are interested in.",
+  "introVehicleListDescription2": "By tapping on a line you can view its vehicles in real time.",
+  "searchStop": "Search stop...",
+  "searchVehicle": "Search vehicle...",
+  "searchAddress": "Search address...",
+  "makeDefault": "Make default",
+  "selectMaxVehicles": "You can select up to {maxRoutesInMap} vehicles"
+}

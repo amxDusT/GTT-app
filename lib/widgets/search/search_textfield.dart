@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/search/search_controller.dart';
-import 'package:flutter_gtt/widgets/search/disabled_focusnode.dart';
+import 'package:torino_mobility/controllers/search/search_controller.dart';
+import 'package:torino_mobility/widgets/search/disabled_focusnode.dart';
 import 'package:get/get.dart';
 
 class SearchTextField extends StatelessWidget {

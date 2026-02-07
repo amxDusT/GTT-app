@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/resources/utils/gtt_date.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/utils/gtt_date.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:intl/intl.dart';
 
 enum CardType { cardBip, cardPYou, cardEdisu, cardNone }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_controller.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
+import 'package:torino_mobility/controllers/map/map_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
 import 'package:get/get.dart';
 
 class RouteAppBarInfo extends StatefulWidget {
@@ -81,7 +82,7 @@ class _RouteAppBarInfoState extends State<RouteAppBarInfo>
                 const SizedBox(
                   height: 5,
                 ),
-                const Text('Direzione:'),
+                Text(l10n.directionLabel),
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(

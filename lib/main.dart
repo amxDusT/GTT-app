@@ -5,13 +5,14 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
-import 'package:flutter_gtt/firebase_options.dart';
-import 'package:flutter_gtt/resources/analytics.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:torino_mobility/firebase_options.dart';
+import 'package:torino_mobility/l10n/app_localizations.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/resources/analytics.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -49,19 +50,28 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       //debugShowCheckedModeBanner: false,
-      locale: const Locale('it'),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      builder: (context, child) {
+        Get.put(LocalizationService(context));
+        return child!;
+      },
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       initialRoute: '/',
       getPages: Utils.getPages(),
-      supportedLocales: const [
-        Locale('it', 'IT'),
-        Locale('en', 'US'),
-      ],
-      title: 'GTT App',
+      supportedLocales: AppLocalizations.supportedLocales,
+      title: 'Torino Mobility',
+      localeResolutionCallback: (locale, locales) {
+        Locale? newLocale;
+        if (locales
+            .map((l) => l.languageCode)
+            .any((code) => code == locale?.languageCode)) {
+          newLocale = locales.firstWhere(
+            (element) => element.languageCode == locale!.languageCode,
+          );
+        } else
+          newLocale ??= const Locale('en');
+
+        return newLocale;
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
