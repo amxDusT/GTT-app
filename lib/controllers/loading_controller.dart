@@ -1,6 +1,5 @@
 import 'dart:isolate';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
@@ -10,9 +9,7 @@ import 'package:torino_mobility/models/gtt/pattern.dart' as gtt;
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:torino_mobility/exceptions/api_exception.dart';
-import 'package:torino_mobility/resources/api/github_api.dart';
 import 'package:torino_mobility/resources/api/gtt_api.dart';
-import 'package:torino_mobility/resources/apk_install.dart';
 import 'package:torino_mobility/resources/database.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
@@ -25,11 +22,11 @@ class LoadingController extends GetxController {
   @override
   void onInit() async {
     super.onInit();
-    if (!kDebugMode) await checkVersion();
+    //if (!kDebugMode) await checkVersion();
     checkAndLoad();
   }
 
-  Future<void> checkVersion() async {
+  /* Future<void> checkVersion() async {
     bool isDifferent = await GithubApi.checkVersion();
 
     if (isDifferent) {
@@ -74,28 +71,6 @@ class LoadingController extends GetxController {
       middleText: l10n.downloadNewVersion,
       textConfirm: l10n.download,
       textCancel: l10n.cancel,
-      /*cancel: TextButton(
-        style: TextButton.styleFrom(
-          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          shape: RoundedRectangleBorder(
-            side: BorderSide(
-              color: Get.theme.colorScheme.secondary,
-              width: 2,
-              style: BorderStyle.solid,
-            ),
-            borderRadius: BorderRadius.circular(100),
-          ),
-        ),
-        onPressed: () {
-          if (isDownloading.value) return;
-          Get.back();
-        },
-        child: Text(
-          l10n.cancel,
-          style: TextStyle(color: Get.theme.colorScheme.secondary),
-        ),
-      ),*/
       onConfirm: () async {
         if (isDownloading.value) return;
         isDownloading.value = true;
@@ -103,7 +78,7 @@ class LoadingController extends GetxController {
         Get.back();
       },
     );
-  }
+  } */
 
   /*
     check if hasnt been updated in the last $daysBeforeAutoUpdate days
