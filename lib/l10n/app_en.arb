@@ -195,7 +195,8 @@
       }
     }
   },
-
+  "@skip": {},
+  "@start": {},
   
 
   "appTitle": "Torino Mobility",
@@ -323,5 +324,7 @@
   "searchVehicle": "Search vehicle...",
   "searchAddress": "Search address...",
   "makeDefault": "Make default",
-  "selectMaxVehicles": "You can select up to {maxRoutesInMap} vehicles"
+  "selectMaxVehicles": "You can select up to {maxRoutesInMap} vehicles",
+  "skip": "Skip",
+  "start": "Start"
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/intro/intro_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/widgets/intro/back_forward_button.dart';
 import 'package:get/get.dart';
 
@@ -68,8 +69,8 @@ class IntroPage extends GetView<IntroController> {
                 child: Obx(
                   () => Text(
                     controller.currentIndex.value == controller.pages.length - 1
-                        ? 'Comincia'
-                        : 'Salta',
+                        ? l10n.start
+                        : l10n.skip,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),

@@ -433,4 +433,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String selectMaxVehicles(int maxRoutesInMap) {
     return 'You can select up to $maxRoutesInMap vehicles';
   }
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get start => 'Start';
 }

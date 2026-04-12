@@ -853,6 +853,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can select up to {maxRoutesInMap} vehicles'**
   String selectMaxVehicles(int maxRoutesInMap);
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @start.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get start;
 }
 
 class _AppLocalizationsDelegate

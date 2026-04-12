@@ -29,32 +29,11 @@
   "settingsInfoTitle": "Informazioni app",
   "settingsPageTitle": "Impostazioni",
   "settingsVersion": "Versione: {version}",
-  "@settingsVersion": {
-    "placeholders": {
-      "version": {
-        "type": "String"
-      }
-    }
-  },
-
-    "errorWithCode": "Errore {code}",
+  "errorWithCode": "Errore {code}",
   "shareAppMessage": "Sto usando questa app GTT, scaricala anche tu \nhttps://github.com/amxDusT/GTT-app/releases/latest",
   "shareAppSubject": "GTT app",
   "developedBy": "Sviluppato da: {developer}",
-    "@errorWithCode": {
-      "placeholders": {
-        "code": {
-          "type": "int"
-        }
-      }
-    },
-  "@developedBy": {
-    "placeholders": {
-      "developer": {
-        "type": "String"
-      }
-    }
-  },
+   
   "githubLabel": "Github: ",
   "betaFeaturesHeading": "Funzionalità in fase di test:",
   "betaFeaturesWarning": "ATTENZIONE! Queste funzionalità non sono ancora completamente testate e potrebbero non funzionare correttamente.",
@@ -66,13 +45,7 @@
   "delete": "Elimina",
   "chooseColorTitle": "Scegli un colore",
   "deleteStopQuestion": "Vuoi eliminare la fermata {stop}?",
-  "@deleteStopQuestion": {
-    "placeholders": {
-      "stop": {
-        "type": "String"
-      }
-    }
-  },
+  
   "enterShortDescription": "Scrivi una breve descrizione",
   "confirm": "Conferma",
   "cancel": "Annulla",
@@ -81,23 +54,6 @@
   "saveToHome": "Salva in home",
   "removeFromHome": "Rimuovi dalla home",
   "lastUpdate": "Ultimo aggiornamento: {time}",
-  "@selectedRoutesCount": {
-    "placeholders": {
-      "selected": {
-        "type": "int"
-      },
-      "total": {
-        "type": "int"
-      }
-    }
-  },
-  "@lastUpdate": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
 
   "update": "Aggiorna",
   "errorTitle": "Errore",
@@ -116,13 +72,7 @@
 
   "readCardTitle": "Leggi Carta",
   "cardTitle": "Carta {cardNumber}",
-  "@cardTitle": {
-    "placeholders": {
-      "cardNumber": {
-        "type": "String"
-      }
-    }
-  },
+ 
   "cardInfoHeading": "Informazioni carta",
   "subscriptionsHeading": "Abbonamenti",
   "cardNumberLabel": "Numero Carta: ",
@@ -131,13 +81,7 @@
   "contractsLabel": "Contratti/Abbonamenti: ",
 
   "ticketTitle": "Biglietto {cardNumber}",
-  "@ticketTitle": {
-    "placeholders": {
-      "cardNumber": {
-        "type": "String"
-      }
-    }
-  },
+  
   "ticketInfoHeading": "Informazioni biglietto:",
   "ticketNumberLabel": "Numero Biglietto: ",
   "ticketTypeLabel": "Tipo Biglietto: ",
@@ -148,13 +92,7 @@
   "ticketExpiredLabel": "Scaduto",
 
   "stopTitle": "Fermata {stopName}",
-  "@stopTitle": {
-    "placeholders": {
-      "stopName": {
-        "type": "String"
-      }
-    }
-  },
+ 
 
   "viewOnMap": "Guarda sulla mappa",
   "routesTitle": "Linee",
@@ -164,13 +102,7 @@
 
   "loadingFirstDownload": "Scarico i dati GTT per la prima volta..",
   "updateAvailableTitle": "Nuova versione disponibile ({version})",
-  "@updateAvailableTitle": {
-    "placeholders": {
-      "version": {
-        "type": "String"
-      }
-    }
-  },
+ 
   "updateAvailableBody": "È disponibile una nuova versione dell'app",
   "whatsNewTitle": "  Novità:",
   "downloadNewVersion": "Scarica la nuova versione",
@@ -215,5 +147,7 @@
   "searchVehicle": "Cerca veicolo...",
   "searchAddress": "Cerca indirizzo...",
   "makeDefault": "Rendi predefinito",
-  "selectMaxVehicles": "Puoi selezionare al massimo {maxRoutesInMap} veicoli"
+  "selectMaxVehicles": "Puoi selezionare al massimo {maxRoutesInMap} veicoli",
+  "skip": "Salta",
+  "start": "Inizia"
 }
