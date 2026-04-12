@@ -65,7 +65,7 @@ class GttApi {
         await http.post(Uri.parse(_url), body: data, headers: {
       'Content-Type': 'application/json',
     }).timeout(
-      const Duration(seconds: 30),
+      const Duration(seconds: 10),
       onTimeout: () {
         return http.Response('Time out', 408);
       },
