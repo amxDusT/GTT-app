@@ -19,6 +19,17 @@ class HomePage extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final topInset = mediaQuery.padding.top;
+    final collapsedHeaderHeight = (topInset + kToolbarHeight + 8).clamp(
+      88.0,
+      132.0,
+    );
+    final expandedHeaderHeight = (collapsedHeaderHeight + 56).clamp(
+      collapsedHeaderHeight + 40,
+      mediaQuery.size.height * 0.28,
+    );
+
     return Scaffold(
       key: controller.scaffoldKey,
       endDrawer: HomeDrawer(),
@@ -37,8 +48,8 @@ class HomePage extends GetView<HomeController> {
                     searchController: _searchController,
                   ),
                   title: Text(l10n.stopsTitle),
-                  maxHeight: 150,
-                  minHeight: 100,
+                  maxHeight: expandedHeaderHeight,
+                  minHeight: collapsedHeaderHeight,
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.menu),
