@@ -86,7 +86,8 @@ class InfoController extends GetxController {
       lastUpdate.value = DateTime.now();
       fermata = newFermata.obs;
     } on ApiException catch (e) {
-      Utils.showSnackBar(e.message, title: 'Errore ${e.statusCode}');
+      Utils.showSnackBar(l10n.gttException,
+          title: l10n.errorWithCode(e.statusCode));
     } on Error {
       // probably related to GTT data not updated
       showErrorPopup();

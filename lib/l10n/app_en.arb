@@ -197,7 +197,7 @@
   },
   "@skip": {},
   "@start": {},
-  
+  "@gttException": {},
 
   "appTitle": "Torino Mobility",
   "stopsTitle": "Stops",
@@ -326,5 +326,7 @@
   "makeDefault": "Make default",
   "selectMaxVehicles": "You can select up to {maxRoutesInMap} vehicles",
   "skip": "Skip",
-  "start": "Start"
+  "start": "Start",
+  "gttException": "There was a problem with the request. Please try again later."
+
 }

@@ -439,4 +439,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get start => 'Start';
+
+  @override
+  String get gttException =>
+      'There was a problem with the request. Please try again later.';
 }

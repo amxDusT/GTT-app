@@ -149,5 +149,6 @@
   "makeDefault": "Rendi predefinito",
   "selectMaxVehicles": "Puoi selezionare al massimo {maxRoutesInMap} veicoli",
   "skip": "Salta",
-  "start": "Inizia"
+  "start": "Inizia",
+  "gttException": "C'è stato un problema con la richiesta. Riprova più tardi."
 }

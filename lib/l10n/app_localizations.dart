@@ -865,6 +865,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start'**
   String get start;
+
+  /// No description provided for @gttException.
+  ///
+  /// In en, this message translates to:
+  /// **'There was a problem with the request. Please try again later.'**
+  String get gttException;
 }
 
 class _AppLocalizationsDelegate

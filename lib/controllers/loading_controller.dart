@@ -119,7 +119,7 @@ class LoadingController extends GetxController {
       }
     } on ApiException catch (e) {
       Utils.showSnackBar(
-        e.message,
+        l10n.gttException,
         title: l10n.errorWithCode(e.statusCode),
       );
     } finally {

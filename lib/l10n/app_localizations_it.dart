@@ -441,4 +441,8 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get start => 'Inizia';
+
+  @override
+  String get gttException =>
+      'C\'è stato un problema con la richiesta. Riprova più tardi.';
 }

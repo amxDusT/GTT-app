@@ -22,7 +22,7 @@ class InfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, res) {
         if (_infoController.isSelecting.isTrue) {
           _infoController.switchSelecting();
         } else {

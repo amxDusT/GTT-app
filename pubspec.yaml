@@ -34,7 +34,7 @@ dependencies:
   flutter_secure_storage: ^9.2.1
   flutter_typeahead: ^5.0.1
   geolocator: ^12.0.0
-  get: ^4.6.6
+  get: ^4.7.3
   http: ^1.1.0
   icon_decoration: ^2.0.2
   install_plugin:
