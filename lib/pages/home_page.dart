@@ -3,9 +3,10 @@ import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/controllers/search/home_search_controller.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
-import 'package:torino_mobility/l10n/localization_service.dart';
-import 'package:torino_mobility/widgets/home/search_header_delegate.dart';
-import 'package:torino_mobility/widgets/search/home_search_widget.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/utils/fonts.dart';
+import 'package:torino_mobility/resources/utils/spacing.dart';
+import 'package:torino_mobility/widgets/app_header.dart';
 import 'package:torino_mobility/widgets/home/drawer/drawer.dart';
 import 'package:torino_mobility/widgets/home/favorite_card.dart';
 import 'package:torino_mobility/widgets/route_list_favorite_widget.dart';
@@ -19,128 +20,128 @@ class HomePage extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    final mediaQuery = MediaQuery.of(context);
-    final topInset = mediaQuery.padding.top;
-    final collapsedHeaderHeight = (topInset + kToolbarHeight + 8).clamp(
-      88.0,
-      132.0,
-    );
-    final expandedHeaderHeight = (collapsedHeaderHeight + 56).clamp(
-      collapsedHeaderHeight + 40,
-      mediaQuery.size.height * 0.28,
-    );
-
     return Scaffold(
       key: controller.scaffoldKey,
       endDrawer: HomeDrawer(),
       body: Obx(
         () {
-          return CustomScrollView(
-            slivers: [
-              // sticky sliver
-              SliverPersistentHeader(
-                pinned: true,
-                floating: false,
-                delegate: SearchHeaderDelegate(
-                  searchController: _searchController,
-                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                  searchWidget: SearchStop(
-                    searchController: _searchController,
-                  ),
-                  title: Text(l10n.stopsTitle),
-                  maxHeight: expandedHeaderHeight,
-                  minHeight: collapsedHeaderHeight,
-                  actions: [
-                    IconButton(
-                      icon: const Icon(Icons.menu),
-                      onPressed: () {
-                        controller.scaffoldKey.currentState?.openEndDrawer();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              if (_settingsController.isFavoritesRoutesShowing.value)
-                GetBuilder<RouteListController>(
-                  builder: (controller) => controller.favorites.isEmpty
-                      ? SliverToBoxAdapter(child: Container())
-                      : SliverList(
-                          delegate: SliverChildListDelegate(
-                            [
-                              const Divider(
-                                indent: 12,
-                                endIndent: 12,
-                              ),
-                              SingleChildScrollView(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                scrollDirection: Axis.horizontal,
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ...controller.favorites
-                                        .map((route) => RouteListFavorite(
-                                              route: route,
-                                              routeListController: controller,
-                                              hasRemoveIcon: false,
-                                            )),
-                                  ],
-                                ),
-                              ),
-                              const Divider(
-                                indent: 12,
-                                endIndent: 12,
-                              ),
-                            ],
+          return SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: AppHeader(
+                    subtitle: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xffff7a3f),
+                          ),
+                          height: 5,
+                          width: 5,
+                          alignment: Alignment.center,
+                        ),
+                        Spacing.hGap8,
+                        Text(
+                          'TORINO'.hc,
+                          style: Fonts.subtitle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            height: .9,
+                            color: const Color(0xff6e6555),
                           ),
                         ),
+                      ],
+                    ),
+                    titleTop: 'le tue'.hc,
+                    titleBottom: 'fermate'.hc,
+                  ),
                 ),
-              GetBuilder<HomeController>(
-                builder: (controller) {
-                  return SliverPadding(
-                    padding: const EdgeInsets.all(20),
-                    sliver: SliverReorderableGrid(
-                      itemBuilder: (context, index) {
-                        final fermata = controller.fermate[index];
-                        return HomeFavCard(
-                          key: ValueKey(fermata.code),
-                          fermata: fermata,
-                          homeController: controller,
-                        );
-                      },
-                      itemCount: controller.fermate.length,
-                      proxyDecorator: (child, index, animation) {
-                        return Material(
-                          color: Colors.transparent,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: const BorderSide(
-                              color: Colors.grey,
-                              width: 1.5,
+                if (_settingsController.isFavoritesRoutesShowing.value)
+                  GetBuilder<RouteListController>(
+                    builder: (controller) => controller.favorites.isEmpty
+                        ? SliverToBoxAdapter(child: Container())
+                        : SliverList(
+                            delegate: SliverChildListDelegate(
+                              [
+                                const Divider(
+                                  indent: 12,
+                                  endIndent: 12,
+                                ),
+                                SingleChildScrollView(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8.0),
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ...controller.favorites
+                                          .map((route) => RouteListFavorite(
+                                                route: route,
+                                                routeListController: controller,
+                                                hasRemoveIcon: false,
+                                              )),
+                                    ],
+                                  ),
+                                ),
+                                const Divider(
+                                  indent: 12,
+                                  endIndent: 12,
+                                ),
+                              ],
                             ),
                           ),
-                          child: child,
-                        );
-                      },
-                      onReorder: (oldIndex, newIndex) {
-                        final item = controller.fermate.removeAt(oldIndex);
-                        controller.fermate.insert(newIndex, item);
-                        controller.updateFavorites();
-                      },
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 1.0,
+                  ),
+                GetBuilder<HomeController>(
+                  builder: (controller) {
+                    return SliverPadding(
+                      padding: const EdgeInsets.all(20),
+                      sliver: SliverReorderableGrid(
+                        itemBuilder: (context, index) {
+                          final fermata = controller.fermate[index];
+                          return HomeFavCard(
+                            key: ValueKey(fermata.code),
+                            fermata: fermata,
+                            homeController: controller,
+                          );
+                        },
+                        itemCount: controller.fermate.length,
+                        proxyDecorator: (child, index, animation) {
+                          return Material(
+                            color: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: const BorderSide(
+                                color: Colors.grey,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: child,
+                          );
+                        },
+                        onReorder: (oldIndex, newIndex) {
+                          final item = controller.fermate.removeAt(oldIndex);
+                          controller.fermate.insert(newIndex, item);
+                          controller.updateFavorites();
+                        },
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
+                          childAspectRatio: 1.0,
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ],
+                    );
+                  },
+                ),
+              ],
+            ),
           );
         },
       ),
