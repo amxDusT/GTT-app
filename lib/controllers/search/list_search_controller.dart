@@ -5,6 +5,7 @@ import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 
 class ListSearchController extends GetxController {
   late final List<gtt.Route> routes;
@@ -41,7 +42,7 @@ class ListSearchController extends GetxController {
     List<gtt.Route>? suggestions = await getSuggestions(value);
     clearText();
     if (suggestions != null && suggestions.isNotEmpty) {
-      Get.toNamed('/mapBus', arguments: {
+      Get.toNamed(r.Router.mapBusRoute, arguments: {
         'vehicles': [suggestions.first]
       });
     } else {

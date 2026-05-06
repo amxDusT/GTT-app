@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/intro/intro_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/widgets/intro/back_forward_button.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 import 'package:get/get.dart';
 
 class IntroPage extends GetView<IntroController> {
@@ -64,7 +65,7 @@ class IntroPage extends GetView<IntroController> {
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
                 onPressed: () {
-                  Get.offNamed('/home');
+                  Get.offNamed(r.Router.homeRoute);
                 },
                 child: Obx(
                   () => Text(

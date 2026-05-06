@@ -8,6 +8,7 @@ import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:torino_mobility/widgets/passage_time.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 import 'package:get/get.dart';
 
 class InfoWidget extends StatelessWidget {
@@ -73,7 +74,7 @@ class InfoWidget extends StatelessWidget {
 
               return;
             }
-            Get.toNamed('/mapBus', arguments: {
+            Get.toNamed(r.Router.mapBusRoute, arguments: {
               'vehicles': [vehicle],
               'fermata': stop
             });

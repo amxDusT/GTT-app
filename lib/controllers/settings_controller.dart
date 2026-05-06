@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 
 class SettingsController extends GetxController {
   final RxBool showBetaFeatures = Storage.instance.showBetaFeatures.obs;
@@ -79,7 +80,7 @@ class SettingsController extends GetxController {
   }
 
   void resetData() async {
-    Get.until((route) => Get.currentRoute == '/home');
+    Get.until((route) => Get.currentRoute == r.Router.homeRoute);
     Get.find<LoadingController>().loadFromApi();
   }
 
@@ -166,7 +167,7 @@ class SettingsController extends GetxController {
   }
 
   void showTutorial() {
-    Get.offAllNamed('/intro');
+    Get.offAllNamed(r.Router.introRoute);
   }
 
   void betaFeaturesInfo() {

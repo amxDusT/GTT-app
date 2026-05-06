@@ -9,6 +9,7 @@ import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:torino_mobility/widgets/info_widget.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 
 class InfoPage extends StatelessWidget {
   final InfoController _infoController;
@@ -162,7 +163,7 @@ class InfoPage extends StatelessWidget {
                                 return;
                               }
 
-                              Get.toNamed('/mapBus', arguments: {
+                              Get.toNamed(r.Router.mapBusRoute, arguments: {
                                 'vehicles': _infoController.isSelecting.isTrue
                                     ? _infoController.selectedRoutes
                                     : _infoController.fermata.value.vehicles,
