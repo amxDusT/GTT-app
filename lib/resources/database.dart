@@ -44,12 +44,53 @@ class DatabaseCommands {
       onCreate: (db, version) {
         return createTable(db: db);
       },
-      version: 9,
+      version: 10,
       onUpgrade: (db, oldVersion, newVersion) async {
-        createTable(db: db);
+        if (oldVersion < 10) {
+          await _migrateToV10(db);
+        }
+        await createTable(db: db);
       },
     );
     return database!;
+  }
+
+  Future<void> _migrateToV10(Database db) async {
+    await db.transaction((txn) async {
+      await txn.execute('''
+        CREATE TABLE ${_favoritesTable}_new (
+          stopId TEXT PRIMARY KEY,
+          descrizione TEXT,
+          date INTEGER,
+          color TEXT,
+          FOREIGN KEY (stopId) REFERENCES $_stopsTable(gtfsId)
+        )
+      ''');
+      await txn.execute('''
+        INSERT OR IGNORE INTO ${_favoritesTable}_new (stopId, descrizione, date, color)
+        SELECT stopId, descrizione, date, color FROM $_favoritesTable
+      ''');
+      await txn.execute('DROP TABLE $_favoritesTable');
+      await txn.execute(
+        'ALTER TABLE ${_favoritesTable}_new RENAME TO $_favoritesTable',
+      );
+
+      await txn.execute('''
+        CREATE TABLE ${_favoritesVehiclesTable}_new (
+          routeId TEXT PRIMARY KEY,
+          date INTEGER,
+          FOREIGN KEY (routeId) REFERENCES $_routesTable(gtfsId)
+        )
+      ''');
+      await txn.execute('''
+        INSERT OR IGNORE INTO ${_favoritesVehiclesTable}_new (routeId, date)
+        SELECT routeId, date FROM $_favoritesVehiclesTable
+      ''');
+      await txn.execute('DROP TABLE $_favoritesVehiclesTable');
+      await txn.execute(
+        'ALTER TABLE ${_favoritesVehiclesTable}_new RENAME TO $_favoritesVehiclesTable',
+      );
+    });
   }
 
   Future<void> createTable({Database? db}) async {
@@ -105,13 +146,13 @@ class DatabaseCommands {
             stopId TEXT,
             stopOrder INTEGER,
             PRIMARY KEY (patternCode, stopId),
-            FOREIGN KEY (patternCode) REFERENCES $_patternsTable(patternCode),
+            FOREIGN KEY (patternCode) REFERENCES $_patternsTable(code),
             FOREIGN KEY (stopId) REFERENCES $_stopsTable(gtfsId)
         )''',
     );
     batch.execute(
       '''CREATE TABLE IF NOT EXISTS $_favoritesTable(
-        stopId TEXT UNIQUE,
+        stopId TEXT PRIMARY KEY,
         descrizione TEXT,
         date INTEGER,
         color TEXT,
@@ -122,12 +163,29 @@ class DatabaseCommands {
     batch.execute(
       '''
       CREATE TABLE IF NOT EXISTS $_favoritesVehiclesTable(
-        routeId TEXT UNIQUE,
+        routeId TEXT PRIMARY KEY,
         date INTEGER,
         FOREIGN KEY (routeId) REFERENCES $_routesTable(gtfsId)
       )
       ''',
     );
+
+    batch.execute(
+      'CREATE INDEX IF NOT EXISTS idx_routes_agencyId ON $_routesTable(agencyId)',
+    );
+    batch.execute(
+      'CREATE INDEX IF NOT EXISTS idx_patterns_routeId ON $_patternsTable(routeId)',
+    );
+    batch.execute(
+      'CREATE INDEX IF NOT EXISTS idx_pattern_stops_stopId ON $_patternStopsTable(stopId)',
+    );
+    batch.execute(
+      'CREATE INDEX IF NOT EXISTS idx_stops_code ON $_stopsTable(code)',
+    );
+    batch.execute(
+      'CREATE INDEX IF NOT EXISTS idx_stops_name ON $_stopsTable(name)',
+    );
+
     await batch.commit();
   }
 
@@ -268,6 +326,31 @@ class DatabaseCommands {
     return List.generate(result.length, (i) {
       return FavStop.fromJson(result[i]);
     });
+  }
+
+  /// Routes serving each favorite stop, keyed by `stopId`.
+  /// One DB round-trip; favorite stops with no derivable routes are omitted.
+  Future<Map<String, List<Route>>> get routesForFavoriteStops async {
+    final db = await _dbInstance;
+    final result = await db.rawQuery('''
+      SELECT DISTINCT $_favoritesTable.stopId AS favStopId, $_routesTable.*
+      FROM $_favoritesTable
+      JOIN $_patternStopsTable ON $_favoritesTable.stopId = $_patternStopsTable.stopId
+      JOIN $_patternsTable ON $_patternStopsTable.patternCode = $_patternsTable.code
+      JOIN $_routesTable ON $_patternsTable.routeId = $_routesTable.gtfsId
+      ORDER BY $_favoritesTable.date ASC, $_routesTable.type ASC, $_routesTable.shortName ASC
+    ''');
+
+    final Map<String, List<Route>> grouped = {};
+    for (final row in result) {
+      final stopId = row['favStopId'] as String;
+      if (grouped.containsKey(stopId) &&
+          grouped[stopId]!.any((route) => route.gtfsId == row['gtfsId'])) {
+        continue; // skip duplicates
+      }
+      grouped.putIfAbsent(stopId, () => []).add(Route.fromJson(row));
+    }
+    return grouped;
   }
 
   Future<String> get exportFavorites async {
