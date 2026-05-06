@@ -3,6 +3,8 @@ import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:get/get.dart';
+import 'package:torino_mobility/resources/utils/color_utils.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 
 class RouteListFavorite extends GetView<SettingsController> {
   final gtt.Route route;
@@ -21,24 +23,24 @@ class RouteListFavorite extends GetView<SettingsController> {
       fit: StackFit.loose,
       children: [
         GestureDetector(
-          onTap: () => Get.toNamed('/mapBus', arguments: {
+          onTap: () => Get.toNamed(r.Router.mapBusRoute, arguments: {
             'vehicles': [route]
           }),
           child: Obx(
             () => Container(
               alignment: Alignment.center,
-              margin: EdgeInsets.symmetric(
-                  vertical: 8, horizontal: hasRemoveIcon ? 8 : 4),
+              margin: EdgeInsets.symmetric(horizontal: hasRemoveIcon ? 8 : 4),
               padding: const EdgeInsets.all(5),
               width: 40 +
                   (route.shortName.length > 2 ? route.shortName.length * 5 : 0),
               height: 40,
               decoration: BoxDecoration(
-                color: controller.isDarkMode.isTrue
-                    ? Theme.of(context).colorScheme.primaryContainer
-                    : Theme.of(context).colorScheme.primary,
+                color: ColorUtils.normalize(
+                  ColorUtils.indexColor(int.tryParse(route.shortName) ?? 0),
+                  dark: controller.isDarkMode.isTrue,
+                ),
                 shape: BoxShape.rectangle,
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 route.shortName,

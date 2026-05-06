@@ -9,9 +9,10 @@ import 'package:torino_mobility/resources/utils/spacing.dart';
 import 'package:torino_mobility/widgets/app_header.dart';
 import 'package:torino_mobility/widgets/home/drawer/drawer.dart';
 import 'package:torino_mobility/widgets/home/favorite_card.dart';
-import 'package:torino_mobility/widgets/route_list_favorite_widget.dart';
+import 'package:torino_mobility/widgets/home/favorite_routes.dart';
 import 'package:get/get.dart';
-import 'package:reorderable_grid/reorderable_grid.dart';
+import 'package:torino_mobility/widgets/search/home_search_widget.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 
 class HomePage extends GetView<HomeController> {
   HomePage({super.key});
@@ -57,191 +58,67 @@ class HomePage extends GetView<HomeController> {
                     ),
                     titleTop: 'le tue'.hc,
                     titleBottom: 'fermate'.hc,
+                    actions: [
+                      IconButton(
+                        icon: const Icon(Icons.settings_outlined),
+                        style: IconButton.styleFrom(
+                          backgroundColor: const Color(0xff221d17),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(100),
+                            side: Divider.createBorderSide(
+                              context,
+                            ),
+                          ),
+                        ),
+                        onPressed: () => Get.toNamed(r.Router.settingsRoute),
+                        /* onPressed: () => controller.scaffoldKey.currentState
+                            ?.openEndDrawer(), */
+                      ),
+                    ],
                   ),
                 ),
+                SliverToBoxAdapter(
+                  child: SearchStop(searchController: _searchController),
+                ),
+                //SliverToBoxAdapter(child: SearchBar()),
                 if (_settingsController.isFavoritesRoutesShowing.value)
                   GetBuilder<RouteListController>(
                     builder: (controller) => controller.favorites.isEmpty
-                        ? SliverToBoxAdapter(child: Container())
-                        : SliverList(
-                            delegate: SliverChildListDelegate(
-                              [
-                                const Divider(
-                                  indent: 12,
-                                  endIndent: 12,
-                                ),
-                                SingleChildScrollView(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8.0),
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ...controller.favorites
-                                          .map((route) => RouteListFavorite(
-                                                route: route,
-                                                routeListController: controller,
-                                                hasRemoveIcon: false,
-                                              )),
-                                    ],
-                                  ),
-                                ),
-                                const Divider(
-                                  indent: 12,
-                                  endIndent: 12,
-                                ),
-                              ],
-                            ),
+                        ? const SliverToBoxAdapter(child: SizedBox.shrink())
+                        : FavoriteRoutes(
+                            controller: controller,
                           ),
                   ),
+                SliverPadding(
+                  padding: const EdgeInsets.only(top: 24, bottom: 12),
+                  sliver: SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                      child: Text(
+                        'LE TUE FERMATE'.hc,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                  ),
+                ),
                 GetBuilder<HomeController>(
                   builder: (controller) {
                     return SliverPadding(
-                      padding: const EdgeInsets.all(20),
-                      sliver: SliverReorderableGrid(
-                        itemBuilder: (context, index) {
-                          final fermata = controller.fermate[index];
-                          return HomeFavCard(
-                            key: ValueKey(fermata.code),
-                            fermata: fermata,
-                            homeController: controller,
-                          );
-                        },
-                        itemCount: controller.fermate.length,
-                        proxyDecorator: (child, index, animation) {
-                          return Material(
-                            color: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              side: const BorderSide(
-                                color: Colors.grey,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: child,
-                          );
-                        },
-                        onReorder: (oldIndex, newIndex) {
-                          final item = controller.fermate.removeAt(oldIndex);
-                          controller.fermate.insert(newIndex, item);
-                          controller.updateFavorites();
-                        },
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 1.0,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ),
-      floatingActionButton: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              elevation: 2,
-              heroTag: '___Menu',
-              child: const Icon(Icons.menu),
-              onPressed: () {
-                controller.scaffoldKey.currentState?.openEndDrawer();
-              },
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            FloatingActionButton(
-              elevation: 2,
-              child: const Icon(Icons.search),
-              onPressed: () {
-                _searchController.searchButton();
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/* 
-class HomePageOld extends StatelessWidget {
-  HomePageOld({super.key});
-  final _homeController = Get.find<HomeController>();
-  final _searchController = Get.find<SearchStopsController>();
-  final _settingsController = Get.find<SettingsController>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _homeController.scaffoldKey,
-      endDrawer: HomeDrawer(),
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Gtt Fermate"),
-      ),
-      body: Obx(
-        () => Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SearchStop(),
-            Expanded(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_settingsController.isFavoritesRoutesShowing.value)
-                      GetBuilder<RouteListController>(
-                          builder: (controller) => controller.favorites.isEmpty
-                              ? Container()
-                              : Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Divider(
-                                      indent: 10,
-                                      endIndent: 10,
-                                    ),
-                                    SingleChildScrollView(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 4.0),
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          ...controller.favorites
-                                              .map((route) => RouteListFavorite(
-                                                    route: route,
-                                                    controller: controller,
-                                                    hasRemoveIcon: false,
-                                                  )),
-                                        ],
-                                      ),
-                                    ),
-                                    const Divider(
-                                      indent: 10,
-                                      endIndent: 10,
-                                    ),
-                                  ],
-                                )),
-                    GetBuilder<HomeController>(
-                      builder: (controller) {
-                        return ReorderableGridView.count(
+                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 100),
+                        sliver: SliverReorderableList(
+                          itemBuilder: (context, index) {
+                            final fermata = controller.fermate[index];
+                            return HomeFavCard(
+                              key: ValueKey(fermata.code),
+                              fermata: fermata,
+                              homeController: controller,
+                              favoriteRoutes: controller
+                                  .favoriteRoutes[fermata.gtfsId]
+                                  ?.map((route) => route.shortName)
+                                  .toList(),
+                            );
+                          },
+                          itemCount: controller.fermate.length,
                           proxyDecorator: (child, index, animation) {
                             return Material(
                               color: Colors.transparent,
@@ -260,56 +137,14 @@ class HomePageOld extends StatelessWidget {
                             controller.fermate.insert(newIndex, item);
                             controller.updateFavorites();
                           },
-                          physics: const ScrollPhysics(),
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          padding: const EdgeInsets.all(20),
-                          crossAxisCount: 2,
-                          shrinkWrap: true,
-                          primary: true,
-                          children: [
-                            ...controller.fermate.map((fermata) => HomeFavCard(
-                                  key: ValueKey(fermata.code),
-                                  fermata: fermata,
-                                  controller: controller,
-                                ))
-                          ],
-                        );
-                      },
-                    ),
-                  ],
+                        ));
+                  },
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
-      floatingActionButton: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            FloatingActionButton(
-              elevation: 2,
-              heroTag: '___Menu',
-              child: const Icon(Icons.menu),
-              onPressed: () {
-                _homeController.scaffoldKey.currentState?.openEndDrawer();
-              },
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            FloatingActionButton(
-              elevation: 2,
-              child: const Icon(Icons.search),
-              onPressed: () {
-                _searchController.searchButton();
-              },
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 }
- */

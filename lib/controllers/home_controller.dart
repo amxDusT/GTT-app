@@ -2,32 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/favorite_stop.dart';
+import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:torino_mobility/resources/analytics.dart';
 import 'package:torino_mobility/resources/database.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/color_utils.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:torino_mobility/widgets/home/color_picker.dart';
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   List<FavStop> fermate = [];
+  Map<String, List<gtt.Route>> favoriteRoutes = {};
   late final Rx<TextEditingController> descriptionController;
-  late Offset tapPosition;
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
-  RelativeRect get relRectSize => RelativeRect.fromLTRB(
-        tapPosition.dx,
-        tapPosition.dy,
-        Get.size.width - tapPosition.dx,
-        Get.size.height - tapPosition.dy,
-      );
-
-  void getPosition(TapDownDetails detail) {
-    tapPosition = detail.globalPosition;
-  }
 
   @override
   void onClose() {
@@ -43,7 +34,18 @@ class HomeController extends GetxController {
   }
 
   void getStops() async {
-    fermate = await DatabaseCommands.instance.favorites;
+    final List<dynamic> results = await Future.wait([
+      DatabaseCommands.instance.favorites,
+      DatabaseCommands.instance.routesForFavoriteStops,
+    ]);
+
+    fermate = results[0];
+    favoriteRoutes = results[1];
+
+    favoriteRoutes.forEach((key, routes) {
+      Utils.sort(routes);
+    });
+
     update();
   }
 
@@ -100,11 +102,25 @@ class HomeController extends GetxController {
     update();
   }
 
-  void showContextMenu(FavStop fermata) {
+  void showContextMenu(FavStop fermata, GlobalKey anchorKey) {
+    final BuildContext? anchorContext = anchorKey.currentContext;
+    if (anchorContext == null) return;
+
+    final RenderBox button = anchorContext.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+        Overlay.of(anchorContext).context.findRenderObject() as RenderBox;
+    final RelativeRect position = RelativeRect.fromRect(
+      Rect.fromPoints(
+        button.localToGlobal(Offset.zero, ancestor: overlay),
+        button.localToGlobal(button.size.bottomRight(Offset.zero),
+            ancestor: overlay),
+      ),
+      Offset.zero & overlay.size,
+    );
+
     showMenu(
-      //surfaceTintColor: Colors.red,
-      context: Get.context!,
-      position: relRectSize,
+      context: anchorContext,
+      position: position,
       items: [
         PopupMenuItem(
           child: Text(l10n.moveToTop),
@@ -138,12 +154,7 @@ class HomeController extends GetxController {
         },
         availableColors: const [
           initialColor,
-          Colors.red,
-          Colors.blue,
-          Colors.green,
-          Colors.yellow,
-          Colors.amber,
-          Colors.cyan
+          ...ColorUtils.defaultColors,
         ],
         layoutBuilder: (context, colors, child) {
           return Flexible(
