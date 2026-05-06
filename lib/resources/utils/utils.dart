@@ -1,22 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:torino_mobility/bindings/home_bindings.dart';
-import 'package:torino_mobility/bindings/info_bindings.dart';
-import 'package:torino_mobility/bindings/intro_bindings.dart';
-import 'package:torino_mobility/bindings/loading_bindings.dart';
-import 'package:torino_mobility/bindings/map_global_bindings.dart';
-import 'package:torino_mobility/bindings/map_page_bindings.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
-import 'package:torino_mobility/pages/home_page.dart';
-import 'package:torino_mobility/pages/info_page.dart';
-import 'package:torino_mobility/pages/intro/intro_page.dart';
-import 'package:torino_mobility/pages/loading_page.dart';
-import 'package:torino_mobility/pages/map/map_global.dart';
-import 'package:torino_mobility/pages/map/map_page.dart';
-import 'package:torino_mobility/pages/nfc/nfc_page.dart';
-import 'package:torino_mobility/pages/route_list_page.dart';
-import 'package:torino_mobility/pages/settings_page.dart';
 import 'package:torino_mobility/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -56,26 +41,32 @@ class Utils {
   }
 
   static String dateToString(DateTime date) {
-    return DateFormat('d MMMM, y H:mm', getLocale())
-        .format(date)
-        .capitalizeFirst!;
+    return DateFormat(
+      'd MMMM, y H:mm',
+      getLocale(),
+    ).format(date).capitalizeFirst!;
   }
 
   static Color darken(Color c, [int percent = 50]) {
     assert(1 <= percent && percent <= 100);
     var f = 1 - percent / 100;
-    return Color.fromARGB(c.alpha, (c.red * f).round(), (c.green * f).round(),
-        (c.blue * f).round());
+    return Color.fromARGB(
+      c.alpha,
+      (c.red * f).round(),
+      (c.green * f).round(),
+      (c.blue * f).round(),
+    );
   }
 
   static Color lighten(Color c, [int percent = 50]) {
     assert(1 <= percent && percent <= 100);
     var p = percent / 100;
     return Color.fromARGB(
-        c.alpha,
-        c.red + ((255 - c.red) * p).round(),
-        c.green + ((255 - c.green) * p).round(),
-        c.blue + ((255 - c.blue) * p).round());
+      c.alpha,
+      c.red + ((255 - c.red) * p).round(),
+      c.green + ((255 - c.green) * p).round(),
+      c.blue + ((255 - c.blue) * p).round(),
+    );
   }
 
   static void showSnackBar(
@@ -163,52 +154,5 @@ class Utils {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
-  }
-
-  static List<GetPage> getPages() {
-    return [
-      GetPage(
-        name: '/',
-        page: () => LoadingPage(),
-        binding: LoadingBindings(),
-      ),
-      GetPage(
-        name: '/home',
-        page: () => HomePage(),
-        binding: HomeBindings(),
-      ),
-      GetPage(
-        name: '/map',
-        page: () => MapGlobal(),
-        binding: MapGlobalBindings(),
-      ),
-      GetPage(
-        name: '/routelist',
-        page: () => RouteListPage(),
-      ),
-      GetPage(
-        name: '/settings',
-        page: () => SettingsPage(),
-      ),
-      GetPage(
-        name: '/nfc',
-        page: () => NfcPage(),
-      ),
-      GetPage(
-        name: '/info',
-        page: () => InfoPage(),
-        binding: InfoBindings(),
-      ),
-      GetPage(
-        name: '/mapBus',
-        page: () => MapPage(),
-        binding: MapPageBindings(),
-      ),
-      GetPage(
-        name: '/intro',
-        page: () => const IntroPage(),
-        binding: IntroBindings(),
-      )
-    ];
   }
 }
