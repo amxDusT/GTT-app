@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/pages/nav_shell.dart';
 import 'package:torino_mobility/widgets/home/drawer/drawer_tile.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
+
 import 'package:get/get.dart';
 
 class HomeDrawer extends StatelessWidget {
@@ -15,13 +18,18 @@ class HomeDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void goToTab(int index) {
+      Get.back();
+      NavShell.goTo(index);
+    }
+
     final Map<String, dynamic> beta = {
-      l10n.defaultMap: () => Get.toNamed('/map'),
+      l10n.defaultMap: () => goToTab(NavShell.mapIndex),
     };
     final Map<String, dynamic> elements = {
-      l10n.readTicketOrCard: () => Get.toNamed('/nfc'),
-      l10n.routesTitle: () => Get.toNamed('/routelist'),
-      l10n.settings: () => Get.toNamed('/settings'),
+      l10n.readTicketOrCard: () => goToTab(NavShell.nfcIndex),
+      l10n.routesTitle: () => goToTab(NavShell.routeListIndex),
+      l10n.settings: () => Get.toNamed(r.Router.settingsRoute),
     };
     return Drawer(
       //backgroundColor: Colors.grey,

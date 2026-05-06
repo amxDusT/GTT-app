@@ -53,7 +53,7 @@ class NfcPage extends StatelessWidget {
             ),
             Obx(
               () => Positioned(
-                bottom: _nfcController.isReading.isTrue ? 20 : -100,
+                bottom: _nfcController.isReading.isTrue ? 100 : -100,
                 child: TextButton(
                   onPressed: _nfcController.stopReading,
                   style: TextButton.styleFrom(

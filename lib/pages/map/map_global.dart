@@ -220,12 +220,12 @@ class MapGlobal extends StatelessWidget {
                     ),
                   ),
                   BottomButtons(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 20)
-                            .copyWith(
+                    padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 20)
+                        .copyWith(
                       bottom: controller.travelController.isSearching.isTrue
-                          ? 100
-                          : null,
+                          ? 180
+                          : 100,
                     ),
                     children: [
                       CircleButton(
