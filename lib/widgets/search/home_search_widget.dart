@@ -48,11 +48,7 @@ class SearchStop extends StatelessWidget {
                   controller: controller,
                   focusNode: focusNode,
                   decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                        borderSide: Divider.createBorderSide(context)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                    filled: true,
-                    labelText: l10n.searchStop,
+                    hintText: l10n.searchStop,
                     prefixIcon: searchController.showLeadingIcon.isTrue
                         ? IconButton(
                             icon: const Icon(Icons.arrow_back),
@@ -62,7 +58,7 @@ class SearchStop extends StatelessWidget {
                               }
                             },
                           )
-                        : null,
+                        : const Icon(Icons.search),
                   ),
                   keyboardType: TextInputType.text,
                   onSubmitted: (value) => searchController.onSubmitted(value),

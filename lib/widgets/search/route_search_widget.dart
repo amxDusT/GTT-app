@@ -35,12 +35,8 @@ class SearchRoute extends StatelessWidget {
                 controller: controller,
                 focusNode: focusNode,
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderSide: Divider.createBorderSide(context)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  filled: true,
-                  labelText: l10n.searchVehicle,
-                ),
+                    hintText: l10n.searchVehicle,
+                    prefixIcon: const Icon(Icons.search)),
                 keyboardType: TextInputType.text,
                 onSubmitted: (value) => searchController.onSearch(value),
               );
