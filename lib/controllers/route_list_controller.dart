@@ -4,10 +4,35 @@ import 'package:torino_mobility/resources/database.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
+enum RouteFilter { all, favorites, tram, bus }
+
 class RouteListController extends GetxController {
   List<Agency> agencies = [];
   Map<String, List<Route>> routesMap = {};
   List<Route> favorites = [];
+  RouteFilter activeFilter = RouteFilter.all;
+
+  List<Route> get filteredRoutes {
+    final all = routesMap.values.expand((r) => r).toList();
+    Utils.sort(all);
+    switch (activeFilter) {
+      case RouteFilter.all:
+        return all;
+      case RouteFilter.favorites:
+        return favorites;
+      case RouteFilter.tram:
+        return all.where((r) => r.type == 0).toList();
+      case RouteFilter.bus:
+        return all.where((r) => r.type == 3).toList();
+    }
+  }
+
+  void setFilter(RouteFilter filter) {
+    if (activeFilter == filter) return;
+    activeFilter = filter;
+    update();
+  }
+
   Future<void> getFavorites() async {
     favorites = await DatabaseCommands.instance.favoriteRoutes;
     update();
