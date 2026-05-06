@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class HomeColorPicker extends StatelessWidget {

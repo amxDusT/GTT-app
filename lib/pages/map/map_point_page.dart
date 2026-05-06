@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_point_controller.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/resources/storage.dart';
-import 'package:flutter_gtt/resources/utils/map_utils.dart';
-import 'package:flutter_gtt/widgets/map/stop_widget.dart';
+import 'package:torino_mobility/controllers/map/map_point_controller.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/models/marker.dart';
+import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/map_utils.dart';
+import 'package:torino_mobility/widgets/map/stop_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:get/get.dart';
@@ -16,7 +17,7 @@ class MapPointPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Fermata ${_mapController.initialFermata.name}'),
+          title: Text(l10n.stopTitle(_mapController.initialFermata.name)),
         ),
         body: FlutterMap(
           mapController: _mapController.mapController,
@@ -31,7 +32,8 @@ class MapPointPage extends StatelessWidget {
           children: [
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              //userAgentPackageName: 'com.example.app',
+              userAgentPackageName: 'it.amxdust.torino_mobility',
+              maxNativeZoom: 19,
             ),
             PopupMarkerLayer(
               options: PopupMarkerLayerOptions(

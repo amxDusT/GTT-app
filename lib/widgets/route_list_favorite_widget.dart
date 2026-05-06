@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/models/gtt/route.dart' as gtt;
+import 'package:torino_mobility/controllers/route_list_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:get/get.dart';
 
 class RouteListFavorite extends GetView<SettingsController> {

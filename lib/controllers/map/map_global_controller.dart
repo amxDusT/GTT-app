@@ -1,8 +1,8 @@
-import 'package:flutter_gtt/controllers/map/map_address.dart';
-import 'package:flutter_gtt/controllers/map/map_animation.dart';
-import 'package:flutter_gtt/controllers/map/map_location.dart';
-import 'package:flutter_gtt/controllers/map/map_travel_controller.dart';
-import 'package:flutter_gtt/controllers/search/search_controller.dart';
+import 'package:torino_mobility/controllers/map/map_address.dart';
+import 'package:torino_mobility/controllers/map/map_animation.dart';
+import 'package:torino_mobility/controllers/map/map_location.dart';
+import 'package:torino_mobility/controllers/map/map_travel_controller.dart';
+import 'package:torino_mobility/controllers/search/search_controller.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';

@@ -1,24 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/loading_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
 import 'package:get/get.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 
 class SettingsPage extends StatelessWidget {
   SettingsPage({super.key});
   final _settingsController = Get.find<SettingsController>();
 
-  List<Widget> getList() {
+  List<Widget> getList(BuildContext context) {
     return [
       ListTile(
-        title: const Text('Tema scuro'),
+        title: Text(l10n.settingsDarkThemeTitle),
         trailing: Obx(() => Switch(
               value: _settingsController.isDarkMode.value,
               onChanged: (value) => _settingsController.switchDarkMode(),
             )),
       ),
       ListTile(
-        title: const Text('Mostra linee preferite nella pagina iniziale'),
+        title: Text(l10n.settingsShowFavoriteRoutesTitle),
         trailing: Obx(() => Switch(
               value: _settingsController.isFavoritesRoutesShowing.value,
               onChanged: (value) =>
@@ -26,7 +26,7 @@ class SettingsPage extends StatelessWidget {
             )),
       ),
       ListTile(
-        title: const Text('Mostra secondi dall\'ultimo aggiornamento'),
+        title: Text(l10n.settingsShowSecondsTitle),
         trailing: Obx(() => Switch(
               value: _settingsController.showSecondsInUpdates.value,
               onChanged: (value) =>
@@ -34,17 +34,16 @@ class SettingsPage extends StatelessWidget {
             )),
       ),
       ListTile(
-        title: const Text('Mostra fermata nella mappa'),
-        subtitle: const Text('Mostra popup della fermata iniziale nella mappa'),
+        title: Text(l10n.settingsShowStopOnMapTitle),
+        subtitle: Text(l10n.settingsShowStopOnMapSubtitle),
         trailing: Obx(() => Switch(
               value: _settingsController.isFermataShowing.value,
               onChanged: (value) => _settingsController.switchFermataShowing(),
             )),
       ),
       ListTile(
-        title: const Text("'Segna' fermata iniziale"),
-        subtitle: const Text(
-            'Mostra la fermata iniziale di colore diverso nella mappa'),
+        title: Text(l10n.settingsHighlightInitialStopTitle),
+        subtitle: Text(l10n.settingsHighlightInitialStopSubtitle),
         trailing: Obx(() => Switch(
               value: _settingsController.isInitialHighlighted.value,
               onChanged: (value) =>
@@ -52,9 +51,8 @@ class SettingsPage extends StatelessWidget {
             )),
       ),
       ListTile(
-        title: const Text('Visualizza tratte senza passaggi'),
-        subtitle: const Text(
-            'Mostra tratte senza passaggi da \'Guarda sulla mappa\''),
+        title: Text(l10n.settingsShowRoutesWithoutPassagesTitle),
+        subtitle: Text(l10n.settingsShowRoutesWithoutPassagesSubtitle),
         trailing: Obx(() => Switch(
               value: _settingsController.isRouteWithoutPassagesShowing.value,
               onChanged: (value) =>
@@ -63,8 +61,8 @@ class SettingsPage extends StatelessWidget {
       ),
       if (kDebugMode)
         ListTile(
-          title: const Text('Beta features'),
-          subtitle: const Text('Clicca per informazioni'),
+          title: Text(l10n.settingsBetaFeaturesTitle),
+          subtitle: Text(l10n.settingsBetaFeaturesSubtitle),
           onTap: () => _settingsController.betaFeaturesInfo(),
           trailing: Obx(() => Switch(
                 value: _settingsController.showBetaFeatures.value,
@@ -72,32 +70,27 @@ class SettingsPage extends StatelessWidget {
               )),
         ),
       ListTile(
-        title: const Text('Mostra tutorial'),
+        title: Text(l10n.settingsShowTutorialTitle),
         onTap: () => _settingsController.showTutorial(),
       ),
       ListTile(
-        title: const Text('Aggiorna dati GTT'),
+        title: Text(l10n.settingsRefreshDataTitle),
         onTap: () => _settingsController.resetData(),
       ),
-      if (kDebugMode)
-        ListTile(
-          title: const Text('Download release'),
-          onTap: () async => await Get.find<LoadingController>().checkVersion(),
-        ),
       ListTile(
-        title: const Text('Backup locale preferiti'),
+        title: Text(l10n.settingsBackupFavoritesTitle),
         onTap: () => _settingsController.exportFavorites(),
       ),
       ListTile(
-        title: const Text('Ripristina preferiti'),
+        title: Text(l10n.settingsRestoreFavoritesTitle),
         onTap: () => _settingsController.importFavorites(),
       ),
       ListTile(
-        title: const Text('Condividi app'),
+        title: Text(l10n.settingsShareAppTitle),
         onTap: () => _settingsController.shareApp(),
       ),
       ListTile(
-        title: const Text('Informazioni app'),
+        title: Text(l10n.settingsInfoTitle),
         onTap: () => _settingsController.infoApp(),
       ),
     ];
@@ -107,7 +100,7 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Impostazioni'),
+        title: Text(l10n.settingsPageTitle),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         scrolledUnderElevation: 0,
       ),
@@ -116,7 +109,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           Expanded(
             child: ListView(shrinkWrap: true, children: [
-              ...getList().expand(
+              ...getList(context).expand(
                 (element) => [
                   element,
                   const Divider(
@@ -131,7 +124,8 @@ class SettingsPage extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 20, bottom: 4),
                 alignment: Alignment.center,
                 child: Obx(
-                  () => Text('Versione: ${_settingsController.version}'),
+                  () => Text(
+                      l10n.settingsVersion(_settingsController.version.value)),
                 ),
               ),
             ]),

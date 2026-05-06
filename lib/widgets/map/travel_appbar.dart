@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_travel_controller.dart';
-import 'package:flutter_gtt/resources/utils/map_utils.dart';
+import 'package:torino_mobility/controllers/map/map_travel_controller.dart';
+import 'package:torino_mobility/resources/utils/map_utils.dart';
 import 'package:get/get.dart';
 
 class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {

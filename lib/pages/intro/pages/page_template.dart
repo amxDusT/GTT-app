@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter_gtt/widgets/intro/custom_text.dart';
+import 'package:torino_mobility/widgets/intro/custom_text.dart';
 
 class PageTemplate extends StatefulWidget {
   final String title;

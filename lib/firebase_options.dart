@@ -51,20 +51,20 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAqyxsdPXKsMcoHsGi19viMhDw39ZWWoXI',
-    appId: '1:102279235096:android:af0323a220681d928f656d',
+    apiKey: 'AIzaSyAXEv8Xb1aylGGBTFg4B9sAKA3rHeuU0Bw',
+    appId: '1:102279235096:android:f9e80c6f6a8520888f656d',
     messagingSenderId: '102279235096',
     projectId: 'gtt-app-40686',
     storageBucket: 'gtt-app-40686.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA_pcT3e4TK6AMRr1gIyWUbAKj8NE4AmH0',
-    appId: '1:102279235096:ios:d844fd5c50999aeb8f656d',
+    apiKey: 'AIzaSyDiAaBbiQzRczfgDa6bGH_ghFGWMxiEAqE',
+    appId: '1:102279235096:ios:6ce0fe4d6648814b8f656d',
     messagingSenderId: '102279235096',
     projectId: 'gtt-app-40686',
     storageBucket: 'gtt-app-40686.firebasestorage.app',
-    iosBundleId: 'com.example.flutterGtt',
+    iosBundleId: 'it.amxdust.torinomobility',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '102279235096',
     projectId: 'gtt-app-40686',
     storageBucket: 'gtt-app-40686.firebasestorage.app',
-    iosBundleId: 'com.example.flutterGtt',
+    iosBundleId: 'it.amxdust.torinomobility',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

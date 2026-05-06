@@ -7,34 +7,15 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:102279235096:android:9c6e6c269701e4658f656d",
+        "mobilesdk_app_id": "1:102279235096:android:f9e80c6f6a8520888f656d",
         "android_client_info": {
-          "package_name": "com.example.flutter_gtt"
+          "package_name": "it.amxdust.torinomobility"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAqyxsdPXKsMcoHsGi19viMhDw39ZWWoXI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:102279235096:android:af0323a220681d928f656d",
-        "android_client_info": {
-          "package_name": "com.example.flutter_gtt.test"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAqyxsdPXKsMcoHsGi19viMhDw39ZWWoXI"
+          "current_key": "AIzaSyAXEv8Xb1aylGGBTFg4B9sAKA3rHeuU0Bw"
         }
       ],
       "services": {

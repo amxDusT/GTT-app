@@ -1,8 +1,8 @@
-import 'package:flutter_gtt/models/gtt/agency.dart';
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/gtt/pattern.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/database.dart';
+import 'package:torino_mobility/models/gtt/agency.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/gtt/pattern.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/database.dart';
 
 class UpdateUtils {
   static Future<void> update(List<dynamic> elements) async {

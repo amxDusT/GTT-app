@@ -1,5 +1,5 @@
-import 'package:flutter_gtt/models/gtt/route.dart';
-import 'package:flutter_gtt/models/map/address.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
+import 'package:torino_mobility/models/map/address.dart';
 import 'package:latlong2/latlong.dart';
 
 class Travel {

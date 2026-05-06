@@ -1,10 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter_compass/flutter_compass.dart';
-import 'package:flutter_gtt/exceptions/map_location_exception.dart';
+import 'package:torino_mobility/exceptions/map_location_exception.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
 
 class MapLocation extends GetxController {
   StreamSubscription<Position>? _geolocatorSubscription;
@@ -52,7 +53,7 @@ class MapLocation extends GetxController {
     LocationPermission permission;
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      throw MapLocationException('Servizio disabilitato');
+      throw MapLocationException(l10n.locationServiceDisabled);
     }
 
     permission = await Geolocator.checkPermission();
@@ -61,11 +62,10 @@ class MapLocation extends GetxController {
       permission = await Geolocator.requestPermission();
 
       if (permission == LocationPermission.denied) {
-        throw MapLocationException('Permesso negato',
+        throw MapLocationException(l10n.locationPermissionDenied,
             locationPermission: permission);
       } else if (permission == LocationPermission.deniedForever) {
-        throw MapLocationException(
-            'Permesso negato. Abilita la posizione nelle impostazioni del dispositivo',
+        throw MapLocationException(l10n.locationPermissionDeniedForever,
             locationPermission: permission);
       }
     }

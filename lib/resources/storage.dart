@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 

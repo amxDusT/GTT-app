@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/smart_card/smart_card.dart';
-import 'package:flutter_gtt/widgets/card_info_widget.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/models/smart_card/smart_card.dart';
+import 'package:torino_mobility/widgets/card_info_widget.dart';
 import 'package:get/get.dart';
 
 class CardInfoPage extends StatelessWidget {
@@ -10,7 +11,7 @@ class CardInfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Carta ${smartCard.cardNumber}'),
+        title: Text(l10n.cardTitle(smartCard.cardNumber.toString())),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -20,16 +21,16 @@ class CardInfoPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Informazioni carta',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              l10n.cardInfoHeading,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
             _infoCard(),
             const SizedBox(height: 20),
-            const Text(
-              'Abbonamenti',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Text(
+              l10n.subscriptionsHeading,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Flexible(
               flex: 3,
@@ -60,25 +61,25 @@ class CardInfoPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('Numero Carta: '),
+              Text(l10n.cardNumberLabel),
               Text(smartCard.cardNumber.toString()),
             ],
           ),
           Row(
             children: [
-              const Text('Tipo Carta: '),
+              Text(l10n.cardTypeLabel),
               Text(smartCard.cardType.toString()),
             ],
           ),
           Row(
             children: [
-              const Text('Emessa il: '),
+              Text(l10n.cardIssuedOnLabel),
               Text(smartCard.creationDate),
             ],
           ),
           Row(
             children: [
-              const Text('Contratti/Abbonamenti: '),
+              Text(l10n.contractsLabel),
               Text(smartCard.allContracts.length.toString()),
             ],
           ),

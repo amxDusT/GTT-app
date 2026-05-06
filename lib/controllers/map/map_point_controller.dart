@@ -1,5 +1,5 @@
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/models/marker.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/models/marker.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/extension_api.dart';
 import 'package:get/get.dart';

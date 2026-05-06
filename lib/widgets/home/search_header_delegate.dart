@@ -1,7 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/search/home_search_controller.dart';
+import 'package:get/get.dart';
+import 'package:torino_mobility/controllers/search/home_search_controller.dart';
 
 class SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Widget searchWidget;
@@ -14,6 +15,7 @@ class SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
   final Color? backgroundColor;
   final Widget firstAction;
   final Icon icon;
+
   SearchHeaderDelegate({
     required this.searchWidget,
     this.maxHeight = 150,
@@ -41,56 +43,73 @@ class SearchHeaderDelegate extends SliverPersistentHeaderDelegate {
     bool overlapsContent,
   ) {
     final defaultOp = defaultOpacity(shrinkOffset);
-    final isSearching = searchController.focusNode?.hasFocus ?? false;
 
-    return Stack(
-      fit: StackFit.expand,
-      alignment: Alignment.center,
-      children: [
-        Container(
-          color: backgroundColor,
-        ),
-        if (title != null && (!isSearching || defaultOp > _defaultOpacityBreak))
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: AppBar(
-              scrolledUnderElevation: 0.0,
-              backgroundColor: Colors.transparent,
-              title: title,
-              leading: leading,
-              actions: [
-                AnimatedOpacity(
-                  duration: const Duration(milliseconds: 200),
-                  opacity: defaultOp <= _defaultOpacityBreak ? 1.0 : 0,
-                  child: firstAction,
+    return Obx(() {
+      final isSearching = searchController.showLeadingIcon.value;
+
+      return Stack(
+        fit: StackFit.expand,
+        alignment: Alignment.center,
+        children: [
+          Container(
+            color: backgroundColor,
+          ),
+          if (title != null &&
+              (!isSearching || defaultOp > _defaultOpacityBreak))
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: AppBar(
+                scrolledUnderElevation: 0.0,
+                backgroundColor: Colors.transparent,
+                title: title,
+                leading: leading,
+                actions: [
+                  AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: defaultOp <= _defaultOpacityBreak ? 1.0 : 0,
+                    child: firstAction,
+                  ),
+                  if (actions != null) ...actions!,
+                ],
+                elevation: 0,
+              ),
+            ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: AnimatedSlide(
+                  duration: const Duration(milliseconds: 150),
+                  offset: isSearching || defaultOp > _defaultOpacityBreak
+                      ? Offset.zero
+                      : const Offset(0, 0.2),
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: isSearching
+                        ? 1.0
+                        : defaultOp > _defaultOpacityBreak
+                            ? defaultOp
+                            : 0,
+                    child: searchWidget,
+                  ),
                 ),
-                if (actions != null) ...actions!,
-              ],
-              elevation: 0,
+              ),
             ),
           ),
-        AnimatedPositioned(
-          duration: const Duration(milliseconds: 150),
-          right: isSearching || defaultOp > _defaultOpacityBreak ? 0 : 70,
-          left: isSearching || defaultOp > _defaultOpacityBreak ? 0 : 400,
-          bottom: isSearching || defaultOp > _defaultOpacityBreak ? 0 : 10,
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 200),
-            opacity: isSearching
-                ? 1.0
-                : defaultOp > _defaultOpacityBreak
-                    ? defaultOp
-                    : 0,
-            child: searchWidget,
-          ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   double defaultOpacity(double shrinkOffset) {
-    return (1.0 - max(0.0, shrinkOffset) / (maxExtent - minExtent))
-        .clamp(0.0, 1.0);
+    final extentRange = maxExtent - minExtent;
+    if (extentRange <= 0) {
+      return 1.0;
+    }
+
+    return (1.0 - max(0.0, shrinkOffset) / extentRange).clamp(0.0, 1.0);
   }
 
   @override

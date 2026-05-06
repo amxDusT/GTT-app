@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter_gtt/models/mqtt_data.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/models/mqtt_data.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:uuid/uuid.dart';

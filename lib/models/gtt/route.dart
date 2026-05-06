@@ -1,5 +1,5 @@
-import 'package:flutter_gtt/models/gtt/stoptime.dart';
-import 'package:flutter_gtt/models/gtt/pattern.dart';
+import 'package:torino_mobility/models/gtt/stoptime.dart';
+import 'package:torino_mobility/models/gtt/pattern.dart';
 
 class RouteWithDetails extends Route {
   final List<Stoptime> stoptimes;

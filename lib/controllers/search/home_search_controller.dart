@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/database.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class SearchStopsController extends GetxController {
@@ -43,8 +44,8 @@ class SearchStopsController extends GetxController {
     List<Stop> stops = await getStopsFromValue(value);
 
     if (stops.isEmpty) {
-      Utils.showSnackBar('La fermata non esiste',
-          title: 'Errore', snackPosition: SnackPosition.TOP);
+      Utils.showSnackBar(l10n.stopNotFound,
+          title: l10n.errorTitle, snackPosition: SnackPosition.TOP);
       //Get.snackbar('Errore', 'La fermata non esiste');
     } else {
       openInfoPage(stops.first);

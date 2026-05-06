@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:flutter_gtt/resources/utils/gtt_date.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/utils/gtt_date.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
 
 class ChipPaper {
   late final DateTime _lastDate;

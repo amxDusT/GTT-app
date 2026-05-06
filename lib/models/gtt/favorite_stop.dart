@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:flutter_gtt/models/gtt/stop.dart';
-import 'package:flutter_gtt/resources/storage.dart';
+import 'package:torino_mobility/models/gtt/stop.dart';
+import 'package:torino_mobility/resources/storage.dart';
 
 class FavStop extends Stop {
   final DateTime dateTime;

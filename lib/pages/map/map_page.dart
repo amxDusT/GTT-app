@@ -1,16 +1,18 @@
-import 'package:flutter/foundation.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_gtt/controllers/map/map_controller.dart';
-import 'package:flutter_gtt/controllers/route_list_controller.dart';
-import 'package:flutter_gtt/controllers/settings_controller.dart';
-import 'package:flutter_gtt/models/marker.dart';
-import 'package:flutter_gtt/resources/globals.dart';
-import 'package:flutter_gtt/resources/utils/map_utils.dart';
-import 'package:flutter_gtt/resources/utils/utils.dart';
-import 'package:flutter_gtt/widgets/map/bottom_buttons.dart';
-import 'package:flutter_gtt/widgets/map/card_map_widget.dart';
-import 'package:flutter_gtt/widgets/map/circle_button.dart';
-import 'package:flutter_gtt/widgets/map/route_appbar_info.dart';
+import 'package:http/io_client.dart';
+import 'package:torino_mobility/controllers/map/map_controller.dart';
+import 'package:torino_mobility/controllers/route_list_controller.dart';
+import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/models/marker.dart';
+import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/utils/map_utils.dart';
+import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/widgets/map/bottom_buttons.dart';
+import 'package:torino_mobility/widgets/map/card_map_widget.dart';
+import 'package:torino_mobility/widgets/map/circle_button.dart';
+import 'package:torino_mobility/widgets/map/route_appbar_info.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
@@ -122,17 +124,21 @@ class MapPage extends StatelessWidget {
               ),
               children: [
                 TileLayer(
-                  userAgentPackageName: 'com.amxdust.flutter_gtt',
-                  maxNativeZoom:
-                      _settingsController.showBetaFeatures.isTrue ? 22 : 19,
-                  urlTemplate: (_settingsController.showBetaFeatures.isTrue &&
-                          !kDebugMode &&
-                          mapboxApiKey.isNotEmpty)
-                      ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey'
-                      : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  tileProvider:
-                      const FMTCStore(tileCacheName).getTileProvider(),
-                ),
+                    userAgentPackageName: 'it.amxdust.torino_mobility',
+                    maxNativeZoom:
+                        _settingsController.showBetaFeatures.isTrue ? 22 : 19,
+                    urlTemplate: (_settingsController.showBetaFeatures.isTrue &&
+                            mapboxApiKey.isNotEmpty)
+                        ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey'
+                        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    tileProvider:
+                        const FMTCStore(tileCacheName).getTileProvider(
+                      httpClient: IOClient(
+                        HttpClient()
+                          ..userAgent = null
+                          ..connectionTimeout = const Duration(seconds: 5),
+                      ),
+                    )),
 
                 /*  TileLayer(
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
