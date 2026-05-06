@@ -85,8 +85,10 @@ class HomeController extends GetxController {
     if (fermate.contains(stop)) {
       DatabaseCommands.instance.deleteStop(stop);
       fermate.remove(stop);
+      favoriteRoutes.remove(stop.gtfsId);
     } else {
       DatabaseCommands.instance.insertStop(stop);
+
       if (stop is FavStop) {
         fermate.add(stop);
       } else {
@@ -98,6 +100,8 @@ class HomeController extends GetxController {
         );
         fermate.add(FavStop.fromStop(stop: stop));
       }
+      final routes = await DatabaseCommands.instance.getRouteFromStop(stop);
+      favoriteRoutes[stop.gtfsId] = routes;
     }
     update();
   }
