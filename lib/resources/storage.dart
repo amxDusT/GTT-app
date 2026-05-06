@@ -18,7 +18,9 @@ enum StorageParam {
 }
 
 class Storage {
-  final _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(resetOnError: true),
+  );
   static Storage? _instance;
   Map<StorageParam, dynamic> params = {};
   Storage._();
