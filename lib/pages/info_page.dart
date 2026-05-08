@@ -4,8 +4,9 @@ import 'package:torino_mobility/fake/fake_data.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/route.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
-import 'package:torino_mobility/resources/globals.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/utils/fonts.dart';
+import 'package:torino_mobility/widgets/home/info_app_bar.dart';
 import 'package:torino_mobility/widgets/info_widget.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -23,163 +24,153 @@ class InfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, res) {
-        if (_infoController.isSelecting.isTrue) {
+      onPopInvokedWithResult: (didPop, _) {
+        if (_infoController.isSelecting.isTrue)
           _infoController.switchSelecting();
-        } else {
-          Future.delayed(Duration.zero, () {
-            if (!didPop) Get.back(closeOverlays: true);
-          });
-        }
+        else if (!didPop) Get.back(closeOverlays: true);
       },
       child: Hero(
         tag: 'HeroTagFermata$stopCode',
         child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-            scrolledUnderElevation: 0,
-            title: Obx(
-              () => Text(
-                _infoController.isSelecting.isTrue
-                    ? l10n.selectedRoutesCount(
-                        _infoController.selectedRoutes.length,
-                        maxRoutesInMap >
-                                _infoController.fermata.value.vehicles.length
-                            ? _infoController.fermata.value.vehicles.length
-                            : maxRoutesInMap,
-                      )
-                    : _infoController.fermata.value.toString(),
-              ),
-            ),
-            actions: [
-              Obx(
-                () => IconButton(
-                  onPressed: () {
-                    _infoController.switchSelecting();
-                  },
-                  icon: Icon(_infoController.isSelecting.isTrue
-                      ? Icons.close
-                      : Icons.select_all),
-                  tooltip: _infoController.isSelecting.isTrue
-                      ? l10n.cancel
-                      : l10n.selectRoutes,
-                ),
-              ),
-              Obx(
-                () => IconButton(
-                  onPressed: () {
-                    _infoController.switchAddDeleteFermata();
-                  },
-                  icon: Icon(_infoController.isSaved.isTrue
-                      ? Icons.star
-                      : Icons.star_outline),
-                  tooltip: _infoController.isSaved.isTrue
-                      ? l10n.removeFromHome
-                      : l10n.saveToHome,
-                ),
-              ),
-            ],
-          ),
-          body: LayoutBuilder(
-            builder: (context, constraints) => RefreshIndicator(
-              onRefresh: () async => _infoController.getFermata(),
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  SingleChildScrollView(
-                    physics: const AlwaysScrollableScrollPhysics(
-                        parent: BouncingScrollPhysics()),
-                    child: Obx(
-                      () {
-                        final routes = _infoController.isLoading.isTrue
-                            ? List.filled(5, FakeData().fakeRouteWithDetails)
-                            : _infoController.fermata.value.vehicles;
-                        return ConstrainedBox(
-                          constraints:
-                              BoxConstraints(minHeight: constraints.maxHeight),
-                          child: Skeletonizer(
-                            enabled: _infoController.isLoading.isTrue,
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              itemCount: routes.length + 1,
-                              itemBuilder: (context, index) {
-                                if (index == routes.length) {
-                                  return Skeleton.ignore(
-                                    child: Container(
-                                      alignment: Alignment.center,
-                                      padding: const EdgeInsets.only(
-                                        top: 10,
-                                        bottom: 60,
-                                      ),
-                                      child: Text(
-                                        l10n.lastUpdate(
-                                          Utils.dateToHourString(
-                                            _infoController.lastUpdate.value,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                }
-                                return InfoWidget(
-                                  stop: _infoController.fermata.value,
-                                  vehicle: (routes[index] as RouteWithDetails),
-                                );
-                              },
+          body: Stack(
+            alignment: Alignment.topCenter,
+            children: [
+              RefreshIndicator(
+                onRefresh: () async => _infoController.getFermata(),
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  slivers: [
+                    StopSliverAppBar(
+                      controller: _infoController,
+                      stopCode: stopCode,
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 12)
+                          .copyWith(bottom: 0),
+                      sliver: SliverToBoxAdapter(
+                        child: Text(
+                          'PROSSIMI PASSAGGI'.hc,
+                          style: Fonts.subtitle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w400,
+                            height: 1.4,
+                            color: const Color(0xff6e6555),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Obx(() {
+                      final isLoading = _infoController.isLoading.isTrue;
+
+                      final routes = isLoading
+                          ? List.filled(5, FakeData().fakeRouteWithDetails)
+                          : _infoController.fermata.value.vehicles;
+                      return SliverPadding(
+                        padding: const EdgeInsets.symmetric(
+                                vertical: 12, horizontal: 8)
+                            .copyWith(top: 0),
+                        sliver: Skeletonizer.sliver(
+                          enabled: isLoading,
+                          child: SliverList.builder(
+                            itemCount: routes.length,
+                            itemBuilder: (context, index) => InfoWidget(
+                              stop: _infoController.fermata.value,
+                              vehicle: routes[index] as RouteWithDetails,
                             ),
                           ),
+                        ),
+                      );
+                    }),
+                    Obx(
+                      () {
+                        final buttonHidden = !_infoController.canShowMap ||
+                            _infoController.isLoading.isTrue ||
+                            _infoController.selectedRoutes.isEmpty;
+                        return SliverToBoxAdapter(
+                          child: SizedBox(height: buttonHidden ? 10 : 100),
                         );
                       },
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 20,
-                    child: Obx(
-                      () {
-                        if (!_infoController.canShowMap ||
-                            _infoController.isLoading.isTrue) {
-                          return const SizedBox();
+                    )
+                  ],
+                ),
+              ),
+              Obx(() {
+                final buttonHidden = !_infoController.canShowMap ||
+                    _infoController.isLoading.isTrue ||
+                    _infoController.selectedRoutes.isEmpty;
+                return AnimatedPositioned(
+                  curve: Curves.easeInOut,
+                  duration: const Duration(milliseconds: 200),
+                  bottom: buttonHidden ? 0 : 50,
+                  left: 12,
+                  right: 12,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: buttonHidden ? 0 : 1,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xffff7a3f),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                        iconColor: const Color(0xff1a1611),
+                        fixedSize: const Size.fromHeight(50),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                      onPressed: () {
+                        if (_infoController.isSelecting.isTrue &&
+                            _infoController.selectedRoutes.isEmpty) {
+                          return;
                         }
 
-                        return Opacity(
-                          opacity: 0.9,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  _infoController.isSelecting.isTrue
-                                      ? Theme.of(context)
-                                          .colorScheme
-                                          .primaryContainer
-                                      : null,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            onPressed: () {
-                              if (_infoController.isSelecting.isTrue &&
-                                  _infoController.selectedRoutes.isEmpty) {
-                                return;
-                              }
-
-                              Get.toNamed(r.Router.mapBusRoute, arguments: {
-                                'vehicles': _infoController.isSelecting.isTrue
-                                    ? _infoController.selectedRoutes
-                                    : _infoController.fermata.value.vehicles,
-                                'multiple-patterns': true,
-                                'fermata': _infoController.fermata.value,
-                              });
-                            },
-                            child: Text(l10n.viewOnMap),
-                          ),
-                        );
+                        Get.toNamed(r.Router.mapBusRoute, arguments: {
+                          'vehicles': _infoController.isSelecting.isTrue
+                              ? _infoController.selectedRoutes
+                              : _infoController.fermata.value.vehicles,
+                          'multiple-patterns': true,
+                          'fermata': _infoController.fermata.value,
+                        });
                       },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        spacing: 8,
+                        children: [
+                          const Icon(Icons.map_outlined),
+                          Expanded(
+                            child: Text(
+                              l10n.viewOnMap,
+                              style: Fonts.title(
+                                  fontSize: 16,
+                                  color: const Color(0xff1a1611),
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xffd66625),
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Text(
+                              '${_infoController.selectedRoutes.length} linee'
+                                  .hc,
+                              style: Fonts.subtitle(
+                                  fontSize: 12,
+                                  color: const Color(0xff1a1611),
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
+                );
+              }),
+            ],
           ),
         ),
       ),

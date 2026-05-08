@@ -5,13 +5,13 @@ import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/resources/utils/color_utils.dart';
 
 class RouteIcon extends StatelessWidget {
-  const RouteIcon(
-      {super.key,
-      required this.route,
-      this.removeIcon = false,
-      this.onRemoved,
-      this.onTap})
-      : assert(!(removeIcon && onRemoved == null),
+  const RouteIcon({
+    super.key,
+    required this.route,
+    this.removeIcon = false,
+    this.onRemoved,
+    this.onTap,
+  }) : assert(!(removeIcon && onRemoved == null),
             'If removeIcon is true, onRemoved must be provided');
 
   final gtt.Route route;

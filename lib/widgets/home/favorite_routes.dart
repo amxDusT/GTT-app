@@ -3,7 +3,7 @@ import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/pages/nav_shell.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
-import 'package:torino_mobility/widgets/route_list_favorite_widget.dart';
+import 'package:torino_mobility/widgets/route_icon.dart';
 
 class FavoriteRoutes extends StatelessWidget {
   const FavoriteRoutes({required this.controller, super.key});
@@ -39,10 +39,8 @@ class FavoriteRoutes extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ...controller.favorites.map((route) => RouteListFavorite(
+                ...controller.favorites.map((route) => RouteIcon(
                       route: route,
-                      routeListController: controller,
-                      hasRemoveIcon: false,
                     )),
                 if (controller.favorites.length <= maxDisplayAddRoutes)
                   GestureDetector(
