@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:torino_mobility/controllers/nav_shell_controller.dart';
 import 'package:torino_mobility/pages/home_page.dart';
-import 'package:torino_mobility/pages/map/map_global.dart';
 import 'package:torino_mobility/pages/nfc/nfc_page.dart';
 import 'package:torino_mobility/pages/route_list_page.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
@@ -15,7 +14,6 @@ class NavShell extends StatelessWidget {
   static const homeIndex = 0;
   static const routeListIndex = 1;
   static const nfcIndex = 2;
-  static const mapIndex = 3;
 
   static void goTo(int index) {
     Get.find<NavShellController>().changeIndex(index);
@@ -25,24 +23,26 @@ class NavShell extends StatelessWidget {
     NavPillItem(icon: Icons.home_outlined, label: 'Home'.hc),
     NavPillItem(icon: Icons.directions_bus_outlined, label: 'Linee'.hc),
     NavPillItem(icon: Icons.nfc_outlined, label: 'NFC'.hc),
-    NavPillItem(icon: Icons.map_outlined, label: 'Mappa'.hc),
   ];
 
   static final _pages = <Widget>[
     HomePage(),
     RouteListPage(),
     NfcPage(),
-    MapGlobal(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final pages = List<Widget>.generate(
+      _pages.length,
+      (i) => i == homeIndex ? _pages[i] : NavBackInterceptor(child: _pages[i]),
+    );
     return Scaffold(
       body: Stack(
         children: [
           Obx(() => IndexedStack(
                 index: _controller.currentIndex.value,
-                children: _pages,
+                children: pages,
               )),
           Positioned(
             left: 0,
@@ -60,6 +60,21 @@ class NavShell extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class NavBackInterceptor extends StatelessWidget {
+  const NavBackInterceptor({required this.child, super.key});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (bool didPop, _) {
+        if (!didPop) NavShell.goTo(NavShell.homeIndex);
+      },
+      child: child,
     );
   }
 }
