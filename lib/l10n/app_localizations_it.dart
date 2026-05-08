@@ -283,7 +283,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get viewOnMap => 'Guarda sulla mappa';
+  String get viewOnMap => 'Mostra in mappa';
 
   @override
   String get routesTitle => 'Linee';
