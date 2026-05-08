@@ -37,7 +37,8 @@ class RouteListPage extends GetView<RouteListController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
-                          '${routes.length} LINEE'.hc,
+                          '${controller.routesMap.values.expand((r) => r).length} LINEE'
+                              .hc,
                           style: Fonts.subtitle(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
@@ -86,22 +87,37 @@ class RouteListPage extends GetView<RouteListController> {
                         children: [
                           for (final filter in RouteFilter.values)
                             ChoiceChip(
-                              label: Text(_filterLabels[filter]!),
+                              label: Text(
+                                _filterLabels[filter]!,
+                                style: Fonts.subtitle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: controller.activeFilter == filter
+                                      ? const Color(0xff1a1611)
+                                      : const Color(0xfff3ede0),
+                                ),
+                              ),
                               selected: controller.activeFilter == filter,
                               showCheckmark: false,
                               onSelected: (_) => controller.setFilter(filter),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              selectedColor: const Color(0xfff3ede0),
                             ),
                         ],
                       ),
                     ),
                   ]),
                 ),
-                SliverList.builder(
+                SliverList.separated(
                   itemCount: routes.length,
                   itemBuilder: (context, index) => RouteListTile(
                     route: routes[index],
                     controller: controller,
                   ),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1, indent: 12, endIndent: 12),
                 ),
                 const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
