@@ -4,7 +4,9 @@ import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/info_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/favorite_stop.dart';
+import 'package:torino_mobility/resources/extensions/date_time.dart';
 import 'package:torino_mobility/resources/globals.dart';
+import 'package:torino_mobility/resources/storage.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
@@ -273,10 +275,10 @@ class StopSliverAppBar extends StatelessWidget {
                                                 children: [
                                                   Spacing.hGap8,
                                                   Text(
-                                                    Utils.dateToHourString(
-                                                      controller
-                                                          .lastUpdate.value,
-                                                    ),
+                                                    controller.lastUpdate.value
+                                                        .toTimeString(Storage
+                                                            .instance
+                                                            .showSecondsInUpdates),
                                                   ),
                                                   Spacing.hGap8,
                                                   Text('•'.hc),

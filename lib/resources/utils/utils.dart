@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
-import 'package:torino_mobility/resources/storage.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
@@ -30,22 +29,8 @@ class Utils {
     return count;
   }
 
-  static String dateToHourString(DateTime date, [checkSeconds = true]) {
-    return checkSeconds && Storage.instance.showSecondsInUpdates
-        ? DateFormat.Hms(getLocale()).format(date)
-        : DateFormat.Hm(getLocale()).format(date);
-  }
-
-  static DateTime stringToDate(String date) {
-    return DateFormat('d MMMM, y H:mm', getLocale()).parse(date);
-  }
-
-  static String dateToString(DateTime date) {
-    return DateFormat(
-      'd MMMM, y H:mm',
-      getLocale(),
-    ).format(date).capitalizeFirst!;
-  }
+  static DateTime stringToDate(String date) =>
+      DateFormat('d MMMM, y H:mm').parse(date);
 
   static Color darken(Color c, [int percent = 50]) {
     assert(1 <= percent && percent <= 100);

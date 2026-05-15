@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/models/marker.dart';
+import 'package:torino_mobility/resources/extensions/date_time.dart';
+import 'package:torino_mobility/resources/storage.dart';
 import 'package:torino_mobility/resources/utils/map_utils.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 
 class RouteWidget extends StatelessWidget {
@@ -26,7 +27,8 @@ class RouteWidget extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Text(
-          Utils.dateToHourString(marker.mqttData.lastUpdate),
+          marker.mqttData.lastUpdate
+              .toTimeString(Storage.instance.showSecondsInUpdates),
           style: TextStyle(
             fontSize: 12,
             color: Colors.grey[700],
