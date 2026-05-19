@@ -9,9 +9,12 @@ import 'package:torino_mobility/resources/database.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
 import 'package:torino_mobility/resources/utils/color_utils.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:torino_mobility/widgets/home/color_picker.dart';
 import 'package:get/get.dart';
+import 'package:torino_mobility/widgets/map/menu_item.dart';
 
 class HomeController extends GetxController {
   List<FavStop> fermate = [];
@@ -115,7 +118,8 @@ class HomeController extends GetxController {
         Overlay.of(anchorContext).context.findRenderObject() as RenderBox;
     final RelativeRect position = RelativeRect.fromRect(
       Rect.fromPoints(
-        button.localToGlobal(Offset.zero, ancestor: overlay),
+        button.localToGlobal(button.size.bottomLeft(Offset.zero),
+            ancestor: overlay),
         button.localToGlobal(button.size.bottomRight(Offset.zero),
             ancestor: overlay),
       ),
@@ -125,23 +129,29 @@ class HomeController extends GetxController {
     showMenu(
       context: anchorContext,
       position: position,
+      color: const Color(0xff241e18).withValues(alpha: 0.95),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+          side: const BorderSide(color: Colors.grey, width: .2)),
       items: [
-        PopupMenuItem(
-          child: Text(l10n.moveToTop),
-          onTap: () => moveOnTop(fermata),
-        ),
-        PopupMenuItem(
-          child: Text(l10n.changeDescription),
-          onTap: () => _changeDescription(fermata),
-        ),
-        PopupMenuItem(
-          child: Text(l10n.changeColor),
-          onTap: () => _changeColor(fermata),
-        ),
-        PopupMenuItem(
-          child: Text(l10n.delete),
-          onTap: () => _getDeleteConfirm(fermata),
-        ),
+        MenuItem(
+            label: l10n.moveToTop,
+            leadingIcon: Icons.arrow_upward,
+            onTap: () => moveOnTop(fermata)),
+        MenuItem(
+            label: l10n.changeDescription,
+            leadingIcon: Icons.edit,
+            onTap: () => _changeDescription(anchorContext, fermata)),
+        MenuItem(
+            label: l10n.changeColor,
+            leadingIcon: Icons.color_lens,
+            onTap: () => _changeColor(fermata)),
+        MenuDivider(),
+        MenuItem(
+            label: l10n.delete,
+            leadingIcon: Icons.close,
+            onTap: () => _getDeleteConfirm(fermata),
+            dangerous: true),
       ],
     );
   }
@@ -247,26 +257,51 @@ class HomeController extends GetxController {
         });
   }
 
-  void _changeDescription(FavStop fermata) {
+  void _changeDescription(BuildContext context, FavStop fermata) async {
     descriptionController.value.text = fermata.descrizione ?? '';
-    Get.defaultDialog(
-        title: l10n.delete,
-        content: Column(children: [
-          Text(l10n.enterShortDescription),
-          Obx(
-            () => TextField(
-              maxLines: 2,
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: const Color(0xff241e18).withValues(alpha: .9),
+            title: Text('DESCRIZIONE'.hc),
+            content: TextField(
               controller: descriptionController.value,
+              minLines: 1,
+              maxLines: 2,
+              decoration: InputDecoration(
+                hintText: 'ciao',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
             ),
-          ),
-        ]),
-        textConfirm: l10n.confirm,
-        textCancel: l10n.cancel,
-        onConfirm: () {
-          Get.back();
-
-          updateStop(
-              fermata.copyWith(descrizione: descriptionController.value.text));
+            actions: [
+              TextButton(
+                onPressed: () => Get.back(),
+                child: Text(l10n.cancel.capitalizeFirst!,
+                    style: Fonts.title(
+                        color: const Color(0xff6e6555),
+                        fontWeight: FontWeight.w400,
+                        height: .9)),
+              ),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xfff3ede0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
+                onPressed: () {
+                  Get.back();
+                  updateStop(fermata.copyWith(
+                      descrizione: descriptionController.value.text));
+                },
+                child:
+                    Text(l10n.confirm.capitalizeFirst!, style: Fonts.title()),
+              ),
+            ],
+          );
         });
   }
 }
