@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:torino_mobility/controllers/app_status_controller.dart';
@@ -51,7 +52,28 @@ class MapPageController extends GetxController
       <String, gtt.RouteWithDetails>{}.obs;
 
   final Map<String, int> routeIndex = {};
-  final RxList<gtt.Pattern> routePatterns = <gtt.Pattern>[].obs;
+
+  /// Patterns fetched per route, populated lazily via [loadPatternsFor].
+  final RxMap<String, RxList<gtt.Pattern>> patternsByRoute =
+      <String, RxList<gtt.Pattern>>{}.obs;
+
+  /// All stops for each pattern, keyed by pattern code. Populated alongside
+  /// [patternsByRoute] in [loadPatternsFor] — we already fetch the stop
+  /// list there to derive [firstStop], so we cache the full list too.
+  final RxMap<String, RxList<Stop>> stopsByPattern =
+      <String, RxList<Stop>>{}.obs;
+
+  /// Which stop codes belong to each route's current pattern. Used to
+  /// know which stops to remove when a route or pattern is swapped.
+  final Map<String, Set<int>> _stopCodesByRoute = {};
+
+  /// Patterns for the single-route case (kept as a getter for the
+  /// existing dropdown in [RouteAppBarInfo]). Empty when there is more
+  /// than one route on the map.
+  List<gtt.Pattern> get routePatterns {
+    if (routes.length != 1) return const [];
+    return patternsByRoute[routes.keys.first] ?? const [];
+  }
 
   //live bus
   final MqttController _mqttController = MqttController();
@@ -187,27 +209,28 @@ class MapPageController extends GetxController
       if (showMultiplePatterns || routeValues.first is gtt.RouteWithDetails) {
         isAppBarExpanded.value = false;
       }
-      routePatterns.addAll(
-          await DatabaseCommands.instance.getPatterns(routeValues.first));
-
-      for (var pattern in routePatterns) {
-        Stop firstStopValue =
-            (await DatabaseCommands.instance.getStopsFromPattern(pattern))
-                .first;
-        firstStop.putIfAbsent(pattern.code, () => firstStopValue);
+      final loaded =
+          await DatabaseCommands.instance.getPatterns(routeValues.first);
+      for (var pattern in loaded) {
+        final patternStops =
+            await DatabaseCommands.instance.getStopsFromPattern(pattern);
+        stopsByPattern[pattern.code] = patternStops.obs;
+        if (patternStops.isNotEmpty) {
+          firstStop.putIfAbsent(pattern.code, () => patternStops.first);
+        }
       }
+      patternsByRoute[routeValues.first.gtfsId] = loaded.obs;
+
       if (routeValues.first is! gtt.RouteWithDetails) {
         routeValues = [
           gtt.RouteWithDetails.fromData(
-              route: routeValues.first,
-              stoptimes: [],
-              pattern: routePatterns.first)
+              route: routeValues.first, stoptimes: [], pattern: loaded.first)
         ];
       }
     }
 
     int routeCount = 0; // limit to 'maxRoutesInMap' routes
-    Set<Stop> stops = {};
+    stopsMap = <int, Stop>{}.obs;
     for (gtt.Route route in routeValues) {
       if (showMultiplePatterns &&
           !Storage.instance.isRouteWithoutPassagesShowing &&
@@ -220,15 +243,20 @@ class MapPageController extends GetxController
       if (tempStops.isEmpty) {
         tempStops = await GttApi.getStopsFromPattern(route.pattern);
       }
-      stops.addAll(tempStops);
+      _stopCodesByRoute[route.gtfsId] = tempStops.map((s) => s.code).toSet();
+      for (final stop in tempStops) {
+        stopsMap.putIfAbsent(stop.code, () => stop);
+      }
 
       routes.putIfAbsent(route.gtfsId, () => route);
       routeIndex.putIfAbsent(route.gtfsId, () => routeIndex.length);
 
       if (++routeCount >= maxRoutesInMap) break;
     }
-    stopsMap = {for (var stop in stops) stop.code: stop}.obs;
-    allStops = stops.map((stop) => FermataMarker(fermata: stop)).toList().obs;
+    allStops = stopsMap.values
+        .map((stop) => FermataMarker(fermata: stop))
+        .toList()
+        .obs;
 
     _mqttController.connect();
     if (initialStop != null) {
@@ -244,9 +272,8 @@ class MapPageController extends GetxController
         if (Storage.instance.isFermataShowing &&
             initialStop != null &&
             stop == initialStop.code) continue;
-        final isHighlighted = _isHighlighted(stopCode: stop);
-        if (isHighlighted != null && !isHighlighted)
-          setHighlightedStop(stop, false);
+        final isHighlighted = isStopHighlighted(stopCode: stop);
+        if (!isHighlighted) setHighlightedStop(stop, false);
       }
     }
 
@@ -281,8 +308,12 @@ class MapPageController extends GetxController
   }
 
   MapCamera _getCenterBounds() {
+    final points = <LatLng>[
+      for (final route in routes.values) ...route.pattern.polylinePoints,
+    ];
+    if (points.isEmpty) return mapController.camera;
     return CameraFit.coordinates(
-      coordinates: (routes.values.first).pattern.polylinePoints,
+      coordinates: points,
       padding: const EdgeInsets.all(20.0),
     ).fit(mapController.camera);
   }
@@ -378,27 +409,237 @@ class MapPageController extends GetxController
 
   void zoomOut() => _mapAnimation.animateZoom(isZoomIn: false);
 
-  void setCurrentPattern(gtt.Pattern newPattern) async {
-    if (routes.values.first.pattern != newPattern) {
-      stopFollowingVehicle();
+  void panMapByPixels(
+    double dx,
+    double dy, {
+    Duration duration = const Duration(milliseconds: 350),
+  }) {
+    if (dx.abs() < 1 && dy.abs() < 1) return;
+    final camera = mapController.camera;
+    final centerPoint = camera.latLngToScreenPoint(camera.center);
+    final newCenter = camera.pointToLatLng(
+      math.Point(centerPoint.x - dx, centerPoint.y - dy),
+    );
+    _mapAnimation.animate(newCenter, zoom: camera.zoom, duration: duration);
+  }
 
-      List<Stop> stopTemp =
-          await DatabaseCommands.instance.getStopsFromPattern(newPattern);
-      stopsMap = {for (var stop in stopTemp) stop.code: stop}.obs;
-      allStops.value =
-          stopTemp.map((stop) => FermataMarker(fermata: stop)).toList();
-      final highlightedStops = MapUtils.getSignedStops(routes.keys.first);
-      for (final stopCode in highlightedStops) {
-        final isHighlighted = _isHighlighted(stopCode: stopCode);
-        if (isHighlighted != null && !isHighlighted)
-          setHighlightedStop(stopCode, false);
+  void centerMarkerBiasedDown(LatLng point, {double biasY = 0.7}) {
+    final camera = mapController.camera;
+    final size = camera.nonRotatedSize;
+    final markerScreen = camera.latLngToScreenPoint(point);
+    panMapByPixels(
+      size.x / 2 - markerScreen.x,
+      size.y * biasY - markerScreen.y,
+      duration: const Duration(milliseconds: 500),
+    );
+  }
+
+  void setCurrentPattern(String gtfsId, gtt.Pattern newPattern) async {
+    final route = routes[gtfsId];
+    if (route == null || route.pattern == newPattern) return;
+
+    // If we were following a vehicle from this route, stop — the new
+    // pattern may not contain it.
+    final followed = allVehicles[followVehicle.value];
+    if (followed != null && followed.mqttData.gtfsId == gtfsId) {
+      stopFollowingVehicle();
+    }
+
+    var newStops =
+        await DatabaseCommands.instance.getStopsFromPattern(newPattern);
+    if (newStops.isEmpty) {
+      newStops = await GttApi.getStopsFromPattern(newPattern);
+    }
+
+    final oldCodes = _stopCodesByRoute[gtfsId] ?? <int>{};
+    final newCodes = newStops.map((s) => s.code).toSet();
+    _stopCodesByRoute[gtfsId] = newCodes;
+
+    // Stops that no remaining route's current pattern still uses.
+    final stillUsed = <int>{};
+    for (final codes in _stopCodesByRoute.values) {
+      stillUsed.addAll(codes);
+    }
+    final toRemove = oldCodes.difference(stillUsed);
+    if (toRemove.isNotEmpty) {
+      allStops.removeWhere((m) => toRemove.contains(m.fermata.code));
+      for (final code in toRemove) {
+        stopsMap.remove(code);
       }
-      routes.update(routes.keys.first,
-          (value) => routes.values.first.copyWith(pattern: newPattern));
-      popupController.hideAllPopups();
+    }
+
+    // Add stops that weren't on the map yet.
+    final currentZoom = mapController.camera.zoom;
+    for (final stop in newStops) {
+      if (!stopsMap.containsKey(stop.code)) {
+        stopsMap[stop.code] = stop;
+        allStops.add(FermataMarker(fermata: stop, zoom: currentZoom));
+      }
+    }
+
+    routes[gtfsId] = route.copyWith(pattern: newPattern);
+    popupController.hideAllPopups();
+    lastOpenedMarker = null;
+
+    final highlightedStops = MapUtils.getSignedStops(gtfsId);
+    for (final stopCode in highlightedStops) {
+      if (!isStopHighlighted(stopCode: stopCode)) {
+        setHighlightedStop(stopCode, false);
+      }
     }
 
     centerBounds();
+  }
+
+  /// Fetch and cache the patterns for [gtfsId]. Safe to call repeatedly:
+  /// subsequent calls return the cached list immediately.
+  Future<List<gtt.Pattern>> loadPatternsFor(String gtfsId) async {
+    final route = routes[gtfsId];
+    if (route == null) return const [];
+
+    // Ensure pattern list is cached.
+    List<gtt.Pattern> loaded;
+    final cached = patternsByRoute[gtfsId];
+    if (cached != null) {
+      loaded = cached;
+    } else {
+      loaded = await DatabaseCommands.instance.getPatterns(route);
+      patternsByRoute[gtfsId] = loaded.obs;
+    }
+
+    // Ensure each pattern's stops are cached. addRoute may have populated
+    // patternsByRoute without filling stopsByPattern, so we always run this
+    // loop and rely on the per-key check to skip already-cached entries.
+    for (final pattern in loaded) {
+      if (stopsByPattern.containsKey(pattern.code)) continue;
+      final stops =
+          await DatabaseCommands.instance.getStopsFromPattern(pattern);
+      stopsByPattern[pattern.code] = stops.obs;
+      if (stops.isNotEmpty) {
+        firstStop.putIfAbsent(pattern.code, () => stops.first);
+      }
+    }
+    return loaded;
+  }
+
+  /// Add a route to the map after creation. If [route] is a plain
+  /// [gtt.Route], a default pattern is fetched from the database.
+  Future<void> addRoute(gtt.Route route) async {
+    if (routes.containsKey(route.gtfsId)) return;
+    if (routes.length >= maxRoutesInMap) {
+      Utils.showSnackBar(l10n.selectMaxVehicles(maxRoutesInMap));
+      return;
+    }
+
+    gtt.Pattern pattern;
+    if (route is gtt.RouteWithDetails) {
+      pattern = route.pattern;
+    } else {
+      final fetched = await DatabaseCommands.instance.getPatterns(route);
+      if (fetched.isEmpty) return;
+      pattern = fetched.first;
+      patternsByRoute[route.gtfsId] = fetched.obs;
+    }
+
+    final routeWithDetails = route is gtt.RouteWithDetails
+        ? route
+        : gtt.RouteWithDetails.fromData(
+            route: route, stoptimes: const [], pattern: pattern);
+
+    var stops = await DatabaseCommands.instance.getStopsFromPattern(pattern);
+    if (stops.isEmpty) {
+      stops = await GttApi.getStopsFromPattern(pattern);
+    }
+
+    // Share the fetched stops with the per-pattern cache so the pattern
+    // info modal doesn't refetch them.
+    stopsByPattern.putIfAbsent(pattern.code, () => stops.obs);
+    if (stops.isNotEmpty) {
+      firstStop.putIfAbsent(pattern.code, () => stops.first);
+    }
+
+    routes[routeWithDetails.gtfsId] = routeWithDetails;
+    routeIndex.putIfAbsent(routeWithDetails.gtfsId, () => routeIndex.length);
+    _stopCodesByRoute[routeWithDetails.gtfsId] =
+        stops.map((s) => s.code).toSet();
+
+    final currentZoom = mapController.camera.zoom;
+    for (final stop in stops) {
+      if (!stopsMap.containsKey(stop.code)) {
+        stopsMap[stop.code] = stop;
+        allStops.add(FermataMarker(fermata: stop, zoom: currentZoom));
+      }
+    }
+
+    _mqttController.addSubscription(routeWithDetails.gtfsId);
+
+    final highlightedStops = MapUtils.getSignedStops(routeWithDetails.gtfsId);
+    for (final stopCode in highlightedStops) {
+      if (!isStopHighlighted(stopCode: stopCode)) {
+        setHighlightedStop(stopCode, false);
+      }
+    }
+
+    centerBounds();
+  }
+
+  /// Remove a route from the map. No-op if [gtfsId] is the only route
+  /// left — the UI should prevent that case but we defend here too.
+  void removeRoute(String gtfsId) {
+    if (routes.length <= 1) return;
+    if (!routes.containsKey(gtfsId)) return;
+
+    _mqttController.removeSubscription(gtfsId);
+
+    final removedVehicleNums = <int>{};
+    allVehicles.removeWhere((key, vehicle) {
+      if (vehicle.mqttData.gtfsId == gtfsId) {
+        removedVehicleNums.add(vehicle.mqttData.vehicleNum);
+        return true;
+      }
+      return false;
+    });
+
+    if (followVehicle.value != 0 &&
+        removedVehicleNums.contains(followVehicle.value)) {
+      stopFollowingVehicle();
+    }
+
+    if (lastOpenedMarker is VehicleMarker &&
+        removedVehicleNums.contains(
+            (lastOpenedMarker as VehicleMarker).mqttData.vehicleNum)) {
+      popupController.hideAllPopups();
+      lastOpenedMarker = null;
+    }
+
+    final ownedStops = _stopCodesByRoute.remove(gtfsId) ?? <int>{};
+    final stillUsed = <int>{};
+    for (final codes in _stopCodesByRoute.values) {
+      stillUsed.addAll(codes);
+    }
+    final toRemove = ownedStops.difference(stillUsed);
+    if (toRemove.isNotEmpty) {
+      if (lastOpenedMarker is FermataMarker &&
+          toRemove.contains((lastOpenedMarker as FermataMarker).fermata.code)) {
+        popupController.hideAllPopups();
+        lastOpenedMarker = null;
+      }
+      allStops.removeWhere((m) => toRemove.contains(m.fermata.code));
+      for (final code in toRemove) {
+        stopsMap.remove(code);
+      }
+    }
+
+    routes.remove(gtfsId);
+    patternsByRoute.remove(gtfsId);
+
+    // After removal, if a single route remains, eagerly load its patterns
+    // so the appbar dropdown can render right away.
+    if (routes.length == 1) {
+      loadPatternsFor(routes.keys.first);
+    }
+
+    if (routes.isNotEmpty) centerBounds();
   }
 
   void centerUser() async {
@@ -459,7 +700,7 @@ class MapPageController extends GetxController
 
   /// check if a stop is highlighted
   /// either pass the stop or the stop code
-  bool? _isHighlighted({FermataMarker? stop, int? stopCode}) {
+  bool isStopHighlighted({FermataMarker? stop, int? stopCode}) {
     assert(
         (stop != null || stopCode != null) &&
             (stop == null || stopCode == null),
@@ -469,7 +710,7 @@ class MapPageController extends GetxController
     } else {
       final element = allStops
           .firstWhereOrNull((element) => element.fermata.code == stopCode);
-      return element == null ? null : element.color == Colors.green;
+      return element == null ? false : element.color == Colors.green;
     }
   }
 
@@ -480,7 +721,7 @@ class MapPageController extends GetxController
 
     if (element == null) return;
 
-    final isHighlighted = _isHighlighted(stop: element)!;
+    final isHighlighted = isStopHighlighted(stop: element);
     allStops[allStops.indexOf(element)] = element.copyWith(
       color: isHighlighted ? FermataMarker.defaultColor : Colors.green,
     );

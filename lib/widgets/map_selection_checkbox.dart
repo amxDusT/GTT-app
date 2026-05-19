@@ -19,7 +19,8 @@ class MapSelectionCheckbox extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        width: 50,
+        //color: Colors.red,
+        width: 40,
         alignment: const AlignmentGeometry.directional(0, -.5),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),

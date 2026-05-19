@@ -7,6 +7,7 @@ class InfoIconButton extends StatelessWidget {
     required this.tooltip,
     this.iconSize = 20,
     this.color,
+    this.backgroundColor = const Color.fromARGB(77, 82, 68, 70),
     super.key,
   });
 
@@ -15,12 +16,13 @@ class InfoIconButton extends StatelessWidget {
   final String tooltip;
   final double iconSize;
   final Color? color;
+  final Color backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
       style: IconButton.styleFrom(
-        backgroundColor: const Color(0xff524446).withValues(alpha: 0.3),
+        backgroundColor: backgroundColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
         ),

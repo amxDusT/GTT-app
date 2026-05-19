@@ -27,6 +27,13 @@ final class AppTheme {
       ),
       scaffoldBackgroundColor: _darkBackground,
       useMaterial3: true,
+      scrollbarTheme: ScrollbarThemeData(
+        crossAxisMargin: 0,
+        radius: const Radius.circular(100),
+        thumbColor: WidgetStatePropertyAll(
+          _darkText.withValues(alpha: 0.4),
+        ),
+      ),
     );
     return base.copyWith(
       textTheme: _applyFont(base.textTheme, color: _darkText),
