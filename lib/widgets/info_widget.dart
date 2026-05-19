@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:torino_mobility/controllers/info_controller.dart';
 import 'package:torino_mobility/models/gtt/route.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
@@ -66,8 +65,7 @@ class InfoWidget extends StatelessWidget {
                       ListTile(
                         contentPadding: const EdgeInsets.only(left: 8),
                         visualDensity: VisualDensity.compact,
-                        leading:
-                            Skeleton.leaf(child: RouteIcon(route: vehicle)),
+                        leading: RouteIcon(routeName: vehicle.shortName),
                         title: Row(
                           children: [
                             Icon(
