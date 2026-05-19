@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/resources/utils/fonts.dart';
 
 class NavPillItem {
   final IconData icon;
@@ -46,13 +47,18 @@ class FloatingNavPill extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onChanged;
   final Color accentColor;
-
+  final Color? backgroundColor;
+  final bool showAllLabels;
+  final bool expand;
   const FloatingNavPill({
     super.key,
     required this.items,
     required this.currentIndex,
     required this.onChanged,
     this.accentColor = const Color(0xffff7a3f),
+    this.backgroundColor,
+    this.showAllLabels = false,
+    this.expand = false,
   });
 
   @override
@@ -61,19 +67,22 @@ class FloatingNavPill extends StatelessWidget {
     return Material(
       elevation: 6,
       borderRadius: BorderRadius.circular(40),
-      color: palette.background,
+      color: backgroundColor ?? palette.background,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
           children: List.generate(items.length, (i) {
             final selected = i == currentIndex;
-            return NavPillButton(
+            final button = NavPillButton(
               item: items[i],
               selected: selected,
               palette: palette,
+              alwaysShowLabel: showAllLabels,
+              expand: expand,
               onTap: () => onChanged(i),
             );
+            return expand ? Expanded(child: button) : button;
           }),
         ),
       ),
@@ -86,6 +95,8 @@ class NavPillButton extends StatefulWidget {
   final bool selected;
   final PillPalette palette;
   final VoidCallback onTap;
+  final bool alwaysShowLabel;
+  final bool expand;
 
   const NavPillButton({
     super.key,
@@ -93,6 +104,8 @@ class NavPillButton extends StatefulWidget {
     required this.selected,
     required this.palette,
     required this.onTap,
+    this.alwaysShowLabel = false,
+    this.expand = false,
   });
 
   @override
@@ -103,10 +116,12 @@ class _NavPillButtonState extends State<NavPillButton>
     with SingleTickerProviderStateMixin {
   static const _duration = Duration(milliseconds: 150);
 
+  bool get _showLabel => widget.selected || widget.alwaysShowLabel;
+
   late final AnimationController _controller = AnimationController(
     vsync: this,
     duration: _duration,
-    value: widget.selected ? 1.0 : 0.0,
+    value: _showLabel ? 1.0 : 0.0,
   );
 
   late final Animation<double> _widthAnim = CurvedAnimation(
@@ -124,8 +139,9 @@ class _NavPillButtonState extends State<NavPillButton>
   @override
   void didUpdateWidget(NavPillButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.selected != oldWidget.selected) {
-      widget.selected ? _controller.forward() : _controller.reverse();
+    final wasShown = oldWidget.selected || oldWidget.alwaysShowLabel;
+    if (_showLabel != wasShown) {
+      _showLabel ? _controller.forward() : _controller.reverse();
     }
   }
 
@@ -150,7 +166,10 @@ class _NavPillButtonState extends State<NavPillButton>
           borderRadius: BorderRadius.circular(32),
         ),
         child: Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: widget.expand ? MainAxisSize.max : MainAxisSize.min,
+          mainAxisAlignment: widget.expand
+              ? MainAxisAlignment.center
+              : MainAxisAlignment.start,
           children: [
             Icon(
               widget.item.icon,
@@ -168,8 +187,10 @@ class _NavPillButtonState extends State<NavPillButton>
                   padding: const EdgeInsets.only(left: 6),
                   child: Text(
                     widget.item.label,
-                    style: TextStyle(
-                      color: palette.selectedForeground,
+                    style: Fonts.title(
+                      color: widget.selected
+                          ? palette.selectedForeground
+                          : palette.unselectedForeground,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
