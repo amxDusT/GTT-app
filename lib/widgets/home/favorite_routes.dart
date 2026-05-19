@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/pages/nav_shell.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/widgets/route_icon.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 
 class FavoriteRoutes extends StatelessWidget {
   const FavoriteRoutes({required this.controller, super.key});
@@ -40,13 +42,17 @@ class FavoriteRoutes extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ...controller.favorites.map((route) => RouteIcon(
-                      route: route,
+                      routeName: route.shortName,
+                      onTap: () =>
+                          Get.toNamed(r.Router.mapBusRoute, arguments: {
+                        'vehicles': [route]
+                      }),
                     )),
                 if (controller.favorites.length <= maxDisplayAddRoutes)
                   GestureDetector(
                     onTap: () => NavShell.goTo(NavShell.routeListIndex),
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 8),
+                      margin: const EdgeInsets.all(4),
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
