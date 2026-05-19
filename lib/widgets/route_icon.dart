@@ -1,52 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
-import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/resources/utils/color_utils.dart';
 
 class RouteIcon extends StatelessWidget {
   const RouteIcon({
     super.key,
-    required this.route,
+    required this.routeName,
     this.removeIcon = false,
     this.onRemoved,
     this.onTap,
+    this.size = 40,
+    this.color,
+    this.margin = const EdgeInsets.all(4),
+    this.padding = const EdgeInsets.all(4),
   }) : assert(!(removeIcon && onRemoved == null),
             'If removeIcon is true, onRemoved must be provided');
 
-  final gtt.Route route;
+  final String routeName;
   final bool removeIcon;
   final VoidCallback? onRemoved;
   final VoidCallback? onTap;
+  final double size;
+  final Color? color;
+  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry padding;
   @override
   Widget build(BuildContext context) {
-    final name = route.shortName.replaceAll(' ', '');
-    final fontSize = (20 - ((name.length - 2) * 10 / 2)).clamp(10, 20);
-    Widget mainWidget = Obx(() {
-      return Container(
+    final name = routeName.replaceAll(' ', '');
+
+    Widget mainWidget = Skeleton.leaf(
+      child: Container(
         alignment: Alignment.center,
-        margin: const EdgeInsets.all(4),
-        padding: const EdgeInsets.all(5),
-        width: 40 /* + (name.length > 2 ? name.length * 5 : 0) */,
-        height: 40,
+        margin: margin,
+        padding: padding,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
-          color: ColorUtils.normalize(
-            ColorUtils.indexColor(int.tryParse(name) ?? 0),
-            dark: Get.find<SettingsController>().isDarkMode.isTrue,
-          ),
+          color: color ??
+              ColorUtils.normalize(
+                ColorUtils.indexColor(int.tryParse(name) ?? 0),
+                dark: Get.find<SettingsController>().isDarkMode.isTrue,
+              ),
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Text(
-          name,
-          maxLines: 1,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: fontSize.toDouble(),
+        child: FittedBox(
+          child: Text(
+            name,
+            maxLines: 1,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
           ),
         ),
-      );
-    });
+      ),
+    );
+
     if (onTap != null) {
       mainWidget = GestureDetector(
         onTap: onTap,

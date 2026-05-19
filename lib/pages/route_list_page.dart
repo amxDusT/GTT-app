@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
-import 'package:torino_mobility/controllers/search/list_search_controller.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
@@ -10,8 +9,7 @@ import 'package:torino_mobility/widgets/route_list_tile_widget.dart';
 import 'package:get/get.dart';
 
 class RouteListPage extends GetView<RouteListController> {
-  RouteListPage({super.key});
-  final _searchController = Get.put(ListSearchController());
+  const RouteListPage({super.key});
 
   static final Map<RouteFilter, String> _filterLabels = {
     RouteFilter.all: 'Tutte'.hc,
@@ -74,10 +72,7 @@ class RouteListPage extends GetView<RouteListController> {
                 ),
                 SliverList(
                   delegate: SliverChildListDelegate([
-                    SearchRoute(
-                      controller: controller,
-                      searchController: _searchController,
-                    ),
+                    SearchRoute(controller: controller),
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 8),

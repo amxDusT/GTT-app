@@ -11,25 +11,37 @@ class RouteListController extends GetxController {
   Map<String, List<Route>> routesMap = {};
   List<Route> favorites = [];
   RouteFilter activeFilter = RouteFilter.all;
+  String searchQuery = '';
 
   List<Route> get filteredRoutes {
     final all = routesMap.values.expand((r) => r).toList();
     Utils.sort(all);
+    final List<Route> filtered;
     switch (activeFilter) {
       case RouteFilter.all:
-        return all;
+        filtered = all;
       case RouteFilter.favorites:
-        return favorites;
+        filtered = favorites;
       case RouteFilter.tram:
-        return all.where((r) => r.type == 0).toList();
+        filtered = all.where((r) => r.type == 0).toList();
       case RouteFilter.bus:
-        return all.where((r) => r.type == 3).toList();
+        filtered = all.where((r) => r.type == 3).toList();
     }
+    if (searchQuery.isEmpty) return filtered;
+    final q = searchQuery.toLowerCase();
+    return filtered
+        .where((r) => r.shortName.toLowerCase().contains(q))
+        .toList();
   }
 
   void setFilter(RouteFilter filter) {
     if (activeFilter == filter) return;
     activeFilter = filter;
+    update();
+  }
+
+  void setSearchQuery(String query) {
+    searchQuery = query;
     update();
   }
 

@@ -17,7 +17,7 @@ class RouteListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isFavorite = controller.favorites.contains(route);
     return ListTile(
-      leading: RouteIcon(route: route),
+      leading: RouteIcon(routeName: route.shortName),
       title: Text(
         route.longName,
         overflow: TextOverflow.ellipsis,
