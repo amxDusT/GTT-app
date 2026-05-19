@@ -7,7 +7,6 @@ import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
 import 'package:torino_mobility/widgets/app_header.dart';
-import 'package:torino_mobility/widgets/home/drawer/drawer.dart';
 import 'package:torino_mobility/widgets/home/favorite_card.dart';
 import 'package:torino_mobility/widgets/home/favorite_routes.dart';
 import 'package:get/get.dart';
@@ -23,7 +22,6 @@ class HomePage extends GetView<HomeController> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: controller.scaffoldKey,
-      endDrawer: HomeDrawer(),
       body: Obx(
         () {
           return SafeArea(
