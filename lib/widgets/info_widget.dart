@@ -62,37 +62,39 @@ class InfoWidget extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ListTile(
-                        contentPadding: const EdgeInsets.only(left: 8),
-                        visualDensity: VisualDensity.compact,
-                        leading: RouteIcon(routeName: vehicle.shortName),
-                        title: Row(
-                          children: [
-                            Icon(
-                              Icons.arrow_right_alt,
-                              color:
-                                  isSelected ? const Color(0xff1a1611) : null,
-                            ),
-                            Expanded(
-                              child: Text(
-                                vehicle.pattern.headsign,
-                                overflow: TextOverflow.ellipsis,
-                                style: Fonts.title(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: isSelected
-                                      ? const Color(0xff1a1611)
-                                      : null,
+                      Expanded(
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.only(left: 8),
+                          visualDensity: VisualDensity.compact,
+                          leading: RouteIcon(routeName: vehicle.shortName),
+                          title: Row(
+                            children: [
+                              Icon(
+                                Icons.arrow_right_alt,
+                                color:
+                                    isSelected ? const Color(0xff1a1611) : null,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  vehicle.pattern.headsign,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: Fonts.title(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: isSelected
+                                        ? const Color(0xff1a1611)
+                                        : null,
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
+                          subtitle: Text(
+                            'LINEA ${vehicle.shortName}',
+                            style: Fonts.subtitle(
+                              color: const Color(0xff8a8273),
+                              fontSize: 12,
                             ),
-                          ],
-                        ),
-                        subtitle: Text(
-                          'LINEA ${vehicle.shortName}',
-                          style: Fonts.subtitle(
-                            color: const Color(0xff8a8273),
-                            fontSize: 12,
                           ),
                         ),
                       ),
