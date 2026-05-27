@@ -214,7 +214,7 @@ class PatternListPerDirection extends StatelessWidget {
           return const SizedBox(height: 16);
         }
         final pattern = patternsToShow[index];
-        final stops = mapController.stopsByPattern[pattern.code] ?? const [];
+
         return ExpansionTile(
           leading: Obx(() {
             final currentPattern =
@@ -230,39 +230,43 @@ class PatternListPerDirection extends StatelessWidget {
               },
             );
           }),
-          subtitle: Skeletonizer(
-            enabled: stops.isEmpty,
-            child: RichText(
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: pattern.code.split(':').last,
-                    style: Fonts.subtitle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xff8a8273),
+          subtitle: Obx(() {
+            final stops =
+                mapController.stopsByPattern[pattern.code] ?? const [];
+            return Skeletonizer(
+              enabled: stops.isEmpty,
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: pattern.code.split(':').last,
+                      style: Fonts.subtitle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff8a8273),
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: '  •  '.hc,
-                    style: Fonts.subtitle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xff8a8273),
+                    TextSpan(
+                      text: '  •  '.hc,
+                      style: Fonts.subtitle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff8a8273),
+                      ),
                     ),
-                  ),
-                  TextSpan(
-                    text: '${stops.length} FERMATE'.hc,
-                    style: Fonts.subtitle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w400,
-                      color: const Color(0xff8a8273),
+                    TextSpan(
+                      text: '${stops.length} FERMATE'.hc,
+                      style: Fonts.subtitle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w400,
+                        color: const Color(0xff8a8273),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ),
+            );
+          }),
           collapsedShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
             side: const BorderSide(
