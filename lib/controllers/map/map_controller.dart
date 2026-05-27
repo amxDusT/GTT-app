@@ -247,6 +247,10 @@ class MapPageController extends GetxController
       for (final stop in tempStops) {
         stopsMap.putIfAbsent(stop.code, () => stop);
       }
+      stopsByPattern.putIfAbsent(route.pattern.code, () => tempStops.obs);
+      if (tempStops.isNotEmpty) {
+        firstStop.putIfAbsent(route.pattern.code, () => tempStops.first);
+      }
 
       routes.putIfAbsent(route.gtfsId, () => route);
       routeIndex.putIfAbsent(route.gtfsId, () => routeIndex.length);
@@ -449,6 +453,11 @@ class MapPageController extends GetxController
         await DatabaseCommands.instance.getStopsFromPattern(newPattern);
     if (newStops.isEmpty) {
       newStops = await GttApi.getStopsFromPattern(newPattern);
+    }
+
+    stopsByPattern.putIfAbsent(newPattern.code, () => newStops.obs);
+    if (newStops.isNotEmpty) {
+      firstStop.putIfAbsent(newPattern.code, () => newStops.first);
     }
 
     final oldCodes = _stopCodesByRoute[gtfsId] ?? <int>{};
