@@ -7,6 +7,7 @@ import 'package:torino_mobility/controllers/search/home_search_controller.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
+import 'package:torino_mobility/widgets/map/close_popup_icon_button.dart';
 import 'package:torino_mobility/widgets/map/map_info_widget.dart';
 import 'package:get/get.dart';
 
@@ -78,19 +79,13 @@ class _StopWidgetState extends State<StopWidget> {
                     ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  visualDensity: VisualDensity.compact,
-                  onPressed: () {
-                    widget.controller.popupController
-                        .hidePopupsOnlyFor([widget.marker]);
-                    widget.controller.lastOpenedMarker = null;
-
-                    Get.delete<MapInfoController>(
-                      tag: widget.marker.fermata.code.toString(),
-                    );
-                  },
-                )
+                ClosePopupIconButton(
+                  controller: widget.controller,
+                  marker: widget.marker,
+                  onPressed: () => Get.delete<MapInfoController>(
+                    tag: widget.marker.fermata.code.toString(),
+                  ),
+                ),
               ],
             ),
             const Divider(),
