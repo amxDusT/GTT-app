@@ -5,6 +5,7 @@ import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:get/get.dart';
+import 'package:torino_mobility/widgets/star_icon_button.dart';
 
 class SearchStop extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
@@ -30,12 +31,11 @@ class SearchStop extends StatelessWidget {
                   builder: (controller) => ListTile(
                         title: Text(stop.name),
                         subtitle: Text(stop.code.toString()),
-                        trailing: IconButton(
-                          onPressed: () =>
-                              controller.switchAddDeleteFermata(stop),
-                          icon: controller.fermate.contains(stop)
-                              ? const Icon(Icons.star)
-                              : const Icon(Icons.star_border),
+                        trailing: StarIconButton(
+                          onPressed: () {
+                            controller.switchAddDeleteFermata(stop);
+                          },
+                          selected: controller.fermate.contains(stop),
                         ),
                       ));
             },

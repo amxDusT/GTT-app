@@ -7,9 +7,12 @@ import 'package:torino_mobility/controllers/search/home_search_controller.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
+import 'package:torino_mobility/widgets/animated_icon_button.dart';
 import 'package:torino_mobility/widgets/map/close_popup_icon_button.dart';
 import 'package:torino_mobility/widgets/map/map_info_widget.dart';
 import 'package:get/get.dart';
+import 'package:torino_mobility/widgets/map/popup_button.dart';
+import 'package:torino_mobility/widgets/star_icon_button.dart';
 
 class StopWidget extends StatefulWidget {
   final FermataMarker marker;
@@ -88,117 +91,6 @@ class _StopWidgetState extends State<StopWidget> {
                 ),
               ],
             ),
-            const Divider(),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Get.find<HomeController>()
-                        .switchAddDeleteFermata(widget.marker.fermata);
-                  },
-                  style: TextButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    minimumSize: const Size(0, 30),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    splashFactory: NoSplash.splashFactory,
-                  ),
-                  child: GetBuilder<HomeController>(builder: (controller) {
-                    bool isFavorite = controller.fermate
-                        .any((f) => f.code == widget.marker.fermata.code);
-                    return Row(
-                      mainAxisSize: MainAxisSize.min,
-                      spacing: 4,
-                      children: [
-                        IgnorePointer(
-                          child: IconButton(
-                            visualDensity: VisualDensity.compact,
-                            onPressed: () {},
-                            icon: Icon(
-                                isFavorite ? Icons.star : Icons.star_border),
-                            iconSize: 16,
-                            color: isFavorite ? Colors.yellow : Colors.grey,
-                            style: IconButton.styleFrom(
-                              backgroundColor: const Color(0xff221d17),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100),
-                                side: Divider.createBorderSide(
-                                  context,
-                                  color: isFavorite ? Colors.yellow : null,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        Text(
-                          isFavorite ? 'Salvata'.hc : 'Salva'.hc,
-                          style: TextStyle(
-                            color: isFavorite ? Colors.yellow : Colors.grey,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
-                ),
-                TextButton(
-                  onPressed: () {
-                    widget.controller
-                        .setHighlightedStop(widget.marker.fermata.code);
-                    _isHighlighted.value = !_isHighlighted.value;
-                  },
-                  style: TextButton.styleFrom(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
-                    minimumSize: const Size(0, 30),
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    splashFactory: NoSplash.splashFactory,
-                  ),
-                  child: ValueListenableBuilder(
-                      valueListenable: _isHighlighted,
-                      builder: (context, bool isHighlighted, child) {
-                        return Row(
-                          mainAxisSize: MainAxisSize.min,
-                          spacing: 4,
-                          children: [
-                            IgnorePointer(
-                              child: IconButton(
-                                visualDensity: VisualDensity.compact,
-                                onPressed: () {},
-                                icon: Icon(_isHighlighted.value
-                                    ? Icons.highlight
-                                    : Icons.highlight_outlined),
-                                iconSize: 16,
-                                color:
-                                    isHighlighted ? Colors.yellow : Colors.grey,
-                                style: IconButton.styleFrom(
-                                  backgroundColor: const Color(0xff221d17),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100),
-                                    side: Divider.createBorderSide(
-                                      context,
-                                      color:
-                                          isHighlighted ? Colors.yellow : null,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Text(
-                              isHighlighted ? 'Evidenziata'.hc : 'Evidenzia'.hc,
-                              style: TextStyle(
-                                color:
-                                    isHighlighted ? Colors.yellow : Colors.grey,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        );
-                      }),
-                ),
-              ],
-            ),
             Align(
               alignment: Alignment.centerLeft,
               child: Padding(
@@ -221,6 +113,78 @@ class _StopWidgetState extends State<StopWidget> {
               stop: widget.marker.fermata,
               mapPageController: widget.controller,
               mapInfoController: _mapInfoController,
+            ),
+            const Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: GetBuilder<HomeController>(
+                    builder: (controller) {
+                      bool isFavorite = controller.fermate
+                          .any((f) => f.code == widget.marker.fermata.code);
+                      return PopupButton(
+                        icon: IgnorePointer(
+                          child: StarIconButton(
+                            /*  style: IconButton.styleFrom(
+                              backgroundColor: Colors.red,
+                            ), */
+                            selected: isFavorite,
+                            visualDensity: VisualDensity.compact,
+                            onPressed: () {},
+                            iconSize: 16,
+                            selectedColor: Colors.yellow,
+                            unselectedColor: Colors.grey,
+                          ),
+                        ),
+                        onPressed: () {
+                          controller.switchAddDeleteFermata(
+                            widget.marker.fermata,
+                          );
+                        },
+                        label: Text('Salva',
+                            style: TextStyle(
+                                color:
+                                    isFavorite ? Colors.yellow : Colors.white,
+                                fontWeight: FontWeight.bold)),
+                      );
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: PopupButton(
+                    onPressed: () {
+                      widget.controller
+                          .setHighlightedStop(widget.marker.fermata.code);
+                      _isHighlighted.value = !_isHighlighted.value;
+                    },
+                    icon: ValueListenableBuilder(
+                        valueListenable: _isHighlighted,
+                        builder: (context, bool isHighlighted, child) {
+                          return AnimatedIconButton(
+                            visualDensity: VisualDensity.compact,
+                            onPressed: null,
+                            selectedIcon: Icons.flashlight_on,
+                            unselectedIcon: Icons.flashlight_on_outlined,
+                            selected: isHighlighted,
+                            selectedColor: Colors.yellow,
+                            unselectedColor: Colors.grey,
+                            iconSize: 16,
+                          );
+                        }),
+                    label: ValueListenableBuilder(
+                        valueListenable: _isHighlighted,
+                        builder: (context, value, child) {
+                          return Text('Evidenzia',
+                              style: TextStyle(
+                                color: value ? Colors.yellow : Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ));
+                        }),
+                  ),
+                )
+              ],
             ),
           ],
         ),
