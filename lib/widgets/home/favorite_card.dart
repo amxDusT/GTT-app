@@ -103,7 +103,7 @@ class HomeFavCard extends GetView<SettingsController> {
                                   overflow: TextOverflow.ellipsis,
                                   style: Fonts.title(
                                     fontSize: 26,
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w600,
                                     color: Colors.white,
                                   ),
                                 ),

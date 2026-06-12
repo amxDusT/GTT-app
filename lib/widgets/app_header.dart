@@ -36,7 +36,7 @@ class AppHeader extends StatelessWidget {
                   titleTop,
                   style: Fonts.title(
                     fontSize: 52,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     height: .9,
                   ),
                 ),
@@ -44,7 +44,7 @@ class AppHeader extends StatelessWidget {
                   titleBottom,
                   style: Fonts.title(
                     fontSize: 52,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: FontWeight.w600,
                     height: .9,
                     color: accentColor,
                   ),
