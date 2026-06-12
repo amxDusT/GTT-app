@@ -146,7 +146,7 @@ class MapPage extends StatelessWidget {
                                         ),
                                 );
                               })
-                            : <Polyline>[],
+                            : [],
                       ]),
                     ),
                     Obx(

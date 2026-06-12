@@ -24,7 +24,7 @@ extension DateTimeExt on DateTime {
 
   String lastUpdateRelativeTime() {
     final diff = difference(DateTime.now());
-    if (!diff.isNegative || diff.inSeconds > -10) return 'now'.hc;
+    if (!diff.isNegative || diff.inSeconds > -10) return 'adesso'.hc;
 
     if (diff.inMinutes > -1) return '<1 min'.hc;
     return '${-diff.inMinutes} min'.hc;

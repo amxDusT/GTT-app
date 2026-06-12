@@ -11,8 +11,6 @@ import 'package:torino_mobility/widgets/animated_icon_button.dart';
 import 'package:torino_mobility/widgets/map/close_popup_icon_button.dart';
 import 'package:torino_mobility/widgets/map/map_info_widget.dart';
 import 'package:get/get.dart';
-import 'package:torino_mobility/widgets/map/popup_button.dart';
-import 'package:torino_mobility/widgets/star_icon_button.dart';
 
 class StopWidget extends StatefulWidget {
   final FermataMarker marker;
@@ -124,64 +122,40 @@ class _StopWidgetState extends State<StopWidget> {
                     builder: (controller) {
                       bool isFavorite = controller.fermate
                           .any((f) => f.code == widget.marker.fermata.code);
-                      return PopupButton(
-                        icon: IgnorePointer(
-                          child: StarIconButton(
-                            /*  style: IconButton.styleFrom(
-                              backgroundColor: Colors.red,
-                            ), */
-                            selected: isFavorite,
-                            visualDensity: VisualDensity.compact,
-                            onPressed: () {},
-                            iconSize: 16,
-                            selectedColor: Colors.yellow,
-                            unselectedColor: Colors.grey,
-                          ),
-                        ),
+                      return AnimatedIconButton(
+                        selectedIcon: Icons.star,
+                        unselectedIcon: Icons.star_outline,
+                        selected: isFavorite,
+                        selectedColor: Colors.yellow,
+                        selectedLabel: 'Salvato'.hc,
+                        unselectedLabel: 'Salva'.hc,
                         onPressed: () {
                           controller.switchAddDeleteFermata(
                             widget.marker.fermata,
                           );
                         },
-                        label: Text('Salva',
-                            style: TextStyle(
-                                color:
-                                    isFavorite ? Colors.yellow : Colors.white,
-                                fontWeight: FontWeight.bold)),
                       );
                     },
                   ),
                 ),
                 Expanded(
-                  child: PopupButton(
-                    onPressed: () {
-                      widget.controller
-                          .setHighlightedStop(widget.marker.fermata.code);
-                      _isHighlighted.value = !_isHighlighted.value;
+                  child: ValueListenableBuilder(
+                    valueListenable: _isHighlighted,
+                    builder: (context, bool isHighlighted, child) {
+                      return AnimatedIconButton(
+                        selectedIcon: Icons.flashlight_on,
+                        unselectedIcon: Icons.flashlight_on_outlined,
+                        selected: isHighlighted,
+                        selectedColor: Colors.yellow,
+                        selectedLabel: 'Evidenziato'.hc,
+                        unselectedLabel: 'Evidenzia'.hc,
+                        onPressed: () {
+                          widget.controller
+                              .setHighlightedStop(widget.marker.fermata.code);
+                          _isHighlighted.value = !_isHighlighted.value;
+                        },
+                      );
                     },
-                    icon: ValueListenableBuilder(
-                        valueListenable: _isHighlighted,
-                        builder: (context, bool isHighlighted, child) {
-                          return AnimatedIconButton(
-                            visualDensity: VisualDensity.compact,
-                            onPressed: null,
-                            selectedIcon: Icons.flashlight_on,
-                            unselectedIcon: Icons.flashlight_on_outlined,
-                            selected: isHighlighted,
-                            selectedColor: Colors.yellow,
-                            unselectedColor: Colors.grey,
-                            iconSize: 16,
-                          );
-                        }),
-                    label: ValueListenableBuilder(
-                        valueListenable: _isHighlighted,
-                        builder: (context, value, child) {
-                          return Text('Evidenzia',
-                              style: TextStyle(
-                                color: value ? Colors.yellow : Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ));
-                        }),
                   ),
                 )
               ],

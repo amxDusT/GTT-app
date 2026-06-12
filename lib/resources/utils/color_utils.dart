@@ -54,11 +54,12 @@ class ColorUtils {
   static Color lighten(Color c, [int percent = 50]) {
     assert(1 <= percent && percent <= 100);
     var p = percent / 100;
+    // r/g/b are 0..1 doubles in the new Color API.
     return Color.fromARGB(
       _channelToInt(c.a),
-      _channelToInt(c.r + ((255 - c.r) * p)),
-      _channelToInt(c.g + ((255 - c.g) * p)),
-      _channelToInt(c.b + ((255 - c.b) * p)),
+      _channelToInt(c.r + ((1.0 - c.r) * p)),
+      _channelToInt(c.g + ((1.0 - c.g) * p)),
+      _channelToInt(c.b + ((1.0 - c.b) * p)),
     );
   }
 }

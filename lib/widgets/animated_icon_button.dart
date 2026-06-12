@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/utils/fonts.dart';
 
-/// An [IconButton] that switches between [selectedIcon] and [unselectedIcon]
-/// and bounces with an elastic scale effect when pressed or when [selected]
-/// changes.
+const _bgInset = Color(0xff13100c);
+const _ink = Color(0xfff3ede0);
+const _lineBorder = Color(0xff332c22);
+const _accent = Color(0xffff7a3f);
+
 class AnimatedIconButton extends StatefulWidget {
   const AnimatedIconButton({
     required this.selectedIcon,
@@ -15,6 +18,8 @@ class AnimatedIconButton extends StatefulWidget {
     this.iconSize,
     this.selectedColor,
     this.unselectedColor,
+    this.selectedLabel,
+    this.unselectedLabel,
     super.key,
   });
   final IconData selectedIcon;
@@ -27,6 +32,8 @@ class AnimatedIconButton extends StatefulWidget {
   final double? iconSize;
   final Color? selectedColor;
   final Color? unselectedColor;
+  final String? selectedLabel;
+  final String? unselectedLabel;
 
   @override
   State<AnimatedIconButton> createState() => _AnimatedIconButtonState();
@@ -65,6 +72,11 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
 
   @override
   Widget build(BuildContext context) {
+    final label = widget.selected
+        ? (widget.selectedLabel ?? widget.unselectedLabel)
+        : (widget.unselectedLabel ?? widget.selectedLabel);
+    if (label != null) return _buildPill(label);
+
     return IconButton(
       style: widget.style,
       visualDensity: widget.visualDensity,
@@ -78,6 +90,47 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
         ),
       ),
       onPressed: widget.onPressed == null ? null : _handlePressed,
+    );
+  }
+
+  Widget _buildPill(String label) {
+    final selectedColor = widget.selectedColor ?? _accent;
+    return TextButton(
+      onPressed: widget.onPressed == null ? null : _handlePressed,
+      style: TextButton.styleFrom(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        minimumSize: const Size(0, 40),
+        visualDensity: widget.visualDensity,
+        backgroundColor:
+            widget.selected ? selectedColor.withValues(alpha: .11) : _bgInset,
+        foregroundColor:
+            widget.selected ? selectedColor : widget.unselectedColor ?? _ink,
+        shape: StadiumBorder(
+          side: BorderSide(
+            color: widget.selected ? selectedColor : _lineBorder,
+          ),
+        ),
+      ).merge(widget.style),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 8,
+        children: [
+          ScaleTransition(
+            scale: _scale,
+            child: Icon(
+              widget.selected ? widget.selectedIcon : widget.unselectedIcon,
+              size: widget.iconSize ?? 16,
+            ),
+          ),
+          Text(
+            label,
+            style: Fonts.title(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

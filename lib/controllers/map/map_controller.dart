@@ -374,7 +374,7 @@ class MapPageController extends GetxController
         lastOpenedMarker is VehicleMarker &&
         (lastOpenedMarker as VehicleMarker).mqttData.vehicleNum ==
             oldMarker.mqttData.vehicleNum) {
-      lastOpenedMarker = VehicleMarker(mqttData: payload);
+      lastOpenedMarker = oldMarker.copyWith(mqttData: payload);
       popupController.showPopupsOnlyFor([lastOpenedMarker!]);
     }
     //follow vehicle
