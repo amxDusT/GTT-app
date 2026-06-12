@@ -12,6 +12,7 @@ import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:torino_mobility/widgets/home/info_icon_button.dart';
+import 'package:torino_mobility/widgets/star_icon_button.dart';
 
 const double _kExpandedAppBarHeight = 200;
 
@@ -37,6 +38,92 @@ class StopSliverAppBar extends StatelessWidget {
         .fermate
         .where((f) => f.code == stopCode)
         .firstOrNull;
+  }
+
+  TextStyle _titleStyle(double fontSize, Color color) => Fonts.title(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w400,
+        color: color,
+        letterSpacing: -0.5,
+        height: 1.1,
+      );
+
+  /// Largest font size at which the stop name fits in 2 lines within
+  /// [maxHeight], starting from the size the design prefers for this length.
+  double _titleFontSize(
+    String name, {
+    required Color color,
+    required double maxWidth,
+    required double maxHeight,
+    required TextScaler textScaler,
+  }) {
+    final preferred =
+        (30 + (48 - 30) * (1 - name.length / 25)).clamp(30, 48).toDouble();
+    for (var size = preferred; size > 20; size -= 2) {
+      final painter = TextPainter(
+        text: TextSpan(text: name, style: _titleStyle(size, color)),
+        maxLines: 2,
+        textDirection: TextDirection.ltr,
+        textScaler: textScaler,
+      )..layout(maxWidth: maxWidth);
+      if (!painter.didExceedMaxLines && painter.height <= maxHeight) {
+        return size;
+      }
+    }
+    return 20;
+  }
+
+  void _showFullDescription(
+      BuildContext context, String name, String description) {
+    final theme = Theme.of(context);
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'FERMATA #$stopCode'.hc,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    letterSpacing: 0.5,
+                    fontSize: 12,
+                  ),
+                ),
+                Spacing.vGap4,
+                Text(
+                  name,
+                  style: Fonts.title(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                Spacing.vGap16,
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Text(
+                      description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontStyle: FontStyle.italic,
+                        color:
+                            theme.colorScheme.onSurface.withValues(alpha: 0.8),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   Color _bgColor(BuildContext context, {FavStop? fav}) {
@@ -84,11 +171,17 @@ class StopSliverAppBar extends StatelessWidget {
           child: Obx(
             () {
               final isFavorite = controller.isSaved.isTrue;
-              return InfoIconButton(
+              return StarIconButton(
                 onPressed: controller.switchAddDeleteFermata,
-                icon: isFavorite ? Icons.star : Icons.star_outline,
-                tooltip: isFavorite ? l10n.removeFromHome : l10n.saveToHome,
-                color: isFavorite ? const Color(0xffff5a1f) : onBg,
+                selected: isFavorite,
+                selectedColor: const Color(0xffff5a1f),
+                unselectedColor: onBg,
+                style: IconButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(77, 82, 68, 70),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                ),
               );
             },
           ),
@@ -103,7 +196,6 @@ class StopSliverAppBar extends StatelessWidget {
           final transparency =
               ((height - minH) / (maxH - minH)).clamp(0.0, 1.0);
 
-          //final fontSize =
           return Obx(() {
             final fav = _favStop();
             final bg = _bgColor(context, fav: fav);
@@ -154,19 +246,55 @@ class StopSliverAppBar extends StatelessWidget {
                     right: 56,
                     top: topPadding + 20,
                     child: IgnorePointer(
+                      ignoring: transparency < 0.5,
                       child: Opacity(
                         opacity: transparency,
                         child: Obx(() {
                           final stop = controller.fermata.value;
-
-                          final fontSize =
-                              (30 + (48 - 30) * (1 - stop.name.length / 25))
-                                  .clamp(30, 48)
-                                  .toDouble();
                           final desc = (fav?.descrizione?.isNotEmpty ?? false)
                               ? fav!.descrizione
                               : null;
                           final isLoading = controller.isLoading.isTrue;
+
+                          final textScaler = MediaQuery.textScalerOf(context);
+                          final contentWidth =
+                              constraints.biggest.width - 20 - 56;
+
+                          final descStyle =
+                              theme.textTheme.bodyMedium?.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: onBg.withValues(alpha: 0.75),
+                          );
+                          var descHeight = 0.0;
+                          var descOverflows = false;
+                          if (desc != null) {
+                            final painter = TextPainter(
+                              text: TextSpan(text: desc, style: descStyle),
+                              maxLines: 2,
+                              textDirection: TextDirection.ltr,
+                              textScaler: textScaler,
+                            )..layout(maxWidth: contentWidth);
+                            descHeight = painter.height;
+                            descOverflows = painter.didExceedMaxLines;
+                          }
+
+                          final titleGap = descHeight > 30 ? 12.0 : 24.0;
+                          final titleMaxHeight = (_kExpandedAppBarHeight -
+                                  20 - // offset below the status bar
+                                  17 - // 'FERMATA #' label
+                                  titleGap -
+                                  (desc == null ? 0 : 4 + descHeight) -
+                                  16 - // gap above the update chip
+                                  34) // update chip
+                              .clamp(24.0, double.infinity);
+
+                          final fontSize = _titleFontSize(
+                            stop.name,
+                            color: onBg,
+                            maxWidth: contentWidth,
+                            maxHeight: titleMaxHeight,
+                            textScaler: textScaler,
+                          );
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
@@ -182,29 +310,46 @@ class StopSliverAppBar extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Spacing.vGap24,
+                              SizedBox(height: titleGap),
                               Text(
                                 stop.name,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
-                                style: Fonts.title(
-                                  fontSize: fontSize,
-                                  fontWeight: FontWeight.w400,
-                                  color: onBg,
-                                  letterSpacing: -0.5,
-                                  height: 1.1,
-                                ),
+                                style: _titleStyle(fontSize, onBg),
                               ),
-                              Spacing.vGap4,
-                              Text(
-                                desc ?? '',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  color: onBg.withValues(alpha: 0.75),
+                              if (desc != null) ...[
+                                Spacing.vGap4,
+                                GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
+                                  onTap: descOverflows
+                                      ? () => _showFullDescription(
+                                          context, stop.name, desc)
+                                      : null,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    spacing: 12,
+                                    children: [
+                                      Flexible(
+                                        child: Text(
+                                          desc,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: descStyle,
+                                        ),
+                                      ),
+                                      if (descOverflows)
+                                        Icon(
+                                          Icons.keyboard_arrow_down,
+                                          size: 18,
+                                          color: onBg.withValues(alpha: 0.75),
+                                        ),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ],
                               Spacing.vGap16,
                               Container(
                                 decoration: BoxDecoration(
@@ -242,26 +387,6 @@ class StopSliverAppBar extends StatelessWidget {
                                             (_, true) => Colors.grey
                                           }),
                                     ),
-                                    /*   Text(
-                                      '●'.hc,
-                                      style:
-                                          theme.textTheme.bodyMedium?.copyWith(
-                                              fontSize: 14,
-                                              color: switch ((
-                                                controller.lastUpdate.value
-                                                    .add(const Duration(
-                                                        minutes: 1))
-                                                    .isAfter(DateTime.now()),
-                                                isLoading
-                                              )) {
-                                                (true, false) =>
-                                                  const Color(0xff9bd14a),
-                                                (false, false) =>
-                                                  const Color.fromARGB(
-                                                      211, 220, 131, 48),
-                                                (_, true) => Colors.grey
-                                              }),
-                                    ), */
                                     AnimatedSize(
                                       duration:
                                           const Duration(milliseconds: 350),
