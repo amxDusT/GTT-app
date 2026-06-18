@@ -69,6 +69,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Mostra tratte senza passaggi da \'Guarda sulla mappa\'';
 
   @override
+  String get settingsDirectionArrowsAnimationTitle =>
+      'Anima le frecce di direzione';
+
+  @override
+  String get settingsDirectionArrowsAnimationSubtitle =>
+      'Anima le frecce lungo le linee nella direzione di marcia';
+
+  @override
   String get settingsBetaFeaturesTitle => 'Beta features';
 
   @override

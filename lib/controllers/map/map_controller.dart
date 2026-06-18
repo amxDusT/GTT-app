@@ -96,6 +96,13 @@ class MapPageController extends GetxController
   // map event related
   double lastZoom = 0.0;
 
+  /// Current integer zoom level. Polyline offsets are recomputed only when
+  /// this changes (i.e. when crossing a zoom-level boundary), keeping the
+  /// on-screen gap between parallel routes roughly constant in pixels without
+  /// paying a recompute on every fractional zoom step. Reactive so the
+  /// polyline/arrow layers rebuild on a level crossing.
+  final RxInt zoomLevel = 0.obs;
+
   // follow vehicle
   final RxInt followVehicle = 0.obs; // <= 0 = not following
 
@@ -108,18 +115,84 @@ class MapPageController extends GetxController
       .toList()
       .obs;
   late final Route<dynamic>? currentRoute;
-  double get offsetVal {
-    int len = routes.length;
-    switch (len) {
+
+  double get offsetPx {
+    switch (routes.length) {
       case 1:
-        return 0.0;
+        return 0;
       case 2:
-        return 0.00015;
+        return 8;
       case 3:
-        return 0.0001;
+        return 7;
       default:
-        return 0.00005;
+        return 6;
     }
+  }
+
+  double _pixelsToDegrees(double px, int zoom, double lat) {
+    final worldSize = 256 * math.pow(2, zoom);
+    return px * 360 * math.cos(lat * math.pi / 180) / worldSize;
+  }
+
+  final Map<String, List<LatLng>> _offsetPolylineCache = {};
+
+  void _clearOffsetCache() => _offsetPolylineCache.clear();
+
+  List<LatLng> offsetPolylineFor(gtt.RouteWithDetails route, int index) {
+    final n = routes.length;
+    if (n <= 1 || offsetPx == 0) return route.pattern.polylinePoints;
+
+    final zoom = zoomLevel.value;
+    final lat = mapController.camera.center.latitude;
+    final spacing = _pixelsToDegrees(offsetPx, zoom, lat);
+    final offset = (index - (n - 1) / 2) * spacing;
+    if (offset == 0) return route.pattern.polylinePoints;
+
+    final key = '${route.gtfsId}:${route.pattern.code}:$index:$n:$zoom';
+    return _offsetPolylineCache[key] ??=
+        MapUtils.polylineOffset(route.pattern.polylinePoints, offset);
+  }
+
+  Color polylineColorFor(gtt.RouteWithDetails route) {
+    if (routes.length == 1) return Colors.red;
+    return Utils.lighten(
+      colors[(routeIndex[route.gtfsId] ?? 0) % colors.length],
+      20,
+    );
+  }
+
+  Color stopBorderColor(int stopCode) {
+    for (final entry in _stopCodesByRoute.entries) {
+      if (entry.value.contains(stopCode)) {
+        final route = routes[entry.key];
+        if (route != null) return polylineColorFor(route);
+      }
+    }
+    return FermataMarker.defaultColor;
+  }
+
+  /// isCap
+  bool isTerminalStop(int stopCode) {
+    for (final route in routes.values) {
+      final stops = stopsByPattern[route.pattern.code];
+      if (stops == null || stops.isEmpty) continue;
+      if (stops.first.code == stopCode || stops.last.code == stopCode) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  void _refreshStopMarkers() {
+    if (allStops.isEmpty) return;
+    allStops.value = allStops.map((m) {
+      final highlighted = m.color == Colors.green;
+      return m.copyWith(
+        color: highlighted ? Colors.green : stopBorderColor(m.fermata.code),
+        isTerminal: isTerminalStop(m.fermata.code),
+      );
+    }).toList();
+    allStops.refresh();
   }
 
   @override
@@ -161,6 +234,8 @@ class MapPageController extends GetxController
   void onMapEvent(MapEvent mapEvent) {
     if (lastZoom != mapEvent.camera.zoom && isPatternInitialized.isTrue) {
       lastZoom = mapEvent.camera.zoom;
+
+      zoomLevel.value = mapEvent.camera.zoom.round();
 
       List<FermataMarker> list = allStops
           .map((marker) => marker.copyWith(zoom: mapEvent.camera.zoom))
@@ -258,7 +333,11 @@ class MapPageController extends GetxController
       if (++routeCount >= maxRoutesInMap) break;
     }
     allStops = stopsMap.values
-        .map((stop) => FermataMarker(fermata: stop))
+        .map((stop) => FermataMarker(
+              fermata: stop,
+              color: stopBorderColor(stop.code),
+              isTerminal: isTerminalStop(stop.code),
+            ))
         .toList()
         .obs;
 
@@ -289,6 +368,7 @@ class MapPageController extends GetxController
   }
 
   void onMapReady() async {
+    zoomLevel.value = mapController.camera.zoom.round();
     if (routes.values.isNotEmpty) {
       lastView = _getCenterBounds();
       centerBounds();
@@ -482,11 +562,17 @@ class MapPageController extends GetxController
     for (final stop in newStops) {
       if (!stopsMap.containsKey(stop.code)) {
         stopsMap[stop.code] = stop;
-        allStops.add(FermataMarker(fermata: stop, zoom: currentZoom));
+        allStops.add(FermataMarker(
+            fermata: stop,
+            zoom: currentZoom,
+            color: stopBorderColor(stop.code),
+            isTerminal: isTerminalStop(stop.code)));
       }
     }
 
     routes[gtfsId] = route.copyWith(pattern: newPattern);
+    _clearOffsetCache();
+    _refreshStopMarkers();
     popupController.hideAllPopups();
     lastOpenedMarker = null;
 
@@ -500,8 +586,6 @@ class MapPageController extends GetxController
     centerBounds();
   }
 
-  /// Fetch and cache the patterns for [gtfsId]. Safe to call repeatedly:
-  /// subsequent calls return the cached list immediately.
   Future<List<gtt.Pattern>> loadPatternsFor(String gtfsId) async {
     final route = routes[gtfsId];
     if (route == null) return const [];
@@ -516,9 +600,6 @@ class MapPageController extends GetxController
       patternsByRoute[gtfsId] = loaded.obs;
     }
 
-    // Ensure each pattern's stops are cached. addRoute may have populated
-    // patternsByRoute without filling stopsByPattern, so we always run this
-    // loop and rely on the per-key check to skip already-cached entries.
     for (final pattern in loaded) {
       if (stopsByPattern.containsKey(pattern.code)) continue;
       final stops =
@@ -531,8 +612,6 @@ class MapPageController extends GetxController
     return loaded;
   }
 
-  /// Add a route to the map after creation. If [route] is a plain
-  /// [gtt.Route], a default pattern is fetched from the database.
   Future<void> addRoute(gtt.Route route) async {
     if (routes.containsKey(route.gtfsId)) return;
     if (routes.length >= maxRoutesInMap) {
@@ -560,14 +639,13 @@ class MapPageController extends GetxController
       stops = await GttApi.getStopsFromPattern(pattern);
     }
 
-    // Share the fetched stops with the per-pattern cache so the pattern
-    // info modal doesn't refetch them.
     stopsByPattern.putIfAbsent(pattern.code, () => stops.obs);
     if (stops.isNotEmpty) {
       firstStop.putIfAbsent(pattern.code, () => stops.first);
     }
 
     routes[routeWithDetails.gtfsId] = routeWithDetails;
+    _clearOffsetCache();
     routeIndex.putIfAbsent(routeWithDetails.gtfsId, () => routeIndex.length);
     _stopCodesByRoute[routeWithDetails.gtfsId] =
         stops.map((s) => s.code).toSet();
@@ -576,9 +654,14 @@ class MapPageController extends GetxController
     for (final stop in stops) {
       if (!stopsMap.containsKey(stop.code)) {
         stopsMap[stop.code] = stop;
-        allStops.add(FermataMarker(fermata: stop, zoom: currentZoom));
+        allStops.add(FermataMarker(
+            fermata: stop,
+            zoom: currentZoom,
+            color: stopBorderColor(stop.code),
+            isTerminal: isTerminalStop(stop.code)));
       }
     }
+    _refreshStopMarkers();
 
     _mqttController.addSubscription(routeWithDetails.gtfsId);
 
@@ -592,8 +675,6 @@ class MapPageController extends GetxController
     centerBounds();
   }
 
-  /// Remove a route from the map. No-op if [gtfsId] is the only route
-  /// left — the UI should prevent that case but we defend here too.
   void removeRoute(String gtfsId) {
     if (routes.length <= 1) return;
     if (!routes.containsKey(gtfsId)) return;
@@ -641,8 +722,10 @@ class MapPageController extends GetxController
 
     routes.remove(gtfsId);
     patternsByRoute.remove(gtfsId);
+    _clearOffsetCache();
+    _refreshStopMarkers();
 
-    // After removal, if a single route remains, eagerly load its patterns
+    // After removal, if a single route remains, load its patterns
     // so the appbar dropdown can render right away.
     if (routes.length == 1) {
       loadPatternsFor(routes.keys.first);
@@ -732,7 +815,7 @@ class MapPageController extends GetxController
 
     final isHighlighted = isStopHighlighted(stop: element);
     allStops[allStops.indexOf(element)] = element.copyWith(
-      color: isHighlighted ? FermataMarker.defaultColor : Colors.green,
+      color: isHighlighted ? stopBorderColor(stopCode) : Colors.green,
     );
     if (addToGlobal) {
       for (final route in routes.values) {

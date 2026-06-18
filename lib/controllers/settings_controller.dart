@@ -26,6 +26,8 @@ class SettingsController extends GetxController {
       Storage.instance.isFavoritesRoutesShowing.obs;
   final RxBool isDarkMode = Storage.instance.isDarkMode.obs;
   final RxBool isInitialHighlighted = Storage.instance.isInitialHighlighted.obs;
+  final RxBool showDirectionArrowsAnimation =
+      Storage.instance.showDirectionArrowsAnimation.obs;
   final RxString version = ''.obs;
 
   @override
@@ -77,6 +79,12 @@ class SettingsController extends GetxController {
     isInitialHighlighted.toggle();
     Storage.instance
         .setBool(StorageParam.isInitialHighlighted, isInitialHighlighted.value);
+  }
+
+  void switchDirectionArrowsAnimation() {
+    showDirectionArrowsAnimation.toggle();
+    Storage.instance.setBool(StorageParam.showDirectionArrowsAnimation,
+        showDirectionArrowsAnimation.value);
   }
 
   void resetData() async {

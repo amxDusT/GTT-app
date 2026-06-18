@@ -8,14 +8,13 @@ import 'package:torino_mobility/models/gtt/route.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
-import 'package:torino_mobility/resources/utils/map_utils.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:torino_mobility/widgets/home/info_icon_button.dart';
 import 'package:torino_mobility/widgets/map/add_route_modal.dart';
 import 'package:torino_mobility/widgets/map/bottom_buttons.dart';
 import 'package:torino_mobility/widgets/map/card_map_widget.dart';
 import 'package:torino_mobility/widgets/map/circle_button.dart';
+import 'package:torino_mobility/widgets/map/direction_arrows_layer.dart';
 import 'package:torino_mobility/widgets/map/map_pattern_info.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
@@ -125,29 +124,36 @@ class MapPage extends StatelessWidget {
                                 var route = value.$2;
                                 var index = value.$1;
 
-                                double offset =
-                                    index * _flutterMapController.offsetVal;
                                 return Polyline(
-                                  points: MapUtils.polylineOffset(
-                                      route.pattern.polylinePoints, offset),
-                                  //points: route.pattern.polylinePoints,
+                                  points: _flutterMapController
+                                      .offsetPolylineFor(route, index),
                                   strokeWidth: 4,
-                                  color: _flutterMapController.routes.length ==
-                                          1
-                                      ? Colors.red
-                                      : Utils.lighten(
-                                          MapPageController.colors[
-                                              (_flutterMapController.routeIndex[
-                                                          route.gtfsId] ??
-                                                      0) %
-                                                  MapPageController
-                                                      .colors.length],
-                                          20,
-                                        ),
+                                  color: _flutterMapController
+                                      .polylineColorFor(route),
                                 );
                               })
                             : [],
                       ]),
+                    ),
+                    Obx(
+                      () => DirectionArrowsLayer(
+                        animate: _settingsController
+                            .showDirectionArrowsAnimation.value,
+                        routes:
+                            _flutterMapController.isPatternInitialized.isTrue
+                                ? _flutterMapController.routes.values.indexed
+                                    .map(
+                                    (value) => DirectionArrowRoute(
+                                      points: _flutterMapController
+                                          .offsetPolylineFor(
+                                              value.$2, value.$1),
+                                      color: _flutterMapController
+                                          .polylineColorFor(value.$2),
+                                    ),
+                                  )
+                                    .toList()
+                                : const [],
+                      ),
                     ),
                     Obx(
                       () => MarkerLayer(

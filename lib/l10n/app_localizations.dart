@@ -200,6 +200,18 @@ abstract class AppLocalizations {
   /// **'Show routes without passages from \"View on map\"'**
   String get settingsShowRoutesWithoutPassagesSubtitle;
 
+  /// No description provided for @settingsDirectionArrowsAnimationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animate direction arrows'**
+  String get settingsDirectionArrowsAnimationTitle;
+
+  /// No description provided for @settingsDirectionArrowsAnimationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animate the arrows along route lines toward the direction of travel'**
+  String get settingsDirectionArrowsAnimationSubtitle;
+
   /// No description provided for @settingsBetaFeaturesTitle.
   ///
   /// In en, this message translates to:

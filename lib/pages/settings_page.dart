@@ -59,6 +59,15 @@ class SettingsPage extends StatelessWidget {
                   _settingsController.switchRouteWithoutPassagesShowing(),
             )),
       ),
+      ListTile(
+        title: Text(l10n.settingsDirectionArrowsAnimationTitle),
+        subtitle: Text(l10n.settingsDirectionArrowsAnimationSubtitle),
+        trailing: Obx(() => Switch(
+              value: _settingsController.showDirectionArrowsAnimation.value,
+              onChanged: (value) =>
+                  _settingsController.switchDirectionArrowsAnimation(),
+            )),
+      ),
       if (kDebugMode)
         ListTile(
           title: Text(l10n.settingsBetaFeaturesTitle),

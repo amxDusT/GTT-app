@@ -54,7 +54,7 @@ class VehicleMarker extends Marker {
                     shape: BoxShape.circle,
                     color: internalColor ??
                         Utils.lighten(color ?? Colors.blue)
-                            .withOpacity(0.9), //color ?? Colors.blue,
+                            .withValues(alpha: 0.9),
                   ),
                 ),
                 DecoratedIcon(
@@ -96,11 +96,14 @@ class FermataMarker extends Marker {
   final Stop fermata;
   final double? zoom;
   final Color color;
+
+  final bool isTerminal;
   static const Color defaultColor = Colors.red;
   FermataMarker({
     required this.fermata,
     this.zoom,
     this.color = defaultColor,
+    this.isTerminal = false,
   }) : super(
           height: getSize(
             zoom: zoom,
@@ -113,28 +116,62 @@ class FermataMarker extends Marker {
             maxSize: markerMaxSize,
           ),
           point: LatLng(fermata.lat, fermata.lon),
-          child: Container(
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              //color: Colors.white,
-            ),
-            child: Icon(
-              Icons.circle,
-              size: getSize(
-                zoom: zoom,
-                minSize: fermataMarkerMinSize,
-                maxSize: fermataMarkerMaxSize,
-              ),
-              color: color,
-            ),
-          ),
+          child: _buildDot(zoom: zoom, color: color, isTerminal: isTerminal),
         );
 
-  FermataMarker copyWith({double? zoom, Color? color}) {
+  static const double _dotMinSize = 12;
+  static const double _dotMaxSize = 20;
+
+  static Widget _buildDot({
+    double? zoom,
+    required Color color,
+    bool isTerminal = false,
+  }) {
+    final size = _dotSize(zoom);
+    // White fill; [color] (route color, or green when highlighted) is shown
+    // only as the border.
+    Widget dot = Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.white,
+        border: Border.all(color: color, width: size / (isTerminal ? 5 : 7)),
+      ),
+    );
+
+    // Terminal/CAP stops get a 2nd, outer white ring around the colored border.
+    if (isTerminal) {
+      dot = Container(
+        padding: EdgeInsets.all(size / 5),
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white,
+        ),
+        child: dot,
+      );
+    }
+
+    return MetaData(
+      behavior: HitTestBehavior.opaque,
+      child: Center(child: dot),
+    );
+  }
+
+  static double _dotSize(double? zoom) {
+    if (zoom == null) return _dotMinSize;
+    final t = ((zoom - MapPageController.minZoom) /
+            (MapPageController.maxZoom - MapPageController.minZoom))
+        .clamp(0.0, 1.0);
+    return _dotMinSize + t * (_dotMaxSize - _dotMinSize);
+  }
+
+  FermataMarker copyWith({double? zoom, Color? color, bool? isTerminal}) {
     return FermataMarker(
       fermata: fermata,
       zoom: zoom ?? this.zoom,
       color: color ?? this.color,
+      isTerminal: isTerminal ?? this.isTerminal,
     );
   }
 

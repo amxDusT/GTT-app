@@ -67,6 +67,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'Show routes without passages from \"View on map\"';
 
   @override
+  String get settingsDirectionArrowsAnimationTitle =>
+      'Animate direction arrows';
+
+  @override
+  String get settingsDirectionArrowsAnimationSubtitle =>
+      'Animate the arrows along route lines toward the direction of travel';
+
+  @override
   String get settingsBetaFeaturesTitle => 'Beta features';
 
   @override

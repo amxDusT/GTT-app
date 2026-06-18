@@ -18,6 +18,8 @@
   "settingsHighlightInitialStopSubtitle": "Mostra la fermata iniziale di colore diverso nella mappa",
   "settingsShowRoutesWithoutPassagesTitle": "Visualizza tratte senza passaggi",
   "settingsShowRoutesWithoutPassagesSubtitle": "Mostra tratte senza passaggi da 'Guarda sulla mappa'",
+  "settingsDirectionArrowsAnimationTitle": "Anima le frecce di direzione",
+  "settingsDirectionArrowsAnimationSubtitle": "Anima le frecce lungo le linee nella direzione di marcia",
   "settingsBetaFeaturesTitle": "Beta features",
   "settingsBetaFeaturesSubtitle": "Clicca per informazioni",
   "settingsShowTutorialTitle": "Mostra tutorial",
