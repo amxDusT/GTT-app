@@ -8,6 +8,13 @@ extension DateTimeExt on DateTime {
       ? DateFormat.Hms().format(this)
       : DateFormat.Hm().format(this);
 
+  String toDateTimeString([bool displaySeconds = false]) {
+    final isEnglish = Get.locale?.languageCode == 'en';
+    final datePattern = isEnglish ? 'MM/dd/yyyy' : 'dd/MM/yyyy';
+    final timePattern = displaySeconds ? 'HH:mm:ss' : 'HH:mm';
+    return DateFormat('$datePattern $timePattern').format(this);
+  }
+
   String get toFullString {
     return DateFormat(
       'd MMMM, y H:mm',

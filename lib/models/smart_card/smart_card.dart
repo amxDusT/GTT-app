@@ -51,8 +51,8 @@ class Contract {
   }
   bool get isActivated => _isActivated;
   bool get isExpired => DateTime.now().isAfter(_endDate);
-  String get startDate => _startDate.toTimeString();
-  String get endDate => _endDate.toTimeString();
+  String get startDate => _startDate.toDateTimeString();
+  String get endDate => _endDate.toDateTimeString();
   int get rides => (code == 712 || code == 714)
       ? (((counters & 0x0000ff) & 0x78) >> 3)
       : (counters >> 19);
@@ -206,5 +206,5 @@ class SmartCard {
   int get remainingMinutes => remainingMins < 0 ? 0 : remainingMins;
   bool isExpired(DateTime date) => DateTime.now().isAfter(date);
 
-  String get creationDate => _creationDate.toTimeString();
+  String get creationDate => _creationDate.toDateTimeString();
 }

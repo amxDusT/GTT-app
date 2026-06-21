@@ -116,9 +116,9 @@ class ChipPaper {
     }
   }
 
-  String get firstValidationDate => _lastDate.toTimeString();
-  String get lastValidationDate => _firstDate.toTimeString();
-  String get expiredDate => _expiredDate.toTimeString();
+  String get firstValidationDate => _lastDate.toDateTimeString();
+  String get lastValidationDate => _firstDate.toDateTimeString();
+  String get expiredDate => _expiredDate.toDateTimeString();
   bool get isExpired => DateTime.now().isAfter(_expiredDate);
   int get remainingMinutes => _remainingMins <= 0 ? 0 : _remainingMins;
   int get cardNumber =>
