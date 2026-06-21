@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:get/get.dart';
@@ -139,5 +139,15 @@ class Utils {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
+  }
+
+  static Directory getDownloadsDirectory() {
+    if (GetPlatform.isAndroid) {
+      return Directory('/storage/emulated/0/Download');
+    } else if (GetPlatform.isIOS) {
+      return Directory('/var/mobile/Containers/Data/Application/Documents');
+    } else {
+      throw UnsupportedError('Unsupported platform');
+    }
   }
 }

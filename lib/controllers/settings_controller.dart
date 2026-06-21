@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/loading_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
@@ -150,8 +151,12 @@ class SettingsController extends GetxController {
   Future<void> exportFavorites() async {
     String jsonResult = await DatabaseCommands.instance.exportFavorites;
 
-    Directory downloadsDirectory = Directory('/storage/emulated/0/Download');
+    Directory downloadsDirectory = Utils.getDownloadsDirectory();
     File file = File('${downloadsDirectory.path}/gtt_favorites.json');
+    if (await Permission.manageExternalStorage.request().isDenied) {
+      Utils.showSnackBar('Permesso di accesso alla memoria negato'.hc);
+      return;
+    }
     await file.writeAsString(jsonResult, mode: FileMode.writeOnly, flush: true);
     Utils.showSnackBar(
       'Salvato in ${file.path}'.hc,
@@ -162,7 +167,7 @@ class SettingsController extends GetxController {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         dialogTitle: 'Seleziona il file da importare'.hc,
-        initialDirectory: '/storage/emulated/0/Download',
+        initialDirectory: Utils.getDownloadsDirectory().path,
         allowCompression: false,
         type: FileType.custom,
         allowedExtensions: ['json'],
