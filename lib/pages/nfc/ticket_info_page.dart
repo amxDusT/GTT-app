@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:get/get.dart';
 import 'package:torino_mobility/models/smart_card/chip_paper.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/utils/fonts.dart';
+import 'package:torino_mobility/widgets/settings/settings_kit.dart';
 
 class TicketInfoPage extends StatelessWidget {
   final ChipPaper ticket;
@@ -8,73 +11,185 @@ class TicketInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
+    final t = SettingsTokens.of(dark);
+    final bool valid = !ticket.isExpired;
+    final rows = <List<String>>[
+      ['Numero'.hc, ticket.cardNumber.toString()],
+      ['Tipo'.hc, ticket.typeName],
+      ['Prima convalida'.hc, ticket.firstValidationDate],
+      ['Ultima convalida'.hc, ticket.lastValidationDate],
+      ['Scadenza'.hc, ticket.expiredDate],
+      [
+        'Minuti rimanenti'.hc,
+        valid ? '${ticket.remainingMinutes} min'.hc : 'Scaduto'.hc,
+      ],
+      if (ticket.remainingRides > 0)
+        ['Corse rimanenti'.hc, ticket.remainingRides.toString()],
+    ];
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.ticketTitle(ticket.cardNumber.toString())),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.only(bottom: 40),
           children: [
-            Text(l10n.ticketInfoHeading),
-            _infoTicket(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 8),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () => Get.back(),
+                    child: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: t.bgRaised,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: t.line),
+                      ),
+                      alignment: Alignment.center,
+                      child: Icon(Icons.arrow_back_ios_new_rounded,
+                          size: 18, color: t.ink),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  _badge(
+                    t,
+                    dark,
+                    color: valid ? t.good : t.bad,
+                    icon: valid ? Icons.check_rounded : Icons.close_rounded,
+                    label: valid ? 'valido'.hc : 'scaduto'.hc,
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Biglietto · n° ${ticket.cardNumber}'.hc,
+                    style: Fonts.subtitle(
+                      fontSize: 10,
+                      letterSpacing: 1.8,
+                      color: t.inkMute,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Informazioni\n'.hc,
+                          style: Fonts.title(
+                            fontSize: 40,
+                            height: 1.0,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: -1,
+                            color: t.ink,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'biglietto'.hc,
+                          style: Fonts.title(
+                            fontSize: 40,
+                            height: 1.0,
+                            fontWeight: FontWeight.w800,
+                            fontStyle: FontStyle.italic,
+                            letterSpacing: -1,
+                            color: t.accent,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 22, 20, 0),
+              child: _infoCard(t, rows),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _infoTicket() {
+  Widget _infoCard(SettingsTokens t, List<List<String>> rows) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      height: 200,
       decoration: BoxDecoration(
-        color: ticket.isExpired ? Colors.red : Colors.green,
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        color: t.bgRaised,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: t.line),
       ),
+      padding: const EdgeInsets.symmetric(horizontal: 6),
       child: Column(
         children: [
-          Row(
-            children: [
-              Text(l10n.ticketNumberLabel),
-              Text(ticket.cardNumber.toString()),
-            ],
-          ),
-          Row(
-            children: [
-              Text(l10n.ticketTypeLabel),
-              Text(ticket.typeName),
-            ],
-          ),
-          Row(
-            children: [
-              Text(l10n.ticketFirstValidationLabel),
-              Text(ticket.firstValidationDate),
-            ],
-          ),
-          Row(
-            children: [
-              Text(l10n.ticketLastValidationLabel),
-              Text(ticket.lastValidationDate),
-            ],
-          ),
-          Row(
-            children: [
-              Text(l10n.ticketExpiresLabel),
-              Text(ticket.expiredDate),
-            ],
-          ),
-          Row(
-            children: [
-              Text(l10n.ticketMinutesRemainingLabel),
-              Text(ticket.isExpired
-                  ? l10n.ticketExpiredLabel
-                  : ticket.remainingMinutes.toString()),
-            ],
+          for (int i = 0; i < rows.length; i++)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: i < rows.length - 1 ? t.line : Colors.transparent,
+                  ),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    rows[i][0].toUpperCase(),
+                    style: Fonts.subtitle(fontSize: 11, color: t.inkMute),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      rows[i][1],
+                      textAlign: TextAlign.right,
+                      style: Fonts.title(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.1,
+                        color: t.ink,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _badge(
+    SettingsTokens t,
+    bool dark, {
+    required Color color,
+    required IconData icon,
+    required String label,
+  }) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(9, 6, 11, 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: dark ? 0.13 : 0.11),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 7),
+          Text(
+            label.toUpperCase(),
+            style: Fonts.subtitle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 1.2,
+              color: color,
+            ),
           ),
         ],
       ),
