@@ -3,11 +3,15 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/loading_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -29,6 +33,8 @@ class SettingsController extends GetxController {
   final RxBool showDirectionArrowsAnimation =
       Storage.instance.showDirectionArrowsAnimation.obs;
   final RxString version = ''.obs;
+  final Rx<Color> defaultColor = Storage.instance.chosenColor.obs;
+  final RxString cacheSize = ''.obs;
 
   @override
   void onInit() async {
@@ -37,7 +43,56 @@ class SettingsController extends GetxController {
     if (isDarkMode.value != Get.isDarkMode) {
       Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
     }
+    loadCacheSize();
     super.onInit();
+  }
+
+  void setDefaultColor(Color color) {
+    defaultColor.value = color;
+    Storage.instance.setColor(color);
+  }
+
+  Future<void> loadCacheSize() async {
+    try {
+      final kib = await const FMTCStore(tileCacheName).stats.size;
+      cacheSize.value = kib >= 1024
+          ? '${(kib / 1024).toStringAsFixed(1)} MB'.hc
+          : '${kib.toStringAsFixed(0)} KB'.hc;
+    } catch (_) {
+      cacheSize.value = '';
+    }
+  }
+
+  void chooseDefaultColor() {
+    Color picked = defaultColor.value;
+    Get.defaultDialog(
+      title: l10n.chooseColorTitle,
+      textConfirm: l10n.confirm,
+      textCancel: l10n.cancel,
+      onConfirm: () {
+        setDefaultColor(picked);
+        Get.back();
+      },
+      content: ColorPicker(
+        pickerColor: defaultColor.value,
+        onColorChanged: (color) => picked = color,
+      ),
+    );
+  }
+
+  void clearCache() {
+    Get.defaultDialog(
+      title: 'Cancella cache'.hc,
+      middleText: 'Vuoi eliminare le mappe salvate localmente?'.hc,
+      textConfirm: l10n.confirm,
+      textCancel: l10n.cancel,
+      onConfirm: () async {
+        Get.back();
+        await const FMTCStore(tileCacheName).manage.reset();
+        await loadCacheSize();
+        Utils.showSnackBar('Cache cancellata'.hc);
+      },
+    );
   }
 
   void switchDarkMode() {
@@ -99,14 +154,14 @@ class SettingsController extends GetxController {
     File file = File('${downloadsDirectory.path}/gtt_favorites.json');
     await file.writeAsString(jsonResult, mode: FileMode.writeOnly, flush: true);
     Utils.showSnackBar(
-      'Salvato in ${file.path}',
+      'Salvato in ${file.path}'.hc,
     );
   }
 
   Future<void> importFavorites() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Seleziona il file da importare',
+        dialogTitle: 'Seleziona il file da importare'.hc,
         initialDirectory: '/storage/emulated/0/Download',
         allowCompression: false,
         type: FileType.custom,
@@ -124,7 +179,7 @@ class SettingsController extends GetxController {
       await DatabaseCommands.instance.importFavorites(jsonMap);
       Get.find<HomeController>().getStops();
     } catch (e) {
-      Utils.showSnackBar('Errore durante l\'importazione');
+      Utils.showSnackBar('Errore durante l\'importazione'.hc);
     }
   }
 
