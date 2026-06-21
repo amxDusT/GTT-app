@@ -17,39 +17,48 @@ class DisplayHours extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-      spacing: 10,
-      children: [
-        ...vehicle.stoptimes.isEmpty
-            ? [
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Non ci sono passaggi',
-                      style: Get.textTheme.labelMedium!.copyWith(
-                          letterSpacing: 1.5,
-                          color: isSelected
-                              ? const Color(0xff1a1611)
-                              : const Color(0xff8a8273)),
-                    ),
-                  ),
-                ),
-              ]
-            : vehicle.stoptimes
-                .getRange(
-                  0,
-                  min(vehicle.stoptimes.length, maxHours),
-                )
-                .map(
-                  (stoptime) => PassageTime(
-                    stoptime: stoptime,
-                    isSelected: isSelected,
-                  ),
-                )
-      ],
+    if (vehicle.stoptimes.isEmpty) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Expanded(
+            child: Align(
+              alignment: Alignment.center,
+              child: Text(
+                'Non ci sono passaggi',
+                style: Get.textTheme.labelMedium!.copyWith(
+                    letterSpacing: 1.5,
+                    color: isSelected
+                        ? const Color(0xff1a1611)
+                        : const Color(0xff8a8273)),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const ClampingScrollPhysics(),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        spacing: 10,
+        children: vehicle.stoptimes
+            .getRange(
+              0,
+              min(vehicle.stoptimes.length, maxHours),
+            )
+            .map(
+              (stoptime) => PassageTime(
+                stoptime: stoptime,
+                isSelected: isSelected,
+              ),
+            )
+            .toList(),
+      ),
     );
   }
 }

@@ -10,12 +10,13 @@ import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
 import 'package:torino_mobility/widgets/home/info_icon_button.dart';
+import 'package:torino_mobility/widgets/animated_icon_button.dart';
 import 'package:torino_mobility/widgets/map/add_route_modal.dart';
-import 'package:torino_mobility/widgets/map/bottom_buttons.dart';
 import 'package:torino_mobility/widgets/map/card_map_widget.dart';
 import 'package:torino_mobility/widgets/map/circle_button.dart';
 import 'package:torino_mobility/widgets/map/direction_arrows_layer.dart';
 import 'package:torino_mobility/widgets/map/map_pattern_info.dart';
+import 'package:torino_mobility/widgets/map/zoom_pill.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
@@ -263,47 +264,59 @@ class MapPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    BottomButtons(
-                      lines: 2,
-                      children: [
-                        CircleButton(
-                          tooltip: 'Center Bounds',
-                          onPressed: () => _flutterMapController.centerBounds(),
-                          icon: const Icon(Icons.center_focus_strong),
-                        ),
-                        Obx(
-                          () => CircleButton(
-                            tooltip: 'Location',
-                            onPressed: () {
-                              _flutterMapController.userLocation
-                                  .switchLocationShowing();
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 15),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Obx(
+                              () => CircleButton(
+                                child: _flutterMapController
+                                        .isLocationLoading.isTrue
+                                    ? const Padding(
+                                        padding: EdgeInsets.all(13),
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      )
+                                    : Tooltip(
+                                        message: 'Location',
+                                        child: AnimatedIconButton(
+                                          selectedIcon: Icons.location_off,
+                                          unselectedIcon: Icons.location_on,
+                                          selectedColor: kInk,
+                                          unselectedColor: kInk,
+                                          selected: _flutterMapController
+                                              .userLocation
+                                              .isLocationShowing
+                                              .isTrue,
+                                          onPressed: () {
+                                            _flutterMapController.userLocation
+                                                .switchLocationShowing();
 
-                              if (_flutterMapController
-                                  .userLocation.isLocationShowing.isTrue) {
-                                _flutterMapController.centerUser();
-                              }
-                            },
-                            icon: _flutterMapController
-                                    .userLocation.isLocationShowing.isFalse
-                                ? const Icon(Icons.location_on)
-                                : const Icon(Icons.location_off),
-                            child:
-                                _flutterMapController.isLocationLoading.isTrue
-                                    ? const CircularProgressIndicator()
-                                    : null,
-                          ),
+                                            if (_flutterMapController
+                                                .userLocation
+                                                .isLocationShowing
+                                                .isTrue) {
+                                              _flutterMapController
+                                                  .centerUser();
+                                            }
+                                          },
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ZoomPill(
+                              onZoomIn: () => _flutterMapController.zoomIn(),
+                              onZoomOut: () => _flutterMapController.zoomOut(),
+                            ),
+                          ],
                         ),
-                        CircleButton(
-                          tooltip: 'Zoom out',
-                          onPressed: () => _flutterMapController.zoomOut(),
-                          icon: const Icon(Icons.remove),
-                        ),
-                        CircleButton(
-                          tooltip: 'Zoom in',
-                          onPressed: () => _flutterMapController.zoomIn(),
-                          icon: const Icon(Icons.add),
-                        ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
