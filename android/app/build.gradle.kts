@@ -57,6 +57,25 @@ android {
         multiDexEnabled = true
     }
 
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("prod") {
+            dimension = "env"
+            isDefault = true
+            manifestPlaceholders["appLabel"] = "MobiliTO"
+        }
+        // Installs side by side with prod as it.amxdust.torinomobility.debug, so a
+        // test build never touches the data of the release app.
+        // Firebase: see src/dev/README.md before enabling reporting for this flavor.
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-dev"
+            manifestPlaceholders["appLabel"] = "MobiliTO Dev"
+        }
+    }
+
     signingConfigs {
         create("release") {
             if (keyStorePropertiesFile.exists()) {

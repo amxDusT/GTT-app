@@ -16,6 +16,31 @@
       "api_key": [
         {
           "current_key": "AIzaSyAXEv8Xb1aylGGBTFg4B9sAKA3rHeuU0Bw"
+        },
+        {
+          "current_key": "AIzaSyDy1UM0UmeAbz35MlhiKbnAUNYq38Cta8I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:102279235096:android:d35647439698d1ac8f656d",
+        "android_client_info": {
+          "package_name": "it.amxdust.torinomobility.debug"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXEv8Xb1aylGGBTFg4B9sAKA3rHeuU0Bw"
+        },
+        {
+          "current_key": "AIzaSyDy1UM0UmeAbz35MlhiKbnAUNYq38Cta8I"
         }
       ],
       "services": {
