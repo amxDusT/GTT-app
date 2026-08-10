@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/search/search_controller.dart';
 import 'package:torino_mobility/widgets/search/disabled_focusnode.dart';
-import 'package:get/get.dart';
 
 class SearchTextField extends StatelessWidget {
   final MapSearchController searchController;
@@ -50,8 +49,11 @@ class SearchTextField extends StatelessWidget {
         fillColor: Theme.of(context)
                 .inputDecorationTheme
                 .fillColor
-                ?.withOpacity(0.7) ??
-            Get.theme.colorScheme.surfaceContainerHighest.withOpacity(0.9),
+                ?.withValues(alpha: 0.7) ??
+            Theme.of(context)
+                .colorScheme
+                .surfaceContainerHighest
+                .withValues(alpha: 0.9),
         border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(40.0),
             borderSide: Divider.createBorderSide(context)),

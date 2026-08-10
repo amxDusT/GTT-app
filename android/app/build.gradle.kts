@@ -57,18 +57,39 @@ android {
         multiDexEnabled = true
     }
 
+    flavorDimensions += "env"
+
+    productFlavors {
+        create("prod") {
+            dimension = "env"
+            isDefault = true
+            manifestPlaceholders["appLabel"] = "MobiliTO"
+        }
+        // Installs side by side with prod as it.amxdust.torinomobility.debug, so a
+        // test build never touches the data of the release app.
+        // Firebase: see src/dev/README.md before enabling reporting for this flavor.
+        create("dev") {
+            dimension = "env"
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-dev"
+            manifestPlaceholders["appLabel"] = "MobiliTO Dev"
+        }
+    }
+
     signingConfigs {
         create("release") {
-            keyAlias = keyStoreProperties.getProperty("keyAlias")
-            keyPassword = keyStoreProperties.getProperty("keyPassword")
-            storeFile = file(expandPath(keyStoreProperties.getProperty("storeFile")))
-            storePassword = keyStoreProperties.getProperty("storePassword")
+            if (keyStorePropertiesFile.exists()) {
+                keyAlias = keyStoreProperties.getProperty("keyAlias")
+                keyPassword = keyStoreProperties.getProperty("keyPassword")
+                storeFile = file(expandPath(keyStoreProperties.getProperty("storeFile")))
+                storePassword = keyStoreProperties.getProperty("storePassword")
+            }
         }
         getByName("debug") {
-            keyAlias = keyStoreProperties.getProperty("keyAlias")
-            keyPassword = keyStoreProperties.getProperty("keyPassword")
-            storeFile = file(expandPath(keyStoreProperties.getProperty("storeFile")))
-            storePassword = keyStoreProperties.getProperty("storePassword")
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+            storeFile = file(expandPath("~/.android/debug.keystore"))
+            storePassword = "android"
         }
     }
 
@@ -77,6 +98,9 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("release")
+        }
+        getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
 }

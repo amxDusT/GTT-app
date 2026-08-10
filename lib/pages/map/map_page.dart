@@ -1,23 +1,29 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:http/io_client.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
-import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/models/gtt/route.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/resources/globals.dart';
-import 'package:torino_mobility/resources/utils/map_utils.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
-import 'package:torino_mobility/widgets/map/bottom_buttons.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/utils/spacing.dart';
+import 'package:torino_mobility/widgets/home/info_icon_button.dart';
+import 'package:torino_mobility/widgets/animated_icon_button.dart';
+import 'package:torino_mobility/widgets/map/add_route_modal.dart';
 import 'package:torino_mobility/widgets/map/card_map_widget.dart';
 import 'package:torino_mobility/widgets/map/circle_button.dart';
-import 'package:torino_mobility/widgets/map/route_appbar_info.dart';
+import 'package:torino_mobility/widgets/map/direction_arrows_layer.dart';
+import 'package:torino_mobility/widgets/map/map_pattern_info.dart';
+import 'package:torino_mobility/widgets/map/zoom_pill.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_popup/flutter_map_marker_popup.dart';
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:get/get.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:torino_mobility/widgets/route_icon.dart';
 
 class MapPage extends StatelessWidget {
   final MapPageController _flutterMapController;
@@ -26,325 +32,377 @@ class MapPage extends StatelessWidget {
       : _flutterMapController = Get.find(
           tag: Get.arguments['vehicles'].map((route) => route.gtfsId).join(),
         );
+  void openModalInfoRoute(BuildContext context, RouteWithDetails route) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => MapPatternInfo(
+        route: route,
+        controller: _flutterMapController,
+      ),
+      showDragHandle: true,
+      isScrollControlled: true,
+      backgroundColor: context.tokens.bgRaised,
+      sheetAnimationStyle: const AnimationStyle(
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+  void openAddRouteModal(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: context.tokens.bgRaised,
+        showDragHandle: true,
+        builder: (context) => AddRouteModal(controller: _flutterMapController));
+  }
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Obx(() {
-          final bool isSingleRoute = _flutterMapController.routes.length == 1 &&
-              _flutterMapController.isPatternInitialized.isTrue;
-          final textWidget = Text(
-              'Map${isSingleRoute ? ' - ${_flutterMapController.routes.values.first.shortName}' : ''}');
-
-          return isSingleRoute
-              ? GestureDetector(
-                  onTap: () => _flutterMapController.toggleAppBar(),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 12.0),
-                          child: textWidget,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : textWidget;
-        }),
-        actions: [
-          Obx(
-            () {
-              if (_flutterMapController.routePatterns.isNotEmpty) {
-                return IconButton(
-                  icon: Icon(_flutterMapController.isAppBarExpanded.isTrue
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down),
-                  onPressed: () {
-                    _flutterMapController.toggleAppBar();
-                  },
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-          GetBuilder<RouteListController>(
-            builder: (controller) => Obx(
-              () => _flutterMapController.routes.length == 1 &&
-                      _flutterMapController.isPatternInitialized.isTrue
-                  ? IconButton(
-                      icon: _flutterMapController.isPatternInitialized.isTrue &&
-                              controller.favorites.contains(
-                                  _flutterMapController.routes.values.first)
-                          ? const Icon(Icons.star)
-                          : const Icon(Icons.star_border),
-                      onPressed: () => controller.toggleFavorite(
-                          _flutterMapController.routes.values.first),
-                    )
-                  : Container(),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
+      body: Stack(
         children: [
-          RouteAppBarInfo(
-            mapController: _flutterMapController,
-          ),
-          Expanded(
-            child: FlutterMap(
-              mapController: _flutterMapController.mapController,
-              options: MapOptions(
-                maxZoom: MapPageController.maxZoom,
-                minZoom: MapPageController.minZoom,
-                initialZoom: 15,
-                onMapReady: _flutterMapController.onMapReady,
-                onMapEvent: _flutterMapController.onMapEvent,
-                onTap: (tapPosition, point) {
-                  _flutterMapController.popupController.hideAllPopups();
-                  _flutterMapController.lastOpenedMarker = null;
-                },
-                interactionOptions: const InteractionOptions(
-                  flags: ~InteractiveFlag.rotate,
-                ),
-                initialCenter: const LatLng(45.064889, 7.670805),
-                initialCameraFit: CameraFit.bounds(
-                  bounds: LatLngBounds(
-                    const LatLng(45.17400, 7.88700),
-                    const LatLng(
-                      44.94300,
-                      7.504,
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: FlutterMap(
+                  mapController: _flutterMapController.mapController,
+                  options: MapOptions(
+                    maxZoom: MapPageController.maxZoom,
+                    minZoom: MapPageController.minZoom,
+                    initialZoom: 15,
+                    onMapReady: _flutterMapController.onMapReady,
+                    onMapEvent: _flutterMapController.onMapEvent,
+                    onTap: (tapPosition, point) {
+                      _flutterMapController.popupController.hideAllPopups();
+                      _flutterMapController.lastOpenedMarker = null;
+                    },
+                    interactionOptions: const InteractionOptions(
+                      flags: ~InteractiveFlag.rotate,
                     ),
-                  ),
-                ),
-              ),
-              children: [
-                TileLayer(
-                    userAgentPackageName: 'it.amxdust.torino_mobility',
-                    maxNativeZoom:
-                        _settingsController.showBetaFeatures.isTrue ? 22 : 19,
-                    urlTemplate: (_settingsController.showBetaFeatures.isTrue &&
-                            mapboxApiKey.isNotEmpty)
-                        ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey'
-                        : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    tileProvider:
-                        const FMTCStore(tileCacheName).getTileProvider(
-                      httpClient: IOClient(
-                        HttpClient()
-                          ..userAgent = null
-                          ..connectionTimeout = const Duration(seconds: 5),
-                      ),
-                    )),
-
-                /*  TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  //userAgentPackageName: 'com.example.app',
-                ), */
-                Obx(
-                  () => PolylineLayer(polylines: [
-                    ..._flutterMapController.isPatternInitialized.isTrue
-                        ? _flutterMapController.routes.values.indexed
-                            .map((value) {
-                            var route = value.$2;
-                            var index = value.$1;
-
-                            double offset =
-                                index * _flutterMapController.offsetVal;
-                            return Polyline(
-                              points: MapUtils.polylineOffset(
-                                  route.pattern.polylinePoints, offset),
-                              //points: route.pattern.polylinePoints,
-                              strokeWidth: 4,
-                              color: _flutterMapController.routes.length == 1
-                                  ? Colors.red
-                                  : Utils.lighten(
-                                      MapPageController
-                                          .colors[(_flutterMapController
-                                                  .routeIndex[route.gtfsId] ??
-                                              0) %
-                                          MapPageController.colors.length],
-                                      20,
-                                    ),
-                            );
-                          })
-                        : <Polyline>[],
-                  ]),
-                ),
-                Obx(
-                  () => MarkerLayer(
-                    markers: [
-                      if (_flutterMapController
-                          .userLocation.isLocationAvailable.isTrue)
-                        UserLocationMarker(
-                          position: _flutterMapController
-                              .userLocation.userPosition.first,
-                          heading: _flutterMapController
-                              .userLocation.userHeading.value,
-                        ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {},
-                  child: Obx(
-                    () => PopupMarkerLayer(
-                      options: PopupMarkerLayerOptions(
-                        markerTapBehavior:
-                            MarkerTapBehavior.togglePopupAndHideRest(),
-                        markerCenterAnimation: const MarkerCenterAnimation(),
-                        popupController: _flutterMapController.popupController,
-                        markers: [
-                          ..._flutterMapController.isPatternInitialized.isTrue
-                              ? _flutterMapController.allStops
-                              : [],
-                          ..._flutterMapController.allVehiclesInDirection,
-                        ],
-                        popupDisplayOptions: PopupDisplayOptions(
-                          builder: (BuildContext context, Marker marker) {
-                            _flutterMapController.lastOpenedMarker = marker;
-
-                            return CardMapWidget(
-                                marker: marker,
-                                mapPageController: _flutterMapController);
-                          },
+                    initialCenter: const LatLng(45.064889, 7.670805),
+                    initialCameraFit: CameraFit.bounds(
+                      bounds: LatLngBounds(
+                        const LatLng(45.17400, 7.88700),
+                        const LatLng(
+                          44.94300,
+                          7.504,
                         ),
                       ),
                     ),
                   ),
-                ),
-                Obx(
-                  () => Opacity(
-                    opacity: _flutterMapController.routes.length > 1 ? 0.8 : 0,
-                    child: Container(
-                      alignment: Alignment.topLeft,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 15),
-                      // show which color each route has
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ..._flutterMapController.routes.values.indexed.map(
-                            (value) => Container(
-                              width: 50,
-                              height: 20,
-                              color: Utils.lighten(
-                                MapPageController.colors[
-                                    value.$1 % MapPageController.colors.length],
-                                20,
-                              ),
-                              margin: const EdgeInsets.all(2),
-                              alignment: Alignment.center,
-                              child: Text(
-                                value.$2.shortName,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Obx(
-                  () => Opacity(
-                    opacity:
-                        _flutterMapController.followVehicle.value > 0 ? 0.8 : 0,
-                    child: Container(
-                      alignment: Alignment.topRight,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 15),
-                      // show which color each route has
-                      child: GestureDetector(
-                        onTap: () => _flutterMapController.moveToFollowed(),
-                        child: Container(
-                            width: 140,
-                            height: 22,
-                            decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.8),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            margin: const EdgeInsets.all(2),
-                            alignment: Alignment.topCenter,
-                            child: Text.rich(
-                              TextSpan(
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        'Seguito:  ${_flutterMapController.followVehicle.value}',
-                                  ),
-                                  const WidgetSpan(child: SizedBox(width: 10)),
-                                  WidgetSpan(
-                                    alignment: PlaceholderAlignment.middle,
-                                    child: GestureDetector(
-                                      onTap: () => _flutterMapController
-                                          .stopFollowingVehicle(),
-                                      child: const Icon(
-                                        Icons.close,
-                                        color: Colors.white,
-                                        //size: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )),
-                      ),
-                    ),
-                  ),
-                ),
-                BottomButtons(
-                  lines: 2,
                   children: [
-                    CircleButton(
-                      tooltip: 'Center Bounds',
-                      onPressed: () => _flutterMapController.centerBounds(),
-                      icon: const Icon(Icons.center_focus_strong),
+                    TileLayer(
+                        userAgentPackageName: 'it.amxdust.torino_mobility',
+                        maxNativeZoom:
+                            _settingsController.showBetaFeatures.isTrue
+                                ? 22
+                                : 19,
+                        urlTemplate: (_settingsController
+                                    .showBetaFeatures.isTrue &&
+                                mapboxApiKey.isNotEmpty)
+                            ? 'https://api.mapbox.com/styles/v1/amxdust/cltc6f9j2002201qp5x08376z/tiles/256/{z}/{x}/{y}?access_token=$mapboxApiKey'
+                            : 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        tileProvider:
+                            const FMTCStore(tileCacheName).getTileProvider(
+                          httpClient: IOClient(
+                            HttpClient()
+                              ..userAgent = null
+                              ..connectionTimeout = const Duration(seconds: 5),
+                          ),
+                        )),
+
+                    /*  TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      //userAgentPackageName: 'com.example.app',
+                    ), */
+                    Obx(
+                      () => PolylineLayer(polylines: [
+                        ..._flutterMapController.isPatternInitialized.isTrue
+                            ? _flutterMapController.routes.values.indexed
+                                .map((value) {
+                                var route = value.$2;
+                                var index = value.$1;
+
+                                return Polyline(
+                                  points: _flutterMapController
+                                      .offsetPolylineFor(route, index),
+                                  strokeWidth: 4,
+                                  color: _flutterMapController
+                                      .polylineColorFor(route),
+                                );
+                              })
+                            : [],
+                      ]),
                     ),
                     Obx(
-                      () => CircleButton(
-                        tooltip: 'Location',
-                        onPressed: () {
-                          _flutterMapController.userLocation
-                              .switchLocationShowing();
-
-                          if (_flutterMapController
-                              .userLocation.isLocationShowing.isTrue) {
-                            _flutterMapController.centerUser();
-                          }
-                        },
-                        icon: _flutterMapController
-                                .userLocation.isLocationShowing.isFalse
-                            ? const Icon(Icons.location_on)
-                            : const Icon(Icons.location_off),
-                        child: _flutterMapController.isLocationLoading.isTrue
-                            ? const CircularProgressIndicator()
-                            : null,
+                      () => DirectionArrowsLayer(
+                        animate: _settingsController
+                            .showDirectionArrowsAnimation.value,
+                        routes: _flutterMapController
+                                .isPatternInitialized.isTrue
+                            ? _flutterMapController.routes.values.indexed
+                                .map(
+                                  (value) => DirectionArrowRoute(
+                                    points: _flutterMapController
+                                        .offsetPolylineFor(value.$2, value.$1),
+                                    color: _flutterMapController
+                                        .polylineColorFor(value.$2),
+                                  ),
+                                )
+                                .toList()
+                            : const [],
                       ),
                     ),
-                    CircleButton(
-                      tooltip: 'Zoom out',
-                      onPressed: () => _flutterMapController.zoomOut(),
-                      icon: const Icon(Icons.remove),
+                    Obx(
+                      () => MarkerLayer(
+                        markers: [
+                          if (_flutterMapController
+                              .userLocation.isLocationAvailable.isTrue)
+                            UserLocationMarker(
+                              position: _flutterMapController
+                                  .userLocation.userPosition.first,
+                              heading: _flutterMapController
+                                  .userLocation.userHeading.value,
+                            ),
+                        ],
+                      ),
                     ),
-                    CircleButton(
-                      tooltip: 'Zoom in',
-                      onPressed: () => _flutterMapController.zoomIn(),
-                      icon: const Icon(Icons.add),
+                    GestureDetector(
+                      onTap: () {},
+                      child: Obx(
+                        () => PopupMarkerLayer(
+                          options: PopupMarkerLayerOptions(
+                            markerTapBehavior: MarkerTapBehavior.custom(
+                              (popupSpec, popupState, popupController) {
+                                if (popupState.selectedPopupSpecs
+                                    .contains(popupSpec)) {
+                                  popupController.hideAllPopups();
+                                } else {
+                                  popupController
+                                      .showPopupsOnlyForSpecs([popupSpec]);
+                                  _flutterMapController.centerMarkerBiasedDown(
+                                      popupSpec.marker.point);
+                                }
+                              },
+                            ),
+                            popupController:
+                                _flutterMapController.popupController,
+                            markers: [
+                              ..._flutterMapController
+                                      .isPatternInitialized.isTrue
+                                  ? _flutterMapController.allStops
+                                  : [],
+                              ..._flutterMapController.allVehiclesInDirection,
+                            ],
+                            popupDisplayOptions: PopupDisplayOptions(
+                              snap: PopupSnap.markerTop,
+                              builder: (BuildContext context, Marker marker) {
+                                _flutterMapController.lastOpenedMarker = marker;
+
+                                return CardMapWidget(
+                                    marker: marker,
+                                    mapPageController: _flutterMapController);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Obx(
+                      () => Opacity(
+                        opacity: _flutterMapController.followVehicle.value > 0
+                            ? 0.8
+                            : 0,
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 20, horizontal: 15),
+                          // show which color each route has
+                          child: GestureDetector(
+                            onTap: () => _flutterMapController.moveToFollowed(),
+                            child: Container(
+                                width: 140,
+                                height: 22,
+                                decoration: BoxDecoration(
+                                  color: t.good,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                margin: const EdgeInsets.all(2),
+                                alignment: Alignment.topCenter,
+                                child: Text.rich(
+                                  TextSpan(
+                                    style: TextStyle(
+                                      color: t.bg,
+                                      fontSize: 16,
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            'Seguito:  ${_flutterMapController.followVehicle.value}',
+                                      ),
+                                      const WidgetSpan(
+                                          child: SizedBox(width: 10)),
+                                      WidgetSpan(
+                                        alignment: PlaceholderAlignment.middle,
+                                        child: GestureDetector(
+                                          onTap: () => _flutterMapController
+                                              .stopFollowingVehicle(),
+                                          child: Icon(
+                                            Icons.close,
+                                            color: t.bg,
+                                            //size: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20, horizontal: 15),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Obx(
+                              () => CircleButton(
+                                child: _flutterMapController
+                                        .isLocationLoading.isTrue
+                                    ? const Padding(
+                                        padding: EdgeInsets.all(13),
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2),
+                                      )
+                                    : Tooltip(
+                                        message: 'Location',
+                                        child: AnimatedIconButton(
+                                          selectedIcon: Icons.location_off,
+                                          unselectedIcon: Icons.location_on,
+                                          selectedColor: context.tokens.ink,
+                                          unselectedColor: context.tokens.ink,
+                                          selected: _flutterMapController
+                                              .userLocation
+                                              .isLocationShowing
+                                              .isTrue,
+                                          onPressed: () {
+                                            _flutterMapController.userLocation
+                                                .switchLocationShowing();
+
+                                            if (_flutterMapController
+                                                .userLocation
+                                                .isLocationShowing
+                                                .isTrue) {
+                                              _flutterMapController
+                                                  .centerUser();
+                                            }
+                                          },
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            ZoomPill(
+                              onZoomIn: () => _flutterMapController.zoomIn(),
+                              onZoomOut: () => _flutterMapController.zoomOut(),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ],
                 ),
-              ],
+              ),
+            ],
+          ),
+          Positioned(
+            top: 12,
+            left: 8,
+            right: 8,
+            child: SafeArea(
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(4.0).copyWith(left: 0),
+                    child: InfoIconButton(
+                      icon: Icons.chevron_left,
+                      tooltip:
+                          MaterialLocalizations.of(context).backButtonTooltip,
+                      backgroundColor: t.floating,
+                      borderSide: t.hairline.top,
+                      onPressed: () {
+                        Get.back(closeOverlays: true);
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: t.floating,
+                        borderRadius: BorderRadius.circular(50),
+                        border: t.hairline,
+                        boxShadow: t.floatingShadow,
+                      ),
+                      child: Obx(() {
+                        final canAdd = _flutterMapController.routes.length <
+                            maxRoutesInMap;
+                        return Row(
+                          spacing: 8,
+                          children: [
+                            Text('TRACKING'.hc),
+                            Spacing.hGap4,
+                            if (_flutterMapController.routes.isNotEmpty)
+                              ..._flutterMapController.routes.values.indexed
+                                  .map((value) {
+                                var route = value.$2;
+                                var index = value.$1;
+                                return RouteIcon(
+                                  routeName: route.shortName,
+                                  size: 25,
+                                  margin: EdgeInsets.zero,
+                                  color: MapPageController.colors[
+                                      index % MapPageController.colors.length],
+                                  onTap: () =>
+                                      openModalInfoRoute(context, route),
+                                );
+                              }),
+                            const Spacer(),
+                            if (canAdd)
+                              InkWell(
+                                onTap: () => openAddRouteModal(context),
+                                customBorder: const CircleBorder(),
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: t.lineStrong,
+                                  ),
+                                  child: Icon(
+                                    Icons.add,
+                                    size: 20,
+                                    color: t.ink,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        );
+                      }),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

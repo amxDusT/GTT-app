@@ -36,8 +36,16 @@ class MqttController {
   void addSubscription(String gtfsId) {
     String shortName = Utils.getBusIdentifier(gtfsId);
 
-    //print(shortName);
-    _shortNames.add(shortName);
+    if (_shortNames.add(shortName) && _connected) {
+      _client.subscribe('/$shortName/#', MqttQos.atMostOnce);
+    }
+  }
+
+  void removeSubscription(String gtfsId) {
+    String shortName = Utils.getBusIdentifier(gtfsId);
+    if (_shortNames.remove(shortName) && _connected) {
+      _client.unsubscribe('/$shortName/#');
+    }
   }
 
   void disconnect() {

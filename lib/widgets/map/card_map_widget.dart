@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
-import 'package:torino_mobility/controllers/map/map_info_controller.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/models/triangle_clipper.dart';
 import 'package:torino_mobility/widgets/map/route_widget.dart';
 import 'package:torino_mobility/widgets/map/stop_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:get/get.dart';
 
 class CardMapWidget extends StatelessWidget {
   final MapPageController mapPageController;
@@ -17,7 +16,7 @@ class CardMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //print('CardMapWidget build');
+    final t = context.tokens;
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -25,12 +24,12 @@ class CardMapWidget extends StatelessWidget {
           bottom: 1,
           child: ClipPath(
             clipper: TriangleClipper(),
-            child: const SizedBox(
+            child: SizedBox(
               height: 10,
               width: 20,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: backgroundColor,
+                  color: t.bgRaised,
                 ),
               ),
             ),
@@ -38,50 +37,25 @@ class CardMapWidget extends StatelessWidget {
         ),
         Card(
           elevation: 0,
-          margin: const EdgeInsets.all(10),
-          color: backgroundColor,
-          child: SizedBox(
-            //height: 70,
-            width: 150,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  height: 40,
-                  alignment: Alignment.topRight,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 5,
-                  ),
-                  child: IconButton(
-                    icon: Icon(Icons.close, color: Colors.grey[600]),
-                    onPressed: () {
-                      mapPageController.popupController
-                          .hidePopupsOnlyFor([marker]);
-                      mapPageController.lastOpenedMarker = null;
-                      if (marker is FermataMarker) {
-                        Get.delete<MapInfoController>(
-                          tag:
-                              (marker as FermataMarker).fermata.code.toString(),
-                        );
-                      }
-                    },
-                  ),
+          margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+          color: t.bgRaised,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (marker is FermataMarker)
+                StopWidget(
+                  marker: marker as FermataMarker,
+                  controller: mapPageController,
                 ),
-                if (marker is FermataMarker)
-                  StopWidget(
-                    marker: marker as FermataMarker,
-                    controller: mapPageController,
-                  ),
-                if (marker is VehicleMarker)
-                  RouteWidget(
-                    marker: marker as VehicleMarker,
-                    controller: mapPageController,
-                  ),
-                const SizedBox(
-                  height: 10,
+              if (marker is VehicleMarker)
+                RouteWidget(
+                  marker: marker as VehicleMarker,
+                  controller: mapPageController,
                 ),
-              ],
-            ),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
           ),
         ),
       ],

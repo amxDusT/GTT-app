@@ -15,6 +15,7 @@ import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
 import 'package:torino_mobility/resources/utils/update_utils.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 import 'package:get/get.dart';
 
 class LoadingController extends GetxController {
@@ -175,9 +176,9 @@ class LoadingController extends GetxController {
     await Future.delayed(duration);
     if (Storage.instance.isFirstTime) {
       Storage.instance.setBool(StorageParam.isFirstTime, false);
-      Get.offNamed('/intro');
+      Get.offNamed(r.Router.introRoute);
     } else {
-      Get.offNamed('/home');
+      Get.offNamed(r.Router.homeRoute);
     }
   }
 }

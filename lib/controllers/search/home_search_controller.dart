@@ -3,6 +3,7 @@ import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:torino_mobility/resources/database.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 import 'package:get/get.dart';
 
 class SearchStopsController extends GetxController {
@@ -53,7 +54,7 @@ class SearchStopsController extends GetxController {
   }
 
   void openInfoPage(Stop stop) {
-    Get.toNamed('/info', arguments: {'fermata': stop});
+    Get.toNamed(r.Router.infoRoute, arguments: {'fermata': stop});
   }
 
   void searchButton() {

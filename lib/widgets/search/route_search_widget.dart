@@ -1,59 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
-import 'package:torino_mobility/controllers/search/list_search_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
-import 'package:torino_mobility/models/gtt/route.dart' as gtt;
-import 'package:torino_mobility/widgets/route_list_tile_widget.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
 
-class SearchRoute extends StatelessWidget {
+class SearchRoute extends StatefulWidget {
   final RouteListController controller;
-  final ListSearchController searchController;
-  const SearchRoute({
-    super.key,
-    required this.controller,
-    required this.searchController,
-  });
+  const SearchRoute({super.key, required this.controller});
+
+  @override
+  State<SearchRoute> createState() => _SearchRouteState();
+}
+
+class _SearchRouteState extends State<SearchRoute> {
+  final TextEditingController _textController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
+  bool _isFocused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_handleFocusChange);
+  }
+
+  void _handleFocusChange() {
+    if (!_focusNode.hasFocus) {
+      _textController.clear();
+      widget.controller.setSearchQuery('');
+    }
+    setState(() => _isFocused = _focusNode.hasFocus);
+  }
+
+  @override
+  void dispose() {
+    _focusNode.removeListener(_handleFocusChange);
+    _focusNode.dispose();
+    _textController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 18.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          TypeAheadField<gtt.Route>(
-            animationDuration: const Duration(milliseconds: 100),
-            itemBuilder: (context, route) {
-              return RouteListTile(route: route, controller: controller);
-            },
-            builder: (context, controller, focusNode) {
-              searchController.setSearchController(controller);
-              searchController.listenUnfocus(focusNode);
-              return TextField(
-                //autofocus: true,
-                controller: controller,
-                focusNode: focusNode,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderSide: Divider.createBorderSide(context)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                  filled: true,
-                  labelText: l10n.searchVehicle,
-                ),
-                keyboardType: TextInputType.text,
-                onSubmitted: (value) => searchController.onSearch(value),
-              );
-            },
-            loadingBuilder: (context) => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            hideOnEmpty: true,
-            debounceDuration: const Duration(milliseconds: 100),
-            onSelected: (route) {},
-            suggestionsCallback: (val) => searchController.getSuggestions(val),
-          ),
-        ],
+      child: TextField(
+        controller: _textController,
+        focusNode: _focusNode,
+        decoration: InputDecoration(
+          hintText: l10n.searchVehicle,
+          prefixIcon: _isFocused
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => _focusNode.unfocus(),
+                )
+              : const Icon(Icons.search),
+        ),
+        keyboardType: TextInputType.text,
+        onChanged: widget.controller.setSearchQuery,
       ),
     );
   }

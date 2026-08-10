@@ -174,8 +174,11 @@ class MapSearchPage extends StatelessWidget {
                   fillColor: Theme.of(context)
                           .inputDecorationTheme
                           .fillColor
-                          ?.withOpacity(0.7) ??
-                      Get.theme.colorScheme.surfaceVariant.withOpacity(0.9),
+                          ?.withValues(alpha: 0.7) ??
+                      Theme.of(context)
+                          .colorScheme
+                          .surfaceContainerHighest
+                          .withValues(alpha: 0.9),
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(40.0),
                       borderSide: Divider.createBorderSide(context)),

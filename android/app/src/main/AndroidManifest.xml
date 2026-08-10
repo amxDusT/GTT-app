@@ -17,15 +17,16 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>  
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <uses-feature android:name="android.hardware.nfc" android:required="false" />
     <uses-feature android:name="android.hardware.nfc.hce" android:required="false" />
     <uses-permission android:name="android.permission.VIBRATE" />
     
    
     <application
-        android:label="MobiliTO"
+        android:label="${appLabel}"
         android:name="${applicationName}"
         android:requestLegacyExternalStorage="true"
         android:icon="@mipmap/launcher_icon">
@@ -54,7 +55,7 @@
                 <action android:name="android.nfc.action.TECH_DISCOVERED"/>
                 <action android:name="android.nfc.action.TAG_DISCOVERED"/>
                 <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="application/it.amxdust.torinomobility" />
+                <data android:mimeType="application/${applicationId}" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

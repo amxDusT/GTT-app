@@ -9,10 +9,11 @@ import 'package:torino_mobility/firebase_options.dart';
 import 'package:torino_mobility/l10n/app_localizations.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/resources/analytics.dart';
+import 'package:torino_mobility/resources/config/theme.dart';
 import 'package:torino_mobility/resources/database.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -55,8 +56,8 @@ class MyApp extends StatelessWidget {
         return child!;
       },
       localizationsDelegates: AppLocalizations.localizationsDelegates,
-      initialRoute: '/',
-      getPages: Utils.getPages(),
+      initialRoute: r.Router.initialRoute,
+      getPages: r.Router.pages,
       supportedLocales: AppLocalizations.supportedLocales,
       title: 'Torino Mobility',
       localeResolutionCallback: (locale, locales) {
@@ -72,19 +73,9 @@ class MyApp extends StatelessWidget {
 
         return newLocale;
       },
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        //brightness: Brightness.dark,
-      ),
-      themeMode: Storage.instance.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: Storage.instance.themeMode,
     );
   }
 }

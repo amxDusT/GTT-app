@@ -36,7 +36,16 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ecco un breve tutorial per aiutarti a capire come funziona.';
 
   @override
-  String get settingsDarkThemeTitle => 'Tema scuro';
+  String get settingsThemeTitle => 'Tema';
+
+  @override
+  String get settingsThemeSystem => 'Sistema';
+
+  @override
+  String get settingsThemeLight => 'Chiaro';
+
+  @override
+  String get settingsThemeDark => 'Scuro';
 
   @override
   String get settingsShowFavoriteRoutesTitle =>
@@ -67,6 +76,14 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get settingsShowRoutesWithoutPassagesSubtitle =>
       'Mostra tratte senza passaggi da \'Guarda sulla mappa\'';
+
+  @override
+  String get settingsDirectionArrowsAnimationTitle =>
+      'Anima le frecce di direzione';
+
+  @override
+  String get settingsDirectionArrowsAnimationSubtitle =>
+      'Anima le frecce lungo le linee nella direzione di marcia';
 
   @override
   String get settingsBetaFeaturesTitle => 'Beta features';
@@ -283,7 +300,7 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get viewOnMap => 'Guarda sulla mappa';
+  String get viewOnMap => 'Mostra in mappa';
 
   @override
   String get routesTitle => 'Linee';

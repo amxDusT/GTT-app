@@ -1,192 +1,127 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
-import 'package:torino_mobility/controllers/search/list_search_controller.dart';
-import 'package:torino_mobility/l10n/localization_service.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/utils/fonts.dart';
+import 'package:torino_mobility/resources/utils/spacing.dart';
+import 'package:torino_mobility/widgets/app_header.dart';
 import 'package:torino_mobility/widgets/search/route_search_widget.dart';
-import 'package:torino_mobility/widgets/route_list_favorite_widget.dart';
 import 'package:torino_mobility/widgets/route_list_tile_widget.dart';
 import 'package:get/get.dart';
 
 class RouteListPage extends GetView<RouteListController> {
-  RouteListPage({super.key});
-  final _searchController = Get.put(ListSearchController());
+  const RouteListPage({super.key});
+
+  static final Map<RouteFilter, String> _filterLabels = {
+    RouteFilter.all: 'Tutte'.hc,
+    RouteFilter.favorites: 'Preferite'.hc,
+    RouteFilter.tram: 'Tram'.hc,
+    RouteFilter.bus: 'Bus'.hc,
+  };
+
   @override
   Widget build(BuildContext context) {
-    //controller.getRoutes();
+    final t = context.tokens;
     controller.getFavorites();
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        if (_searchController.focusNode?.hasFocus ?? false) {
-          _searchController.focusNode?.unfocus();
-        } else {
-          Future.delayed(Duration.zero, () {
-            if (!didPop) {
-              //controller.onPageClose();
-              Get.back(closeOverlays: true);
-            }
-          });
-        }
-      },
-      child: Hero(
-        tag: 'RouteListPage',
-        child: Scaffold(
-          body: GetBuilder<RouteListController>(
-            builder: (controller) => CustomScrollView(
+    return SafeArea(
+      child: Scaffold(
+        body: GetBuilder<RouteListController>(
+          builder: (controller) {
+            final routes = controller.filteredRoutes;
+            return CustomScrollView(
               slivers: [
-                SliverAppBar(
-                  pinned: true,
-                  title: Text(l10n.routesTitle),
-                  backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-                  scrolledUnderElevation: 0,
-                ),
-                SliverList(
-                  delegate: SliverChildListDelegate(
-                    [
-                      SearchRoute(
-                        controller: controller,
-                        searchController: _searchController,
-                      ),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: [
-                            ...controller.favorites.map((route) =>
-                                RouteListFavorite(
-                                    route: route,
-                                    routeListController: controller)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SliverList.builder(
-                  itemCount: controller.agencies.length,
-                  itemBuilder: (context, index) {
-                    final agency = controller.agencies[index];
-                    return ExpansionTile(
-                      initiallyExpanded: agency.gtfsId == 'gtt:U',
-                      title: Text(agency.name),
+                SliverToBoxAdapter(
+                  child: AppHeader(
+                    subtitle: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          height:
-                              (controller.routesMap[agency.gtfsId]?.length ??
-                                          0) >
-                                      5
-                                  ? Get.size.height * 0.5
-                                  : Get.size.height * 0.2,
-                          child: CustomScrollView(
-                            slivers: [
-                              SliverList(
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) {
-                                    final route = controller
-                                        .routesMap[agency.gtfsId]![index];
-                                    return RouteListTile(
-                                        route: route, controller: controller);
-                                  },
-                                  childCount: controller
-                                          .routesMap[agency.gtfsId]?.length ??
-                                      0,
-                                ),
-                              ),
-                            ],
+                        Text(
+                          '${controller.routesMap.values.expand((r) => r).length} LINEE'
+                              .hc,
+                          style: Fonts.subtitle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            height: .9,
+                            color: t.inkMute,
+                          ),
+                        ),
+                        Spacing.hGap8,
+                        Text(
+                          '•'.hc,
+                          style: Fonts.subtitle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            height: .9,
+                            color: t.inkMute,
+                          ),
+                        ),
+                        Spacing.hGap8,
+                        Text(
+                          '${controller.favorites.length} PREFERITE'.hc,
+                          style: Fonts.subtitle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w400,
+                            height: .9,
+                            color: t.inkMute,
                           ),
                         ),
                       ],
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-/* 
-class RouteListPageOld extends StatelessWidget {
-  RouteListPageOld({super.key});
-  final _routeListController = Get.find<RouteListController>();
-  final _searchController = Get.put(ListSearchController());
-  @override
-  Widget build(BuildContext context) {
-    _routeListController.getRoutes();
-    _routeListController.getFavorites();
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        if (_searchController.focusNode?.hasFocus ?? false) {
-          _searchController.focusNode?.unfocus();
-        } else {
-          Future.delayed(Duration.zero, () {
-            if (!didPop) {
-              Get.back(closeOverlays: true);
-            }
-          });
-        }
-      },
-      child: Hero(
-        tag: 'RouteListPage',
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Lista Veicoli'),
-          ),
-          body: GetBuilder<RouteListController>(
-            builder: (controller) => ListView(
-              shrinkWrap: true,
-              children: [
-                SearchRoute(
-                  controller: _routeListController,
-                  searchController: _searchController,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ...controller.favorites.map((route) => RouteListFavorite(
-                          route: route, controller: controller)),
-                    ],
+                    ),
+                    titleTop: 'Tutte le'.hc,
+                    titleBottom: 'linee'.hc,
                   ),
                 ),
-                const SizedBox(
-                  height: 5,
-                ),
-                ...controller.agencies.map(
-                  (agency) => ExpansionTile(
-                    initiallyExpanded: agency.gtfsId == 'gtt:U',
-                    title: Text(agency.name),
-                    children: [
-                      SizedBox(
-                        height:
-                            (controller.routesMap[agency.gtfsId]?.length ?? 0) >
-                                    5
-                                ? Get.size.height * 0.5
-                                : Get.size.height * 0.2,
-                        child: ListView.builder(
-                          itemCount:
-                              controller.routesMap[agency.gtfsId]?.length ?? 0,
-                          itemBuilder: (context, index) {
-                            final route =
-                                controller.routesMap[agency.gtfsId]![index];
-
-                            return RouteListTile(
-                                route: route, controller: controller);
-                          },
-                        ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    SearchRoute(controller: controller),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          for (final filter in RouteFilter.values)
+                            ChoiceChip(
+                              label: Text(
+                                _filterLabels[filter]!,
+                                style: Fonts.subtitle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                  color: controller.activeFilter == filter
+                                      ? t.bg
+                                      : t.ink,
+                                ),
+                              ),
+                              selected: controller.activeFilter == filter,
+                              showCheckmark: false,
+                              onSelected: (_) => controller.setFilter(filter),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                              selectedColor: t.ink,
+                            ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ]),
                 ),
+                SliverList.separated(
+                  itemCount: routes.length,
+                  itemBuilder: (context, index) => RouteListTile(
+                    route: routes[index],
+                    controller: controller,
+                  ),
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1, indent: 12, endIndent: 12),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
               ],
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
   }
 }
- */

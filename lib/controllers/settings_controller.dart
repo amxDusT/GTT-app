@@ -3,16 +3,22 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:flutter_map_tile_caching/flutter_map_tile_caching.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/loading_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/resources/database.dart';
+import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
+import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:get/get.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:torino_mobility/resources/config/router.dart' as r;
 
 class SettingsController extends GetxController {
   final RxBool showBetaFeatures = Storage.instance.showBetaFeatures.obs;
@@ -23,24 +29,76 @@ class SettingsController extends GetxController {
 
   final RxBool isFavoritesRoutesShowing =
       Storage.instance.isFavoritesRoutesShowing.obs;
-  final RxBool isDarkMode = Storage.instance.isDarkMode.obs;
+  final Rx<ThemeMode> themeMode = Storage.instance.themeMode.obs;
   final RxBool isInitialHighlighted = Storage.instance.isInitialHighlighted.obs;
+  final RxBool showDirectionArrowsAnimation =
+      Storage.instance.showDirectionArrowsAnimation.obs;
   final RxString version = ''.obs;
+  final Rx<Color> defaultColor = Storage.instance.chosenColor.obs;
+  final RxString cacheSize = ''.obs;
 
   @override
   void onInit() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version.value = packageInfo.version;
-    if (isDarkMode.value != Get.isDarkMode) {
-      Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
-    }
+    Get.changeThemeMode(themeMode.value);
+    loadCacheSize();
     super.onInit();
   }
 
-  void switchDarkMode() {
-    isDarkMode.toggle();
-    Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
-    Storage.instance.setBool(StorageParam.isDarkMode, isDarkMode.value);
+  void setDefaultColor(Color color) {
+    defaultColor.value = color;
+    Storage.instance.setColor(color);
+  }
+
+  Future<void> loadCacheSize() async {
+    try {
+      final kib = await const FMTCStore(tileCacheName).stats.size;
+      cacheSize.value = kib >= 1024
+          ? '${(kib / 1024).toStringAsFixed(1)} MB'.hc
+          : '${kib.toStringAsFixed(0)} KB'.hc;
+    } catch (_) {
+      cacheSize.value = '';
+    }
+  }
+
+  void chooseDefaultColor() {
+    Color picked = defaultColor.value;
+    Get.defaultDialog(
+      title: l10n.chooseColorTitle,
+      textConfirm: l10n.confirm,
+      textCancel: l10n.cancel,
+      onConfirm: () {
+        setDefaultColor(picked);
+        Get.back();
+      },
+      content: ColorPicker(
+        pickerColor: defaultColor.value,
+        onColorChanged: (color) => picked = color,
+      ),
+    );
+  }
+
+  void clearCache() {
+    Get.defaultDialog(
+      title: 'Cancella cache'.hc,
+      middleText: 'Vuoi eliminare le mappe salvate localmente?'.hc,
+      textConfirm: l10n.confirm,
+      textCancel: l10n.cancel,
+      onConfirm: () async {
+        Get.back();
+        await const FMTCStore(tileCacheName).manage.reset();
+        await loadCacheSize();
+        Utils.showSnackBar('Cache cancellata'.hc);
+      },
+    );
+  }
+
+  void setThemeMode(ThemeMode mode) {
+    if (themeMode.value == mode) return;
+    themeMode.value = mode;
+    Get.changeThemeMode(mode);
+    Storage.instance.setThemeMode(mode);
   }
 
   void switchFermataShowing() {
@@ -78,27 +136,37 @@ class SettingsController extends GetxController {
         .setBool(StorageParam.isInitialHighlighted, isInitialHighlighted.value);
   }
 
+  void switchDirectionArrowsAnimation() {
+    showDirectionArrowsAnimation.toggle();
+    Storage.instance.setBool(StorageParam.showDirectionArrowsAnimation,
+        showDirectionArrowsAnimation.value);
+  }
+
   void resetData() async {
-    Get.until((route) => Get.currentRoute == '/home');
+    Get.until((route) => Get.currentRoute == r.Router.homeRoute);
     Get.find<LoadingController>().loadFromApi();
   }
 
   Future<void> exportFavorites() async {
     String jsonResult = await DatabaseCommands.instance.exportFavorites;
 
-    Directory downloadsDirectory = Directory('/storage/emulated/0/Download');
+    Directory downloadsDirectory = Utils.getDownloadsDirectory();
     File file = File('${downloadsDirectory.path}/gtt_favorites.json');
+    if (await Permission.manageExternalStorage.request().isDenied) {
+      Utils.showSnackBar('Permesso di accesso alla memoria negato'.hc);
+      return;
+    }
     await file.writeAsString(jsonResult, mode: FileMode.writeOnly, flush: true);
     Utils.showSnackBar(
-      'Salvato in ${file.path}',
+      'Salvato in ${file.path}'.hc,
     );
   }
 
   Future<void> importFavorites() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
-        dialogTitle: 'Seleziona il file da importare',
-        initialDirectory: '/storage/emulated/0/Download',
+        dialogTitle: 'Seleziona il file da importare'.hc,
+        initialDirectory: Utils.getDownloadsDirectory().path,
         allowCompression: false,
         type: FileType.custom,
         allowedExtensions: ['json'],
@@ -115,7 +183,7 @@ class SettingsController extends GetxController {
       await DatabaseCommands.instance.importFavorites(jsonMap);
       Get.find<HomeController>().getStops();
     } catch (e) {
-      Utils.showSnackBar('Errore durante l\'importazione');
+      Utils.showSnackBar('Errore durante l\'importazione'.hc);
     }
   }
 
@@ -166,7 +234,7 @@ class SettingsController extends GetxController {
   }
 
   void showTutorial() {
-    Get.offAllNamed('/intro');
+    Get.offAllNamed(r.Router.introRoute);
   }
 
   void betaFeaturesInfo() {

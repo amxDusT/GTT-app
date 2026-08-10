@@ -146,11 +146,29 @@ abstract class AppLocalizations {
   /// **'Here\'s a brief tutorial to help you understand how it works.'**
   String get welcomeDecription2;
 
-  /// No description provided for @settingsDarkThemeTitle.
+  /// No description provided for @settingsThemeTitle.
   ///
   /// In en, this message translates to:
-  /// **'Dark theme'**
-  String get settingsDarkThemeTitle;
+  /// **'Theme'**
+  String get settingsThemeTitle;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get settingsThemeDark;
 
   /// No description provided for @settingsShowFavoriteRoutesTitle.
   ///
@@ -199,6 +217,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Show routes without passages from \"View on map\"'**
   String get settingsShowRoutesWithoutPassagesSubtitle;
+
+  /// No description provided for @settingsDirectionArrowsAnimationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animate direction arrows'**
+  String get settingsDirectionArrowsAnimationTitle;
+
+  /// No description provided for @settingsDirectionArrowsAnimationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Animate the arrows along route lines toward the direction of travel'**
+  String get settingsDirectionArrowsAnimationSubtitle;
 
   /// No description provided for @settingsBetaFeaturesTitle.
   ///

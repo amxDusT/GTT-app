@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/map/map_travel_controller.dart';
 import 'package:torino_mobility/resources/utils/map_utils.dart';
 import 'package:get/get.dart';
@@ -12,6 +13,7 @@ class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return AppBar(
       scrolledUnderElevation: 0,
       leading: Container(
@@ -40,7 +42,7 @@ class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {
                   //backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    side: const BorderSide(color: Colors.blue),
+                    side: BorderSide(color: t.accent),
                   ),
                 ),
                 onPressed: () {
@@ -69,7 +71,7 @@ class TravelAppBar extends StatelessWidget implements PreferredSizeWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
-                    side: const BorderSide(color: Colors.blue),
+                    side: BorderSide(color: t.accent),
                   ),
                 ),
                 onPressed: () {},

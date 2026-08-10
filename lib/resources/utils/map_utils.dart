@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:get/get.dart';
@@ -74,9 +76,42 @@ class MapUtils {
 
   static List<LatLng> polylineOffset(List<LatLng> initialPolyline,
       [double offset = 0.0001]) {
-    return initialPolyline
-        .map((point) => LatLng(point.latitude + offset, point.longitude))
-        .toList();
+    if (offset == 0 || initialPolyline.length < 2) return initialPolyline;
+
+    ({double x, double y}) normal(LatLng a, LatLng b) {
+      final cosLat = math.cos(a.latitude * math.pi / 180);
+      final vx = (b.longitude - a.longitude) * cosLat; // east
+      final vy = b.latitude - a.latitude; // north
+      final len = math.sqrt(vx * vx + vy * vy);
+      if (len == 0) return (x: 0, y: 0);
+      return (x: -vy / len, y: vx / len); //  90°
+    }
+
+    final result = <LatLng>[];
+    for (int i = 0; i < initialPolyline.length; i++) {
+      final point = initialPolyline[i];
+      final prev =
+          i > 0 ? normal(initialPolyline[i - 1], initialPolyline[i]) : null;
+      final next = i < initialPolyline.length - 1
+          ? normal(initialPolyline[i], initialPolyline[i + 1])
+          : null;
+
+      // miter join
+      var nx = (prev?.x ?? next!.x) + (next?.x ?? prev!.x);
+      var ny = (prev?.y ?? next!.y) + (next?.y ?? prev!.y);
+      final m = math.sqrt(nx * nx + ny * ny);
+      if (m != 0) {
+        nx /= m;
+        ny /= m;
+      }
+
+      final cosLat = math.cos(point.latitude * math.pi / 180);
+      result.add(LatLng(
+        point.latitude + offset * ny,
+        point.longitude + offset * nx / (cosLat == 0 ? 1 : cosLat),
+      ));
+    }
+    return result;
   }
 
   /*

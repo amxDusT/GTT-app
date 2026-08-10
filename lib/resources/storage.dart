@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get/get.dart';
 
 enum StorageParam {
   color,
@@ -13,12 +12,16 @@ enum StorageParam {
   isFavoritesRoutesShowing,
   showBetaFeatures,
   isFirstTime,
-  isDarkMode,
+  isDarkMode, // legacy: superseded by [themeMode], still read for migration
+  themeMode,
   isInitialHighlighted,
+  showDirectionArrowsAnimation,
 }
 
 class Storage {
-  final _storage = const FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage(
+    aOptions: AndroidOptions(resetOnError: true),
+  );
   static Storage? _instance;
   Map<StorageParam, dynamic> params = {};
   Storage._();
@@ -47,15 +50,20 @@ class Storage {
     params[StorageParam.isFirstTime] = bool.parse(
         await _getParam(StorageParam.isFirstTime) ?? isFirstTime.toString());
 
-    params[StorageParam.isDarkMode] = bool.parse(
-        await _getParam(StorageParam.isDarkMode) ?? isDarkMode.toString());
+    params[StorageParam.themeMode] = await _loadThemeMode();
 
     params[StorageParam.isInitialHighlighted] = bool.parse(
         await _getParam(StorageParam.isInitialHighlighted) ??
             isInitialHighlighted.toString());
+
+    params[StorageParam.showDirectionArrowsAnimation] = bool.parse(
+        await _getParam(StorageParam.showDirectionArrowsAnimation) ??
+            showDirectionArrowsAnimation.toString());
   }
 
-  bool get isDarkMode => params[StorageParam.isDarkMode] ?? Get.isDarkMode;
+  /// Defaults to [ThemeMode.system] so the app agrees with the native splash,
+  /// which Android resolves from the system dark-mode setting.
+  ThemeMode get themeMode => params[StorageParam.themeMode] ?? ThemeMode.system;
   Color get chosenColor => params[StorageParam.color] ?? initialColor;
   bool get isFermataShowing => params[StorageParam.fermataMap] ?? true;
   bool get isRouteWithoutPassagesShowing =>
@@ -69,6 +77,29 @@ class Storage {
   bool get isFirstTime => params[StorageParam.isFirstTime] ?? true;
   bool get isInitialHighlighted =>
       params[StorageParam.isInitialHighlighted] ?? true;
+  bool get showDirectionArrowsAnimation =>
+      params[StorageParam.showDirectionArrowsAnimation] ?? true;
+  static ThemeMode? stringToThemeMode(String? value) => switch (value) {
+        'system' => ThemeMode.system,
+        'light' => ThemeMode.light,
+        'dark' => ThemeMode.dark,
+        _ => null,
+      };
+
+  Future<ThemeMode> _loadThemeMode() async {
+    final stored = stringToThemeMode(await _getParam(StorageParam.themeMode));
+    if (stored != null) return stored;
+
+    // Builds before the three-way selector only persisted a dark-mode boolean,
+    // so honour that explicit choice instead of resetting the user to system.
+    final legacy = bool.tryParse(
+        await _getParam(StorageParam.isDarkMode) ?? '',
+        caseSensitive: false);
+    if (legacy != null) return legacy ? ThemeMode.dark : ThemeMode.light;
+
+    return ThemeMode.system;
+  }
+
   static String dateToString(DateTime date) {
     return date.millisecondsSinceEpoch.toString();
   }
@@ -116,10 +147,16 @@ class Storage {
 
   Future<void> setBool(StorageParam key, bool value) async {
     assert(
-      key != StorageParam.color && key != StorageParam.lastUpdate,
+      key != StorageParam.color &&
+          key != StorageParam.lastUpdate &&
+          key != StorageParam.themeMode,
       'Invalid key',
     );
     await _setParam(key, value);
+  }
+
+  Future<void> setThemeMode(ThemeMode value) async {
+    await _setParam(StorageParam.themeMode, value);
   }
 
   Future<void> setLastUpdate(DateTime value) async {
@@ -139,6 +176,8 @@ class Storage {
       valueString = dateToString(value);
     } else if (value is Color) {
       valueString = colorToString(value);
+    } else if (value is ThemeMode) {
+      valueString = value.name;
     } else {
       throw Exception('Invalid value type ${value.runtimeType}');
     }

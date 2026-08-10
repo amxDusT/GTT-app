@@ -5,6 +5,8 @@ const int daysBeforeAutoUpdate = 3;
 
 const mapboxApiKey = String.fromEnvironment('MAPBOX_API_KEY', defaultValue: '');
 
+const int maxDisplayAddRoutes = 4;
+const int maxFavoriteRoutes = 4;
 const double mapMaxZoom = 18;
 const double mapMinZoom = 12;
 const double markerMinSize = 10;

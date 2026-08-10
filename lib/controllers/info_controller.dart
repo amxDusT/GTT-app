@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
@@ -18,6 +20,13 @@ class InfoController extends GetxController {
   late Rx<StopWithDetails> fermata;
   final HomeController _homeController = Get.find();
   final RxBool isSaved = false.obs;
+  Timer? _timer;
+
+  @override
+  void onClose() {
+    _timer?.cancel();
+    super.onClose();
+  }
 
   @override
   void onInit() async {
@@ -25,6 +34,9 @@ class InfoController extends GetxController {
     Stop stop = Get.arguments['fermata'];
     //print(stop);
     lastUpdate = DateTime.now().obs;
+    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+      lastUpdate.refresh();
+    });
     fermata = StopWithDetails.fromStop(stop: stop).obs;
 
     getFermata();
@@ -57,6 +69,9 @@ class InfoController extends GetxController {
     if (selectedRoutes.contains(route)) {
       selectedRoutes.remove(route);
     } else {
+      if (isSelecting.isFalse) {
+        isSelecting.value = true;
+      }
       if (selectedRoutes.length >= maxRoutesInMap) {
         Utils.showSnackBar(
           l10n.selectMaxVehicles(maxRoutesInMap),

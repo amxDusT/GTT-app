@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/extensions/date_time.dart';
 import 'package:torino_mobility/resources/utils/gtt_date.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
@@ -50,8 +51,8 @@ class Contract {
   }
   bool get isActivated => _isActivated;
   bool get isExpired => DateTime.now().isAfter(_endDate);
-  String get startDate => Utils.dateToString(_startDate);
-  String get endDate => Utils.dateToString(_endDate);
+  String get startDate => _startDate.toDateTimeString();
+  String get endDate => _endDate.toDateTimeString();
   int get rides => (code == 712 || code == 714)
       ? (((counters & 0x0000ff) & 0x78) >> 3)
       : (counters >> 19);
@@ -62,7 +63,7 @@ class Contract {
           : 'Unknown';
   @override
   String toString() {
-    return 'type: ${isTicket ? ticketCodes[code] : subscriptionCodes[code]}, endDate: ${_endDate.toString()}';
+    return 'type: ${isTicket ? ticketCodes[code] : subscriptionCodes[code]}, endDate: ${_endDate.toTimeString()}';
   }
 }
 
@@ -205,5 +206,5 @@ class SmartCard {
   int get remainingMinutes => remainingMins < 0 ? 0 : remainingMins;
   bool isExpired(DateTime date) => DateTime.now().isAfter(date);
 
-  String get creationDate => Utils.dateToString(_creationDate);
+  String get creationDate => _creationDate.toDateTimeString();
 }

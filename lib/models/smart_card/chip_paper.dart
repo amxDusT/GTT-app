@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:torino_mobility/resources/extensions/date_time.dart';
 import 'package:torino_mobility/resources/utils/gtt_date.dart';
 import 'package:torino_mobility/resources/utils/utils.dart';
 
@@ -115,9 +116,9 @@ class ChipPaper {
     }
   }
 
-  String get firstValidationDate => Utils.dateToString(_lastDate);
-  String get lastValidationDate => Utils.dateToString(_firstDate);
-  String get expiredDate => Utils.dateToString(_expiredDate);
+  String get firstValidationDate => _lastDate.toDateTimeString();
+  String get lastValidationDate => _firstDate.toDateTimeString();
+  String get expiredDate => _expiredDate.toDateTimeString();
   bool get isExpired => DateTime.now().isAfter(_expiredDate);
   int get remainingMinutes => _remainingMins <= 0 ? 0 : _remainingMins;
   int get cardNumber =>

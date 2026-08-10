@@ -7,9 +7,8 @@ import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/widgets/map/map_global/panel_dragger.dart';
 import 'package:torino_mobility/resources/utils/map_utils.dart';
 import 'package:torino_mobility/widgets/map/map_global/address_widget.dart';
-import 'package:torino_mobility/widgets/map/bottom_buttons.dart';
-import 'package:torino_mobility/widgets/map/circle_button.dart';
 import 'package:torino_mobility/widgets/map/map_global/route_option.dart';
+import 'package:torino_mobility/widgets/map/zoom_pill.dart';
 import 'package:torino_mobility/widgets/map/travel_appbar.dart';
 import 'package:torino_mobility/widgets/search/map_search_widget.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -219,26 +218,21 @@ class MapGlobal extends StatelessWidget {
                       ),
                     ),
                   ),
-                  BottomButtons(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 20)
-                            .copyWith(
-                      bottom: controller.travelController.isSearching.isTrue
-                          ? 100
-                          : null,
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 20)
+                          .copyWith(
+                        bottom: controller.travelController.isSearching.isTrue
+                            ? 180
+                            : 100,
+                      ),
+                      child: ZoomPill(
+                        onZoomIn: () => controller.zoomIn,
+                        onZoomOut: () => controller.zoomOut,
+                      ),
                     ),
-                    children: [
-                      CircleButton(
-                        tooltip: 'Zoom out',
-                        icon: const Icon(Icons.remove),
-                        onPressed: () => controller.zoomOut,
-                      ),
-                      CircleButton(
-                        tooltip: 'Zoom in',
-                        icon: const Icon(Icons.add),
-                        onPressed: () => controller.zoomIn,
-                      ),
-                    ],
                   ),
                 ],
               ),

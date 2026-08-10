@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/utils/color_utils.dart';
 import 'package:torino_mobility/resources/storage.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class HomeColorPicker extends StatelessWidget {
@@ -21,7 +21,7 @@ class HomeColorPicker extends StatelessWidget {
       decoration: BoxDecoration(
         border: color.value == Storage.instance.chosenColor.value
             ? Border.all(
-                color: Utils.darken(color, 30),
+                color: ColorUtils.darken(color, 30),
                 width: 2,
                 strokeAlign: BorderSide.strokeAlignOutside)
             : null,
