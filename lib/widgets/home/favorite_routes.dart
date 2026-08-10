@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:get/get.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/pages/nav_shell.dart';
@@ -14,6 +15,7 @@ class FavoriteRoutes extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return SliverList(
       delegate: SliverChildListDelegate(
         [
@@ -60,15 +62,15 @@ class FavoriteRoutes extends StatelessWidget {
                       ),
                       child: CustomPaint(
                         painter: DottedBorderPainter(
-                          color: Colors.grey,
+                          color: t.inkMute,
                           radius: 8,
                           dashLength: 3,
                           gapLength: 3,
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Icon(
                             Icons.add,
-                            color: Colors.grey,
+                            color: t.inkMute,
                           ),
                         ),
                       ),

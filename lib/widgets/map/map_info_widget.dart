@@ -154,13 +154,6 @@ class _MapInfoWidgetState extends State<MapInfoWidget> {
                                   alignment: Alignment.centerRight,
                                   child: MapPassageTime(
                                     stoptime: route.stoptimes[i],
-                                    style: TextStyle(
-                                      color: route.stoptimes[i].realtime
-                                          ? Colors.green
-                                          : Colors.grey[700],
-                                      overflow: TextOverflow.ellipsis,
-                                      fontSize: 14,
-                                    ),
                                   ),
                                 ),
                               )

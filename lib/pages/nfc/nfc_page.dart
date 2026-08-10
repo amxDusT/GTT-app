@@ -6,8 +6,8 @@ import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/pages/nav_shell.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/widgets/app_header.dart';
-import 'package:torino_mobility/widgets/settings/settings_kit.dart';
 
 class NfcPage extends StatefulWidget {
   const NfcPage({super.key});
@@ -16,8 +16,7 @@ class NfcPage extends StatefulWidget {
   State<NfcPage> createState() => _NfcPageState();
 }
 
-class _NfcPageState extends State<NfcPage>
-    with SingleTickerProviderStateMixin {
+class _NfcPageState extends State<NfcPage> with SingleTickerProviderStateMixin {
   late final NfcController _nfc;
   late final AnimationController _rings;
   Worker? _indexWorker;
@@ -61,8 +60,7 @@ class _NfcPageState extends State<NfcPage>
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final t = SettingsTokens.of(dark);
+    final t = context.tokens;
     return Hero(
       tag: 'NFCPage',
       child: Scaffold(
@@ -208,7 +206,7 @@ class _NfcPageState extends State<NfcPage>
     );
   }
 
-  Widget _actionButton(SettingsTokens t, bool reading) {
+  Widget _actionButton(AppTokens t, bool reading) {
     if (reading) {
       return GestureDetector(
         onTap: _nfc.stopReading,
@@ -243,7 +241,7 @@ class _NfcPageState extends State<NfcPage>
           style: Fonts.title(
             fontSize: 15,
             fontWeight: FontWeight.w700,
-            color: Colors.white,
+            color: t.onAccent,
           ),
         ),
       ),

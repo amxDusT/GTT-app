@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 
 enum ToastTone { error, warn, good, info }
@@ -30,7 +31,8 @@ class ToastStyle {
     required this.icon,
   });
 
-  factory ToastStyle.of(ToastTone tone, {required bool dark}) {
+  factory ToastStyle.of(BuildContext context, ToastTone tone) {
+    final dark = context.tokens.isDark;
     switch (tone) {
       case ToastTone.error:
         return ToastStyle(

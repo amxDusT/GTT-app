@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 
 class NavPillItem {
@@ -23,21 +22,15 @@ class PillPalette {
     required this.unselectedForeground,
   });
 
-  factory PillPalette.of(Color accent) {
-    final isDark = Get.find<SettingsController>().isDarkMode.value;
-    if (isDark) {
-      return const PillPalette(
-        background: Color(0xff1f1b16),
-        selectedFill: Color(0xfff5efe0),
-        selectedForeground: Color(0xff1f1b16),
-        unselectedForeground: Color(0xffc9c0b0),
-      );
-    }
+  /// Dark keeps the inverted look (cream pill on the dark bar); light fills
+  /// the selected tab with the accent. Both come from [AppTokens].
+  factory PillPalette.of(BuildContext context, Color? accent) {
+    final t = context.tokens;
     return PillPalette(
-      background: Colors.white,
-      selectedFill: accent,
-      selectedForeground: Colors.white,
-      unselectedForeground: Colors.black87,
+      background: t.bgRaised,
+      selectedFill: t.isDark ? t.ink : (accent ?? t.accent),
+      selectedForeground: t.isDark ? t.bg : t.onAccent,
+      unselectedForeground: t.inkDim,
     );
   }
 }
@@ -46,7 +39,7 @@ class FloatingNavPill extends StatelessWidget {
   final List<NavPillItem> items;
   final int currentIndex;
   final ValueChanged<int> onChanged;
-  final Color accentColor;
+  final Color? accentColor;
   final Color? backgroundColor;
   final bool showAllLabels;
   final bool expand;
@@ -55,7 +48,7 @@ class FloatingNavPill extends StatelessWidget {
     required this.items,
     required this.currentIndex,
     required this.onChanged,
-    this.accentColor = const Color(0xffff7a3f),
+    this.accentColor,
     this.backgroundColor,
     this.showAllLabels = false,
     this.expand = false,
@@ -63,7 +56,7 @@ class FloatingNavPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = PillPalette.of(accentColor);
+    final palette = PillPalette.of(context, accentColor);
     return Material(
       elevation: 6,
       borderRadius: BorderRadius.circular(40),

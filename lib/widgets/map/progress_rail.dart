@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/widgets/map/pulsing_dot.dart';
-
-const _surface = Color(0xff221d17);
-const _ink = Color(0xfff3ede0);
-const _inkDim = Color(0xffa89e89);
-const _inkMute = Color(0xff6e6555);
 
 /// Vertical rail: hollow dot (last stop) → pulsing dot (vehicle) → solid
 /// dot (next stop), connected by a faint line in the route color.
@@ -23,6 +19,7 @@ class ProgressRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     // The text column drives the height; the rail overlays it via
     // Positioned.fill (IntrinsicHeight would break the LayoutBuilder
     // inside AutoShrinkText).
@@ -58,7 +55,7 @@ class ProgressRail extends StatelessWidget {
                   height: 10,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: _surface,
+                    color: t.bgRaised,
                     border: Border.all(
                       color: lineColor.withValues(alpha: .53),
                       width: 2,
@@ -126,6 +123,7 @@ class RailStop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 2,
@@ -135,7 +133,7 @@ class RailStop extends StatelessWidget {
           style: Fonts.subtitle(
             fontSize: 10,
             letterSpacing: 1.4,
-            color: _inkMute,
+            color: t.inkMute,
           ),
         ),
         Text(
@@ -145,7 +143,7 @@ class RailStop extends StatelessWidget {
           style: Fonts.title(
             fontSize: isNext ? 16 : 14,
             fontWeight: isNext ? FontWeight.w800 : FontWeight.w600,
-            color: isNext ? _ink : _inkDim,
+            color: isNext ? t.ink : t.inkDim,
           ),
         ),
       ],

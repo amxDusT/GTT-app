@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/info_controller.dart';
 import 'package:torino_mobility/fake/fake_data.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
@@ -22,6 +23,7 @@ class InfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -57,7 +59,7 @@ class InfoPage extends StatelessWidget {
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             height: 1.4,
-                            color: const Color(0xff6e6555),
+                            color: t.inkMute,
                           ),
                         ),
                       ),
@@ -112,11 +114,11 @@ class InfoPage extends StatelessWidget {
                     opacity: buttonHidden ? 0 : 1,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffff7a3f),
+                        backgroundColor: t.accent,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50),
                         ),
-                        iconColor: const Color(0xff1a1611),
+                        iconColor: t.bg,
                         fixedSize: const Size.fromHeight(50),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                       ),
@@ -144,7 +146,7 @@ class InfoPage extends StatelessWidget {
                               l10n.viewOnMap,
                               style: Fonts.title(
                                   fontSize: 16,
-                                  color: const Color(0xff1a1611),
+                                  color: t.bg,
                                   fontWeight: FontWeight.w600),
                             ),
                           ),
@@ -152,7 +154,7 @@ class InfoPage extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
                             decoration: BoxDecoration(
-                              color: const Color(0xffd66625),
+                              color: t.accent,
                               borderRadius: BorderRadius.circular(50),
                             ),
                             child: Text(
@@ -160,7 +162,7 @@ class InfoPage extends StatelessWidget {
                                   .hc,
                               style: Fonts.subtitle(
                                   fontSize: 12,
-                                  color: const Color(0xff1a1611),
+                                  color: t.bg,
                                   fontWeight: FontWeight.w600),
                             ),
                           )

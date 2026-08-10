@@ -29,7 +29,7 @@ class SettingsController extends GetxController {
 
   final RxBool isFavoritesRoutesShowing =
       Storage.instance.isFavoritesRoutesShowing.obs;
-  final RxBool isDarkMode = Storage.instance.isDarkMode.obs;
+  final Rx<ThemeMode> themeMode = Storage.instance.themeMode.obs;
   final RxBool isInitialHighlighted = Storage.instance.isInitialHighlighted.obs;
   final RxBool showDirectionArrowsAnimation =
       Storage.instance.showDirectionArrowsAnimation.obs;
@@ -41,9 +41,7 @@ class SettingsController extends GetxController {
   void onInit() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     version.value = packageInfo.version;
-    if (isDarkMode.value != Get.isDarkMode) {
-      Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
-    }
+    Get.changeThemeMode(themeMode.value);
     loadCacheSize();
     super.onInit();
   }
@@ -96,10 +94,11 @@ class SettingsController extends GetxController {
     );
   }
 
-  void switchDarkMode() {
-    isDarkMode.toggle();
-    Get.changeThemeMode(isDarkMode.value ? ThemeMode.dark : ThemeMode.light);
-    Storage.instance.setBool(StorageParam.isDarkMode, isDarkMode.value);
+  void setThemeMode(ThemeMode mode) {
+    if (themeMode.value == mode) return;
+    themeMode.value = mode;
+    Get.changeThemeMode(mode);
+    Storage.instance.setThemeMode(mode);
   }
 
   void switchFermataShowing() {

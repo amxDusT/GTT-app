@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
@@ -14,10 +15,6 @@ import 'package:torino_mobility/widgets/map/update_pill.dart';
 import 'package:torino_mobility/widgets/route_icon.dart';
 
 // Popup tokens (dark editorial palette, same as the card host).
-const _ink = Color(0xfff3ede0);
-const _inkDim = Color(0xffa89e89);
-const _inkMute = Color(0xff6e6555);
-const _lineBorder = Color(0xff332c22);
 
 class RouteWidget extends StatelessWidget {
   final VehicleMarker marker;
@@ -27,6 +24,7 @@ class RouteWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final route = controller.routes[marker.mqttData.gtfsId];
     final patternStops =
         controller.stopsByPattern[route?.pattern.code] ?? const [];
@@ -70,7 +68,7 @@ class RouteWidget extends StatelessWidget {
                               horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5),
-                            border: Border.all(color: _lineBorder),
+                            border: Border.all(color: t.line),
                           ),
                           child: Row(
                             spacing: 4,
@@ -78,7 +76,7 @@ class RouteWidget extends StatelessWidget {
                               Icon(
                                 isTram ? Icons.tram : Icons.directions_bus,
                                 size: 11,
-                                color: _inkDim,
+                                color: t.inkDim,
                               ),
                               Text(
                                 isTram ? 'TRAM'.hc : 'BUS'.hc,
@@ -86,7 +84,7 @@ class RouteWidget extends StatelessWidget {
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                   letterSpacing: 0.8,
-                                  color: _inkDim,
+                                  color: t.inkDim,
                                 ),
                               ),
                             ],
@@ -97,7 +95,7 @@ class RouteWidget extends StatelessWidget {
                           style: Fonts.subtitle(
                             fontSize: 10,
                             letterSpacing: 1.6,
-                            color: _inkMute,
+                            color: t.inkMute,
                           ),
                         ),
                       ],
@@ -124,7 +122,7 @@ class RouteWidget extends StatelessWidget {
                               fontSize: 16,
                               height: 1.15,
                               fontWeight: FontWeight.w400,
-                              color: _ink,
+                              color: t.ink,
                             ),
                           ),
                         ),
@@ -145,7 +143,7 @@ class RouteWidget extends StatelessWidget {
               ),
             ),
 
-          const Divider(color: _lineBorder, height: 28),
+          Divider(color: t.line, height: 28),
 
           ProgressRail(
             lineColor: lineColor,
@@ -153,7 +151,7 @@ class RouteWidget extends StatelessWidget {
             nextStopName: nextStop?.name ?? '-'.hc,
           ),
 
-          const Divider(color: _lineBorder, height: 28),
+          Divider(color: t.line, height: 28),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

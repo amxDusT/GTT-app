@@ -8,6 +8,7 @@ import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/widgets/settings/color_swatch.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/widgets/settings/settings_kit.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -28,7 +29,7 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final t = SettingsTokens.of(_c.isDarkMode.value);
+      final t = context.tokens;
       return Scaffold(
         backgroundColor: t.bg,
         body: SafeArea(
@@ -36,7 +37,6 @@ class SettingsPage extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 40),
             children: [
               SettingsHeader(
-                tokens: t,
                 eyebrow: 'Preferenze'.hc,
                 title: l10n.settingsPageTitle,
                 onBack: () => Get.back(),
@@ -46,166 +46,134 @@ class SettingsPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SettingsSectionLabel(tokens: t, label: 'Aspetto'.hc),
-                    SettingsCard(tokens: t, children: [
+                    SettingsSectionLabel(label: 'Aspetto'.hc),
+                    SettingsCard(children: [
+                      _themeRow(context),
+                      const SettingsDivider(),
+                      _colorRow(context),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
-                        icon: _c.isDarkMode.value
-                            ? Icons.dark_mode_outlined
-                            : Icons.light_mode_outlined,
-                        title: l10n.settingsDarkThemeTitle,
-                        trailing: SettingsSwitch(
-                          tokens: t,
-                          value: _c.isDarkMode.value,
-                          onChanged: (_) => _c.switchDarkMode(),
-                        ),
-                      ),
-                      SettingsDivider(tokens: t),
-                      _colorRow(t),
-                      SettingsDivider(tokens: t),
-                      SettingsRow(
-                        tokens: t,
                         icon: Icons.star_outline_rounded,
                         title: l10n.settingsShowFavoriteRoutesTitle,
                         trailing: SettingsSwitch(
-                          tokens: t,
                           value: _c.isFavoritesRoutesShowing.value,
                           onChanged: (_) => _c.switchFavoritesRoutesShowing(),
                         ),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.timer_outlined,
                         title: l10n.settingsShowSecondsTitle,
                         trailing: SettingsSwitch(
-                          tokens: t,
                           value: _c.showSecondsInUpdates.value,
                           onChanged: (_) => _c.switchShowSecondsInUpdates(),
                         ),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.location_on_outlined,
                         title: l10n.settingsShowStopOnMapTitle,
                         subtitle: l10n.settingsShowStopOnMapSubtitle,
                         trailing: SettingsSwitch(
-                          tokens: t,
                           value: _c.isFermataShowing.value,
                           onChanged: (_) => _c.switchFermataShowing(),
                         ),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.push_pin_outlined,
                         title: l10n.settingsHighlightInitialStopTitle,
                         subtitle: l10n.settingsHighlightInitialStopSubtitle,
                         trailing: SettingsSwitch(
-                          tokens: t,
                           value: _c.isInitialHighlighted.value,
                           onChanged: (_) => _c.switchInitialHighlighted(),
                         ),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.alt_route_outlined,
                         title: l10n.settingsShowRoutesWithoutPassagesTitle,
                         subtitle:
                             l10n.settingsShowRoutesWithoutPassagesSubtitle,
                         trailing: SettingsSwitch(
-                          tokens: t,
                           value: _c.isRouteWithoutPassagesShowing.value,
                           onChanged: (_) =>
                               _c.switchRouteWithoutPassagesShowing(),
                         ),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.animation_outlined,
                         title: l10n.settingsDirectionArrowsAnimationTitle,
                         subtitle: l10n.settingsDirectionArrowsAnimationSubtitle,
                         trailing: SettingsSwitch(
-                          tokens: t,
                           value: _c.showDirectionArrowsAnimation.value,
                           onChanged: (_) => _c.switchDirectionArrowsAnimation(),
                         ),
                       ),
                       if (kDebugMode) ...[
-                        SettingsDivider(tokens: t),
+                        const SettingsDivider(),
                         SettingsRow(
-                          tokens: t,
                           icon: Icons.science_outlined,
                           title: l10n.settingsBetaFeaturesTitle,
                           subtitle: l10n.settingsBetaFeaturesSubtitle,
                           onTap: () => _c.betaFeaturesInfo(),
                           trailing: SettingsSwitch(
-                            tokens: t,
                             value: _c.showBetaFeatures.value,
                             onChanged: (_) => _c.switchBetaFeatures(),
                           ),
                         ),
                         if (_c.showBetaFeatures.value) ...[
-                          SettingsDivider(tokens: t),
+                          const SettingsDivider(),
                           SettingsRow(
-                            tokens: t,
                             icon: Icons.bug_report_outlined,
                             title: 'Impostazioni debug'.hc,
                             subtitle: 'Strumenti di sviluppo'.hc,
                             trailing: Icon(Icons.chevron_right_rounded,
                                 size: 22, color: t.inkDim),
-                            onTap: () => Get.to(() => DebugSettingsPage()),
+                            onTap: () =>
+                                Get.to(() => const DebugSettingsPage()),
                           ),
                         ],
                       ],
                     ]),
-                    SettingsSectionLabel(
-                        tokens: t, label: 'Backup & ripristino'.hc),
-                    SettingsCard(tokens: t, children: [
+                    SettingsSectionLabel(label: 'Backup & ripristino'.hc),
+                    SettingsCard(children: [
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.file_upload_outlined,
                         title: l10n.settingsBackupFavoritesTitle,
                         subtitle: 'Salva i preferiti in un file .json'.hc,
                         onTap: () => _c.exportFavorites(),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.file_download_outlined,
                         title: l10n.settingsRestoreFavoritesTitle,
                         subtitle: 'Importa i preferiti da un file .json'.hc,
                         onTap: () => _c.importFavorites(),
                       ),
                     ]),
-                    SettingsSectionLabel(tokens: t, label: 'Avanzate'.hc),
-                    SettingsCard(tokens: t, children: [
+                    SettingsSectionLabel(label: 'Avanzate'.hc),
+                    SettingsCard(children: [
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.refresh_rounded,
                         title: l10n.settingsRefreshDataTitle,
                         onTap: () => _c.resetData(),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.school_outlined,
                         title: l10n.settingsShowTutorialTitle,
                         onTap: () => _c.showTutorial(),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.ios_share_outlined,
                         title: l10n.settingsShareAppTitle,
                         onTap: () => _c.shareApp(),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.delete_outline_rounded,
                         title: 'Cancella cache'.hc,
                         subtitle: _c.cacheSize.value.isEmpty
@@ -215,10 +183,9 @@ class SettingsPage extends StatelessWidget {
                         onTap: () => _c.clearCache(),
                       ),
                     ]),
-                    SettingsSectionLabel(tokens: t, label: 'Info'.hc),
-                    SettingsCard(tokens: t, children: [
+                    SettingsSectionLabel(label: 'Info'.hc),
+                    SettingsCard(children: [
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.directions_bus_outlined,
                         title: 'Versione'.hc,
                         trailing: Text(
@@ -229,9 +196,8 @@ class SettingsPage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SettingsDivider(tokens: t),
+                      const SettingsDivider(),
                       SettingsRow(
-                        tokens: t,
                         icon: Icons.info_outline_rounded,
                         title: l10n.settingsInfoTitle,
                         trailing: Icon(Icons.arrow_outward_rounded,
@@ -261,7 +227,66 @@ class SettingsPage extends StatelessWidget {
     });
   }
 
-  Widget _colorRow(SettingsTokens t) {
+  static IconData _themeIcon(ThemeMode mode) => switch (mode) {
+        ThemeMode.system => Icons.brightness_auto_outlined,
+        ThemeMode.light => Icons.light_mode_outlined,
+        ThemeMode.dark => Icons.dark_mode_outlined,
+      };
+
+  Widget _themeRow(BuildContext context) {
+    final t = context.tokens;
+    final ThemeMode current = _c.themeMode.value;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              SettingsIconChip(icon: _themeIcon(current)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Text(
+                  l10n.settingsThemeTitle,
+                  style: Fonts.title(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w500,
+                    height: 1.25,
+                    color: t.ink,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SettingsSegmented<ThemeMode>(
+            value: current,
+            onChanged: _c.setThemeMode,
+            options: [
+              SettingsSegmentOption(
+                value: ThemeMode.system,
+                icon: Icons.brightness_auto_outlined,
+                label: l10n.settingsThemeSystem,
+              ),
+              SettingsSegmentOption(
+                value: ThemeMode.light,
+                icon: Icons.light_mode_outlined,
+                label: l10n.settingsThemeLight,
+              ),
+              SettingsSegmentOption(
+                value: ThemeMode.dark,
+                icon: Icons.dark_mode_outlined,
+                label: l10n.settingsThemeDark,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _colorRow(BuildContext context) {
+    final t = context.tokens;
     final Color current = _c.defaultColor.value;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -270,7 +295,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           Row(
             children: [
-              SettingsIconChip(tokens: t, icon: Icons.color_lens_outlined),
+              const SettingsIconChip(icon: Icons.color_lens_outlined),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -316,7 +341,6 @@ class SettingsPage extends StatelessWidget {
                 ColorSwatch(
                   color: color,
                   selected: color.toARGB32() == current.toARGB32(),
-                  tokens: t,
                   onTap: () => _c.setDefaultColor(color),
                 ),
               GestureDetector(

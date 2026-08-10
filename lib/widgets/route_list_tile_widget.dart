@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/resources/config/router.dart' as r;
@@ -27,6 +28,7 @@ class _RouteListTileState extends State<RouteListTile> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final isFavorite = widget.controller.favorites.contains(widget.route);
     return Row(
       children: [
@@ -67,7 +69,7 @@ class _RouteListTileState extends State<RouteListTile> {
                           style: Fonts.subtitle(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xff8a8273),
+                            color: t.inkMute,
                           ),
                         ),
                         TextSpan(
@@ -75,7 +77,7 @@ class _RouteListTileState extends State<RouteListTile> {
                           style: Fonts.subtitle(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xff8a8273),
+                            color: t.inkMute,
                           ),
                         ),
                         TextSpan(
@@ -83,7 +85,7 @@ class _RouteListTileState extends State<RouteListTile> {
                           style: Fonts.subtitle(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xff8a8273),
+                            color: t.inkMute,
                           ),
                         ),
                       ],

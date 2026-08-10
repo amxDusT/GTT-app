@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
@@ -20,6 +21,7 @@ class RouteListPage extends GetView<RouteListController> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     controller.getFavorites();
     return SafeArea(
       child: Scaffold(
@@ -41,7 +43,7 @@ class RouteListPage extends GetView<RouteListController> {
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
                             height: .9,
-                            color: const Color(0xff6e6555),
+                            color: t.inkMute,
                           ),
                         ),
                         Spacing.hGap8,
@@ -51,7 +53,7 @@ class RouteListPage extends GetView<RouteListController> {
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
                             height: .9,
-                            color: const Color(0xff6e6555),
+                            color: t.inkMute,
                           ),
                         ),
                         Spacing.hGap8,
@@ -61,7 +63,7 @@ class RouteListPage extends GetView<RouteListController> {
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
                             height: .9,
-                            color: const Color(0xff6e6555),
+                            color: t.inkMute,
                           ),
                         ),
                       ],
@@ -88,8 +90,8 @@ class RouteListPage extends GetView<RouteListController> {
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                   color: controller.activeFilter == filter
-                                      ? const Color(0xff1a1611)
-                                      : const Color(0xfff3ede0),
+                                      ? t.bg
+                                      : t.ink,
                                 ),
                               ),
                               selected: controller.activeFilter == filter,
@@ -98,7 +100,7 @@ class RouteListPage extends GetView<RouteListController> {
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(50),
                               ),
-                              selectedColor: const Color(0xfff3ede0),
+                              selectedColor: t.ink,
                             ),
                         ],
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/info_controller.dart';
 import 'package:torino_mobility/models/gtt/route.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
@@ -41,6 +42,7 @@ class InfoWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final shape =
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(10));
     return Obx(() {
@@ -48,7 +50,7 @@ class InfoWidget extends StatelessWidget {
       return Card(
         clipBehavior: Clip.antiAlias,
         shape: shape,
-        color: isSelected ? const Color(0xfff3ede0) : null,
+        color: isSelected ? t.ink : null,
         child: InkWell(
           onTap: _onTap,
           onLongPress: () => _infoController.onLongPress(vehicle),
@@ -71,8 +73,7 @@ class InfoWidget extends StatelessWidget {
                             children: [
                               Icon(
                                 Icons.arrow_right_alt,
-                                color:
-                                    isSelected ? const Color(0xff1a1611) : null,
+                                color: isSelected ? t.bg : null,
                               ),
                               Expanded(
                                 child: Text(
@@ -81,9 +82,7 @@ class InfoWidget extends StatelessWidget {
                                   style: Fonts.title(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w500,
-                                    color: isSelected
-                                        ? const Color(0xff1a1611)
-                                        : null,
+                                    color: isSelected ? t.bg : null,
                                   ),
                                 ),
                               ),
@@ -92,7 +91,7 @@ class InfoWidget extends StatelessWidget {
                           subtitle: Text(
                             'LINEA ${vehicle.shortName}',
                             style: Fonts.subtitle(
-                              color: const Color(0xff8a8273),
+                              color: t.inkMute,
                               fontSize: 12,
                             ),
                           ),

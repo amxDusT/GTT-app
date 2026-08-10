@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/models/marker.dart';
 import 'package:torino_mobility/models/triangle_clipper.dart';
@@ -15,7 +16,7 @@ class CardMapWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //print('CardMapWidget build');
+    final t = context.tokens;
     return Stack(
       alignment: Alignment.bottomCenter,
       children: [
@@ -23,12 +24,12 @@ class CardMapWidget extends StatelessWidget {
           bottom: 1,
           child: ClipPath(
             clipper: TriangleClipper(),
-            child: const SizedBox(
+            child: SizedBox(
               height: 10,
               width: 20,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: Color(0xff221d17),
+                  color: t.bgRaised,
                 ),
               ),
             ),
@@ -37,7 +38,7 @@ class CardMapWidget extends StatelessWidget {
         Card(
           elevation: 0,
           margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
-          color: const Color(0xff221d17),
+          color: t.bgRaised,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [

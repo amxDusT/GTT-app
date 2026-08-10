@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:http/io_client.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/controllers/settings_controller.dart';
@@ -40,7 +41,7 @@ class MapPage extends StatelessWidget {
       ),
       showDragHandle: true,
       isScrollControlled: true,
-      backgroundColor: const Color(0xff221d17),
+      backgroundColor: context.tokens.bgRaised,
       sheetAnimationStyle: const AnimationStyle(
         duration: Duration(milliseconds: 300),
         curve: Curves.easeInOut,
@@ -52,13 +53,14 @@ class MapPage extends StatelessWidget {
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
-        backgroundColor: const Color(0xff221d17),
+        backgroundColor: context.tokens.bgRaised,
         showDragHandle: true,
         builder: (context) => AddRouteModal(controller: _flutterMapController));
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Scaffold(
       body: Stack(
         children: [
@@ -140,20 +142,19 @@ class MapPage extends StatelessWidget {
                       () => DirectionArrowsLayer(
                         animate: _settingsController
                             .showDirectionArrowsAnimation.value,
-                        routes:
-                            _flutterMapController.isPatternInitialized.isTrue
-                                ? _flutterMapController.routes.values.indexed
-                                    .map(
-                                    (value) => DirectionArrowRoute(
-                                      points: _flutterMapController
-                                          .offsetPolylineFor(
-                                              value.$2, value.$1),
-                                      color: _flutterMapController
-                                          .polylineColorFor(value.$2),
-                                    ),
-                                  )
-                                    .toList()
-                                : const [],
+                        routes: _flutterMapController
+                                .isPatternInitialized.isTrue
+                            ? _flutterMapController.routes.values.indexed
+                                .map(
+                                  (value) => DirectionArrowRoute(
+                                    points: _flutterMapController
+                                        .offsetPolylineFor(value.$2, value.$1),
+                                    color: _flutterMapController
+                                        .polylineColorFor(value.$2),
+                                  ),
+                                )
+                                .toList()
+                            : const [],
                       ),
                     ),
                     Obx(
@@ -227,15 +228,15 @@ class MapPage extends StatelessWidget {
                                 width: 140,
                                 height: 22,
                                 decoration: BoxDecoration(
-                                  color: Colors.green.withOpacity(0.8),
+                                  color: t.good,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 margin: const EdgeInsets.all(2),
                                 alignment: Alignment.topCenter,
                                 child: Text.rich(
                                   TextSpan(
-                                    style: const TextStyle(
-                                      color: Colors.white,
+                                    style: TextStyle(
+                                      color: t.bg,
                                       fontSize: 16,
                                     ),
                                     children: [
@@ -250,9 +251,9 @@ class MapPage extends StatelessWidget {
                                         child: GestureDetector(
                                           onTap: () => _flutterMapController
                                               .stopFollowingVehicle(),
-                                          child: const Icon(
+                                          child: Icon(
                                             Icons.close,
-                                            color: Colors.white,
+                                            color: t.bg,
                                             //size: 16,
                                           ),
                                         ),
@@ -287,8 +288,8 @@ class MapPage extends StatelessWidget {
                                         child: AnimatedIconButton(
                                           selectedIcon: Icons.location_off,
                                           unselectedIcon: Icons.location_on,
-                                          selectedColor: kInk,
-                                          unselectedColor: kInk,
+                                          selectedColor: context.tokens.ink,
+                                          unselectedColor: context.tokens.ink,
                                           selected: _flutterMapController
                                               .userLocation
                                               .isLocationShowing
@@ -336,8 +337,8 @@ class MapPage extends StatelessWidget {
                       icon: Icons.chevron_left,
                       tooltip:
                           MaterialLocalizations.of(context).backButtonTooltip,
-                      backgroundColor:
-                          const Color(0xff221d17).withValues(alpha: 0.8),
+                      backgroundColor: t.floating,
+                      borderSide: t.hairline.top,
                       onPressed: () {
                         Get.back(closeOverlays: true);
                       },
@@ -348,8 +349,10 @@ class MapPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 10),
                       decoration: BoxDecoration(
-                        color: const Color(0xff221d17).withValues(alpha: 0.8),
+                        color: t.floating,
                         borderRadius: BorderRadius.circular(50),
+                        border: t.hairline,
+                        boxShadow: t.floatingShadow,
                       ),
                       child: Obx(() {
                         final canAdd = _flutterMapController.routes.length <
@@ -382,14 +385,14 @@ class MapPage extends StatelessWidget {
                                 child: Container(
                                   width: 25,
                                   height: 25,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: Color(0xff3a322a),
+                                    color: t.lineStrong,
                                   ),
-                                  child: const Icon(
+                                  child: Icon(
                                     Icons.add,
                                     size: 20,
-                                    color: Colors.white,
+                                    color: t.ink,
                                   ),
                                 ),
                               ),

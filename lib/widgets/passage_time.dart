@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/models/gtt/stoptime.dart';
 import 'package:torino_mobility/resources/extensions/date_time.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
@@ -14,13 +15,14 @@ class PassageTime extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: switch ((stoptime.realtime, isSelected)) {
-          (true, true) => Colors.green.withValues(alpha: 0.8),
-          (true, false) => Colors.green.withValues(alpha: 0.4),
-          (false, _) => Colors.grey.withValues(alpha: 0.2),
+          (true, true) => t.good,
+          (true, false) => t.good.withValues(alpha: 0.22),
+          (false, _) => t.inkDim.withValues(alpha: 0.18),
         },
         borderRadius: BorderRadius.circular(20),
       ),
@@ -30,13 +32,13 @@ class PassageTime extends StatelessWidget {
               text: stoptime.realtimeDeparture.relativeTime(false),
               style: Fonts.subtitle(
                 fontSize: 12,
-                fontWeight: FontWeight.w500,
+                fontWeight:
+                    stoptime.realtime ? FontWeight.w700 : FontWeight.w400,
                 color: switch ((stoptime.realtime, isSelected)) {
-                  (true, true) => const Color(0xff1a1611),
-                  (true, false) =>
-                    const Color(0xff3fff7a) /* .withValues(alpha: 0.8) */,
-                  (false, true) => const Color(0xff8a8273),
-                  (false, false) => const Color(0xff8a8273),
+                  (true, true) => t.bg,
+                  (true, false) => t.good /* .withValues(alpha: 0.8) */,
+                  (false, true) => t.inkDim,
+                  (false, false) => t.inkDim,
                 },
               ),
               children: [
@@ -45,13 +47,13 @@ class PassageTime extends StatelessWidget {
                     text: 'min',
                     style: Fonts.subtitle(
                       fontSize: 10,
-                      fontWeight: FontWeight.w400,
+                      fontWeight:
+                          stoptime.realtime ? FontWeight.w600 : FontWeight.w400,
                       color: switch ((stoptime.realtime, isSelected)) {
-                        (true, true) => const Color(0xff1a1611),
-                        (true, false) =>
-                          const Color(0xff3fff7a) /* .withValues(alpha: 0.8) */,
-                        (false, true) => const Color(0xff8a8273),
-                        (false, false) => const Color(0xff8a8273),
+                        (true, true) => t.bg,
+                        (true, false) => t.good /* .withValues(alpha: 0.8) */,
+                        (false, true) => t.inkDim,
+                        (false, false) => t.inkDim,
                       },
                     ),
                   )
@@ -63,13 +65,13 @@ class PassageTime extends StatelessWidget {
           fontSize: 12,
           fontWeight: FontWeight.w500,
           color: switch ((stoptime.realtime, isSelected)) {
-            (true, true) => const Color(0xff1a1611),
+            (true, true) => t.bg,
             (true, false) =>
-              const Color(0xff3fff7a) /* .withValues(alpha: 0.8) */,
-            (false, true) => const Color(0xff8a8273),
-            (false, false) => const Color(0xff8a8273),
+              t.good /* .withValues(alpha: 0.8) */,
+            (false, true) => t.inkMute,
+            (false, false) => t.inkMute,
           },
-          //isSelected ? const Color(0xff1a1611) : const Color(0xff8a8273),
+          //isSelected ? t.bg : t.inkMute,
         ),
       ), */
     );

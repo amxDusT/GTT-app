@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:torino_mobility/models/smart_card/smart_card.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
-import 'package:torino_mobility/widgets/settings/settings_kit.dart';
 
 class CardInfoPage extends StatelessWidget {
   final SmartCard smartCard;
@@ -11,8 +11,7 @@ class CardInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final t = SettingsTokens.of(dark);
+    final t = context.tokens;
     final active = smartCard.allContracts.where((c) => !c.isExpired).length;
     return Scaffold(
       backgroundColor: t.bg,
@@ -42,7 +41,6 @@ class CardInfoPage extends StatelessWidget {
                   const SizedBox(width: 12),
                   _badge(
                     t,
-                    dark,
                     color: t.good,
                     icon: Icons.check_rounded,
                     label: 'tessera letta'.hc,
@@ -130,7 +128,7 @@ class CardInfoPage extends StatelessWidget {
             for (final contract in smartCard.allContracts)
               Padding(
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                child: _contractCard(t, dark, contract),
+                child: _contractCard(t, contract),
               ),
           ],
         ),
@@ -138,7 +136,7 @@ class CardInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _infoCard(SettingsTokens t, List<List<String>> rows) {
+  Widget _infoCard(AppTokens t, List<List<String>> rows) {
     return Container(
       decoration: BoxDecoration(
         color: t.bgRaised,
@@ -185,13 +183,12 @@ class CardInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _contractCard(SettingsTokens t, bool dark, Contract contract) {
+  Widget _contractCard(AppTokens t, Contract contract) {
     final bool isActive = !contract.isExpired;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color:
-            isActive ? t.good.withValues(alpha: dark ? 0.11 : 0.08) : t.bgInset,
+        color: isActive ? t.soft(t.good, light: 0.08, dark: 0.11) : t.bgInset,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isActive ? t.good.withValues(alpha: 0.3) : t.line,
@@ -216,7 +213,7 @@ class CardInfoPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              _statusPill(t, dark, isActive),
+              _statusPill(t, isActive),
             ],
           ),
           const SizedBox(height: 14),
@@ -239,7 +236,7 @@ class CardInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _dateField(SettingsTokens t, String label, String value) {
+  Widget _dateField(AppTokens t, String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -261,10 +258,9 @@ class CardInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _statusPill(SettingsTokens t, bool dark, bool isActive) {
-    final Color bg =
-        isActive ? t.good : t.bad.withValues(alpha: dark ? 0.13 : 0.09);
-    final Color fg = isActive ? (dark ? t.bg : Colors.white) : t.bad;
+  Widget _statusPill(AppTokens t, bool isActive) {
+    final Color bg = isActive ? t.good : t.soft(t.bad, light: 0.09, dark: 0.13);
+    final Color fg = isActive ? t.onAccent : t.bad;
     return Container(
       padding: const EdgeInsets.fromLTRB(8, 5, 10, 5),
       decoration: BoxDecoration(
@@ -292,8 +288,7 @@ class CardInfoPage extends StatelessWidget {
   }
 
   Widget _badge(
-    SettingsTokens t,
-    bool dark, {
+    AppTokens t, {
     required Color color,
     required IconData icon,
     required String label,
@@ -301,7 +296,7 @@ class CardInfoPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(9, 6, 11, 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: dark ? 0.13 : 0.11),
+        color: t.soft(color),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Row(

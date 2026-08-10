@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:torino_mobility/controllers/home_controller.dart';
-import 'package:torino_mobility/controllers/settings_controller.dart';
 import 'package:torino_mobility/models/gtt/favorite_stop.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/utils/color_utils.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:torino_mobility/resources/config/router.dart' as r;
 import 'package:get/get.dart';
 
-class HomeFavCard extends GetView<SettingsController> {
+class HomeFavCard extends StatelessWidget {
   const HomeFavCard({
     super.key,
     required this.fermata,
@@ -25,6 +24,9 @@ class HomeFavCard extends GetView<SettingsController> {
   @override
   Widget build(BuildContext context) {
     final GlobalKey iconKey = GlobalObjectKey('fav_icon_${fermata.code}');
+    final tokens = context.tokens;
+    final cardColor = tokens.tint(fermata.color).withValues(alpha: 0.9);
+    final onCard = tokens.onTint(fermata.color);
     return ReorderableDelayedDragStartListener(
       enabled: true,
       index: homeController.fermate.indexOf(fermata),
@@ -32,10 +34,7 @@ class HomeFavCard extends GetView<SettingsController> {
         margin: const EdgeInsets.only(bottom: 12),
         width: double.maxFinite,
         decoration: BoxDecoration(
-          color: (controller.isDarkMode.isTrue
-                  ? Utils.darken(fermata.color, 30)
-                  : Utils.lighten(fermata.color))
-              .withValues(alpha: 0.9),
+          color: cardColor,
           borderRadius: const BorderRadius.all(Radius.circular(22)),
         ),
         //padding: const EdgeInsets.all(8),
@@ -47,10 +46,7 @@ class HomeFavCard extends GetView<SettingsController> {
               flightShuttleBuilder: ((flightContext, animation, flightDirection,
                       fromHeroContext, toHeroContext) =>
                   Material(
-                    color: (controller.isDarkMode.isTrue
-                            ? Utils.darken(fermata.color, 30)
-                            : Utils.lighten(fermata.color))
-                        .withValues(alpha: 0.9),
+                    color: cardColor,
                     borderRadius: const BorderRadius.all(
                       Radius.circular(22),
                     ),
@@ -76,12 +72,12 @@ class HomeFavCard extends GetView<SettingsController> {
                               horizontal: 6,
                               vertical: 2,
                             ),
-                            decoration: const BoxDecoration(
+                            decoration: BoxDecoration(
                               shape: BoxShape.rectangle,
-                              borderRadius: BorderRadius.all(
+                              borderRadius: const BorderRadius.all(
                                 Radius.circular(4),
                               ),
-                              color: Colors.white,
+                              color: tokens.bg,
                             ),
                             child: Text(
                               '#${fermata.code}',
@@ -89,7 +85,7 @@ class HomeFavCard extends GetView<SettingsController> {
                               style: Fonts.subtitle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: tokens.ink,
                               ),
                             ),
                           ),
@@ -104,7 +100,7 @@ class HomeFavCard extends GetView<SettingsController> {
                                   style: Fonts.title(
                                     fontSize: 26,
                                     fontWeight: FontWeight.w600,
-                                    color: Colors.white,
+                                    color: onCard,
                                   ),
                                 ),
                                 Padding(
@@ -117,7 +113,7 @@ class HomeFavCard extends GetView<SettingsController> {
                                     style: Fonts.subtitle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w400,
-                                      color: Colors.white70,
+                                      color: onCard.withValues(alpha: 0.75),
                                     ),
                                   ),
                                 ),
@@ -133,9 +129,9 @@ class HomeFavCard extends GetView<SettingsController> {
                               padding: EdgeInsets.zero,
                               visualDensity: VisualDensity.compact,
                               onPressed: () => {},
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.more_horiz,
-                                color: Colors.white,
+                                color: onCard,
                               ),
                             ),
                           ),
@@ -158,6 +154,10 @@ class HomeFavCard extends GetView<SettingsController> {
                                 itemBuilder: (context, index) {
                                   final route = favoriteRoutes![index]
                                       .replaceAll(' ', '');
+                                  final chipFill = index < maxFavoriteRoutes
+                                      ? tokens.tint(ColorUtils.indexColor(
+                                          int.tryParse(route) ?? 0))
+                                      : tokens.inkMute.withValues(alpha: 0.8);
 
                                   return Container(
                                     alignment: Alignment.center,
@@ -169,16 +169,10 @@ class HomeFavCard extends GetView<SettingsController> {
                                         Radius.circular(4),
                                       ),
                                       border: Border.all(
-                                        color: Colors.grey,
+                                        color: tokens.line,
                                         width: .2,
                                       ),
-                                      color: index < maxFavoriteRoutes
-                                          ? ColorUtils.normalize(
-                                              ColorUtils.indexColor(
-                                                  int.tryParse(route) ?? 0),
-                                              dark:
-                                                  controller.isDarkMode.isTrue)
-                                          : Colors.grey.withValues(alpha: 0.8),
+                                      color: chipFill,
                                     ),
                                     child: FittedBox(
                                       child: Text(
@@ -190,7 +184,7 @@ class HomeFavCard extends GetView<SettingsController> {
                                         style: Fonts.subtitle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.white,
+                                          color: tokens.onColor(chipFill),
                                         ),
                                       ),
                                     ),

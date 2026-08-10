@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
       },
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: Storage.instance.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      themeMode: Storage.instance.themeMode,
     );
   }
 }

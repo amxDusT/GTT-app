@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:get/get.dart';
 import 'package:torino_mobility/models/gtt/route.dart';
 import 'package:torino_mobility/resources/globals.dart';
@@ -17,6 +18,7 @@ class DisplayHours extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     if (vehicle.stoptimes.isEmpty) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -28,10 +30,7 @@ class DisplayHours extends StatelessWidget {
               child: Text(
                 'Non ci sono passaggi',
                 style: Get.textTheme.labelMedium!.copyWith(
-                    letterSpacing: 1.5,
-                    color: isSelected
-                        ? const Color(0xff1a1611)
-                        : const Color(0xff8a8273)),
+                    letterSpacing: 1.5, color: isSelected ? t.bg : t.inkMute),
               ),
             ),
           ),

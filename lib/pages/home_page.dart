@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/controllers/search/home_search_controller.dart';
@@ -20,6 +21,7 @@ class HomePage extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Scaffold(
       key: controller.scaffoldKey,
       body: Obx(
@@ -34,9 +36,9 @@ class HomePage extends GetView<HomeController> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Color(0xffff7a3f),
+                            color: t.accent,
                           ),
                           height: 5,
                           width: 5,
@@ -49,7 +51,7 @@ class HomePage extends GetView<HomeController> {
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
                             height: .9,
-                            color: const Color(0xff6e6555),
+                            color: t.inkMute,
                           ),
                         ),
                       ],
@@ -60,7 +62,7 @@ class HomePage extends GetView<HomeController> {
                       IconButton(
                         icon: const Icon(Icons.settings_outlined),
                         style: IconButton.styleFrom(
-                          backgroundColor: const Color(0xff221d17),
+                          backgroundColor: t.bgRaised,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
                             side: Divider.createBorderSide(
@@ -122,8 +124,8 @@ class HomePage extends GetView<HomeController> {
                               color: Colors.transparent,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                side: const BorderSide(
-                                  color: Colors.grey,
+                                side: BorderSide(
+                                  color: t.lineStrong,
                                   width: 1.5,
                                 ),
                               ),

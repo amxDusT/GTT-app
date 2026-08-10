@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/intro/intro_controller.dart';
 import 'package:torino_mobility/l10n/localization_service.dart';
 import 'package:torino_mobility/widgets/intro/back_forward_button.dart';
@@ -119,7 +120,7 @@ class IntroDot extends StatelessWidget {
       width: 10,
       height: 10,
       decoration: BoxDecoration(
-        color: isSelected ? Colors.black : Colors.grey,
+        color: isSelected ? context.tokens.ink : context.tokens.inkMute,
         borderRadius: BorderRadius.circular(5),
       ),
     );

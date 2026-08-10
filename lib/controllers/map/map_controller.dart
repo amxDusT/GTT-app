@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
+import 'package:torino_mobility/resources/utils/color_utils.dart';
 import 'package:torino_mobility/controllers/app_status_controller.dart';
 import 'package:torino_mobility/controllers/map/map_animation.dart';
 import 'package:torino_mobility/controllers/map/map_location.dart';
@@ -155,7 +156,7 @@ class MapPageController extends GetxController
 
   Color polylineColorFor(gtt.RouteWithDetails route) {
     if (routes.length == 1) return Colors.red;
-    return Utils.lighten(
+    return ColorUtils.lighten(
       colors[(routeIndex[route.gtfsId] ?? 0) % colors.length],
       20,
     );
@@ -475,7 +476,7 @@ class MapPageController extends GetxController
             mqttData: payload,
             color: routes.length == 1
                 ? null
-                : Utils.darken(
+                : ColorUtils.darken(
                     colors[(routeIndex[payload.gtfsId] ?? 0) % colors.length],
                     30),
             internalColor: routes[payload.gtfsId]?.type == 0 &&

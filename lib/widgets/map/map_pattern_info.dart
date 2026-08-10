@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/models/gtt/pattern.dart';
@@ -41,6 +42,7 @@ class _MapPatternInfoState extends State<MapPatternInfo> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return DraggableScrollableSheet(
       maxChildSize: .9,
       initialChildSize: .9,
@@ -54,7 +56,7 @@ class _MapPatternInfoState extends State<MapPatternInfo> {
               expandedHeight: _kExpandedAppBarHeight,
               automaticallyImplyLeading: false,
               scrolledUnderElevation: 0,
-              backgroundColor: const Color(0xff221d17),
+              backgroundColor: t.bgRaised,
               leadingWidth: 70,
               leading: Padding(
                   padding: const EdgeInsets.all(4).copyWith(left: 16),
@@ -93,7 +95,7 @@ class _MapPatternInfoState extends State<MapPatternInfo> {
                           style: Fonts.subtitle(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xff8a8273),
+                            color: t.inkMute,
                           ),
                         ),
                         TextSpan(
@@ -101,7 +103,7 @@ class _MapPatternInfoState extends State<MapPatternInfo> {
                           style: Fonts.subtitle(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xff8a8273),
+                            color: t.inkMute,
                           ),
                         ),
                         TextSpan(
@@ -109,7 +111,7 @@ class _MapPatternInfoState extends State<MapPatternInfo> {
                           style: Fonts.subtitle(
                             fontSize: 10,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xff8a8273),
+                            color: t.inkMute,
                           ),
                         ),
                       ],
@@ -124,7 +126,7 @@ class _MapPatternInfoState extends State<MapPatternInfo> {
                   child: FloatingNavPill(
                     showAllLabels: true,
                     expand: true,
-                    backgroundColor: Colors.black,
+                    backgroundColor: t.bgInset,
                     currentIndex: _page ?? 0,
                     onChanged: (i) => setState(() => _page = i),
                     items: [
@@ -203,6 +205,7 @@ class PatternListPerDirection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return ListView.separated(
       shrinkWrap: true,
       separatorBuilder: (context, index) => Spacing.vGap8,
@@ -243,7 +246,7 @@ class PatternListPerDirection extends StatelessWidget {
                       style: Fonts.subtitle(
                         fontSize: 10,
                         fontWeight: FontWeight.w400,
-                        color: const Color(0xff8a8273),
+                        color: t.inkMute,
                       ),
                     ),
                     TextSpan(
@@ -251,7 +254,7 @@ class PatternListPerDirection extends StatelessWidget {
                       style: Fonts.subtitle(
                         fontSize: 10,
                         fontWeight: FontWeight.w400,
-                        color: const Color(0xff8a8273),
+                        color: t.inkMute,
                       ),
                     ),
                     TextSpan(
@@ -259,7 +262,7 @@ class PatternListPerDirection extends StatelessWidget {
                       style: Fonts.subtitle(
                         fontSize: 10,
                         fontWeight: FontWeight.w400,
-                        color: const Color(0xff8a8273),
+                        color: t.inkMute,
                       ),
                     ),
                   ],
@@ -269,18 +272,18 @@ class PatternListPerDirection extends StatelessWidget {
           }),
           collapsedShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(
-              color: Color(0xff8a8273),
+            side: BorderSide(
+              color: t.inkMute,
             ),
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
-            side: const BorderSide(
-              color: Color(0xff8a8273),
+            side: BorderSide(
+              color: t.inkMute,
             ),
           ),
-          collapsedBackgroundColor: const Color(0xff1a1611),
-          backgroundColor: const Color(0xff1a1611),
+          collapsedBackgroundColor: t.bg,
+          backgroundColor: t.bg,
           childrenPadding:
               const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),

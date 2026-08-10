@@ -1,17 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/widgets/map/pulsing_dot.dart';
 
-const _bgInset = Color(0xff13100c);
-const _ink = Color(0xfff3ede0);
-const _inkDim = Color(0xffa89e89);
 // ignore: unused_element
-const _inkMute = Color(0xff6e6555);
-const _good = Color(0xff9bd14a);
-const _bad = Color(0xffff6b6b);
 
 /// "Live · adesso" / "Aggiornato Xs fa"
 class UpdatePill extends StatefulWidget {
@@ -42,6 +37,7 @@ class _UpdatePillState extends State<UpdatePill> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final seconds = DateTime.now()
         .difference(widget.lastUpdate)
         .inSeconds
@@ -53,23 +49,23 @@ class _UpdatePillState extends State<UpdatePill> {
     final bool pulse;
     final bool stale;
     if (seconds < 5) {
-      dotColor = _good;
+      dotColor = t.good;
       text = 'Live · adesso'.hc;
-      textColor = _ink;
+      textColor = t.ink;
       pulse = true;
       stale = false;
     } else if (seconds < 60) {
       final val = (seconds / 5).toInt();
 
-      dotColor = _good;
+      dotColor = t.good;
       text = 'Aggiornato ${val * 5}s fa'.hc;
-      textColor = _inkDim;
+      textColor = t.inkDim;
       pulse = true;
       stale = false;
     } else {
-      dotColor = _bad;
+      dotColor = t.bad;
       text = 'Aggiornato ${seconds ~/ 60} min fa'.hc;
-      textColor = _bad;
+      textColor = t.bad;
       pulse = false;
       stale = true;
     }
@@ -77,8 +73,10 @@ class _UpdatePillState extends State<UpdatePill> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
       decoration: BoxDecoration(
-        color: stale ? _bad.withValues(alpha: .09) : _bgInset,
+        color: stale ? t.bad.withValues(alpha: .09) : t.floating,
         borderRadius: BorderRadius.circular(100),
+        border: t.hairline,
+        boxShadow: t.floatingShadow,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

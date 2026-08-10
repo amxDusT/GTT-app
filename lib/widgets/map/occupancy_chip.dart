@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
-
-const _bgInset = Color(0xff13100c);
-const _good = Color(0xff9bd14a);
-const _bad = Color(0xffff6b6b);
-const _lineBorder = Color(0xff332c22);
-const _inkDim = Color(0xffa89e89);
 
 class OccupancyChip extends StatelessWidget {
   const OccupancyChip({super.key, required this.isFull});
@@ -14,14 +9,15 @@ class OccupancyChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final barColor = isFull ? _bad : _good;
+    final t = context.tokens;
+    final barColor = isFull ? t.bad : t.good;
     final activeBars = isFull ? 3 : 1;
     const barHeights = [5.0, 8.0, 11.0];
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
-      decoration: const BoxDecoration(
-        color: _bgInset,
-        borderRadius: BorderRadius.all(Radius.circular(100)),
+      decoration: BoxDecoration(
+        color: t.bgInset,
+        borderRadius: const BorderRadius.all(Radius.circular(100)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -37,7 +33,7 @@ class OccupancyChip extends StatelessWidget {
                   height: barHeights[i],
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(2),
-                    color: i < activeBars ? barColor : _lineBorder,
+                    color: i < activeBars ? barColor : t.line,
                   ),
                 ),
             ],
@@ -47,7 +43,7 @@ class OccupancyChip extends StatelessWidget {
             style: Fonts.title(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: _inkDim,
+              color: t.inkDim,
             ),
           ),
         ],

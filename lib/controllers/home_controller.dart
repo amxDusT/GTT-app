@@ -5,6 +5,7 @@ import 'package:torino_mobility/models/gtt/favorite_stop.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:torino_mobility/resources/analytics.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/database.dart';
 import 'package:torino_mobility/resources/globals.dart';
 import 'package:torino_mobility/resources/storage.dart';
@@ -129,7 +130,7 @@ class HomeController extends GetxController {
     showMenu(
       context: anchorContext,
       position: position,
-      color: const Color(0xff241e18).withValues(alpha: 0.95),
+      color: anchorContext.tokens.bgRaised.withValues(alpha: 0.95),
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(22),
           side: const BorderSide(color: Colors.grey, width: .2)),
@@ -171,6 +172,7 @@ class HomeController extends GetxController {
           ...ColorUtils.defaultColors,
         ],
         layoutBuilder: (context, colors, child) {
+          final pickerColor = context.tokens.tint(lastColor);
           return Flexible(
             child: SizedBox(
               width: Get.size.width * 0.8,
@@ -186,15 +188,11 @@ class HomeController extends GetxController {
                     margin: const EdgeInsets.all(7),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(50),
-                      //border: Border.all(color: Utils.darken(lastColor)),
-                      color: Storage.instance.isDarkMode
-                          ? Utils.darken(lastColor, 30)
-                          : Utils.lighten(lastColor),
+                      //border: Border.all(color: ColorUtils.darken(lastColor)),
+                      color: pickerColor,
                       boxShadow: [
                         BoxShadow(
-                          color: Storage.instance.isDarkMode
-                              ? Utils.darken(lastColor, 30)
-                              : Utils.lighten(lastColor),
+                          color: pickerColor,
                           offset: const Offset(1, 2),
                           blurRadius: 5,
                         ),
@@ -223,9 +221,10 @@ class HomeController extends GetxController {
                         borderRadius: BorderRadius.circular(50),
                         child: Icon(
                           Icons.add,
-                          color: useWhiteForeground(Utils.lighten(lastColor))
-                              ? Colors.white
-                              : Colors.black,
+                          color:
+                              useWhiteForeground(ColorUtils.lighten(lastColor))
+                                  ? Colors.white
+                                  : Colors.black,
                         ),
                       ),
                     ),
@@ -262,8 +261,9 @@ class HomeController extends GetxController {
     await showDialog(
         context: context,
         builder: (context) {
+          final t = context.tokens;
           return AlertDialog(
-            backgroundColor: const Color(0xff241e18).withValues(alpha: .9),
+            backgroundColor: t.bgRaised.withValues(alpha: .9),
             title: Text('DESCRIZIONE'.hc),
             content: TextField(
               controller: descriptionController.value,
@@ -281,13 +281,13 @@ class HomeController extends GetxController {
                 onPressed: () => Get.back(),
                 child: Text(l10n.cancel.capitalizeFirst!,
                     style: Fonts.title(
-                        color: const Color(0xff6e6555),
+                        color: t.inkMute,
                         fontWeight: FontWeight.w400,
                         height: .9)),
               ),
               FilledButton(
                 style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xfff3ede0),
+                  backgroundColor: t.ink,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
                   ),

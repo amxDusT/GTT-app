@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 
 class InfoIconButton extends StatelessWidget {
   const InfoIconButton({
@@ -7,7 +8,8 @@ class InfoIconButton extends StatelessWidget {
     required this.tooltip,
     this.iconSize = 20,
     this.color,
-    this.backgroundColor = const Color.fromARGB(77, 82, 68, 70),
+    this.backgroundColor,
+    this.borderSide,
     super.key,
   });
 
@@ -16,15 +18,23 @@ class InfoIconButton extends StatelessWidget {
   final String tooltip;
   final double iconSize;
   final Color? color;
-  final Color backgroundColor;
+
+  /// Defaults to a faint scrim of [AppTokens.ink], which reads on both a dark
+  /// and a pale surface (a fixed dark scrim only worked in dark mode).
+  final Color? backgroundColor;
+
+  /// Set when the button floats over the map, so it doesn't blend into it.
+  final BorderSide? borderSide;
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return IconButton(
       style: IconButton.styleFrom(
-        backgroundColor: backgroundColor,
+        backgroundColor: backgroundColor ?? t.ink.withValues(alpha: 0.10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
+          side: borderSide ?? BorderSide.none,
         ),
       ),
       onPressed: onPressed,
@@ -33,7 +43,7 @@ class InfoIconButton extends StatelessWidget {
       icon: Icon(
         icon,
         size: iconSize,
-        color: color,
+        color: color ?? t.ink,
       ),
     );
   }

@@ -1,71 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 
-class SettingsTokens {
-  final Color bg;
-  final Color bgRaised;
-  final Color bgInset;
-  final Color ink;
-  final Color inkDim;
-  final Color inkMute;
-  final Color line;
-  final Color lineStrong;
-  final Color accent;
-  final Color good;
-  final Color bad;
-
-  const SettingsTokens({
-    required this.bg,
-    required this.bgRaised,
-    required this.bgInset,
-    required this.ink,
-    required this.inkDim,
-    required this.inkMute,
-    required this.line,
-    required this.lineStrong,
-    required this.accent,
-    required this.good,
-    required this.bad,
-  });
-
-  factory SettingsTokens.of(bool dark) => dark
-      ? const SettingsTokens(
-          bg: Color(0xff1a1611),
-          bgRaised: Color(0xff221d17),
-          bgInset: Color(0xff13100c),
-          ink: Color(0xfff3ede0),
-          inkDim: Color(0xffa89e89),
-          inkMute: Color(0xff6e6555),
-          line: Color(0xff332c22),
-          lineStrong: Color(0xff473e30),
-          accent: Color(0xffff7a3f),
-          good: Color(0xff9bd14a),
-          bad: Color(0xffff6b6b),
-        )
-      : const SettingsTokens(
-          bg: Color(0xfff5f1e8),
-          bgRaised: Color(0xfffbf8f0),
-          bgInset: Color(0xffece6d8),
-          ink: Color(0xff1a1611),
-          inkDim: Color(0xff5a5447),
-          inkMute: Color(0xff8a8273),
-          line: Color(0xffe2dccb),
-          lineStrong: Color(0xffc8bfa8),
-          accent: Color(0xffff5a1f),
-          good: Color(0xff3a8c2c),
-          bad: Color(0xffc42b1c),
-        );
-}
-
 class SettingsHeader extends StatelessWidget {
-  final SettingsTokens tokens;
   final String eyebrow;
   final String title;
   final VoidCallback? onBack;
 
   const SettingsHeader({
     super.key,
-    required this.tokens,
     required this.eyebrow,
     required this.title,
     this.onBack,
@@ -73,6 +16,7 @@ class SettingsHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
       child: Row(
@@ -128,12 +72,10 @@ class SettingsHeader extends StatelessWidget {
 }
 
 class SettingsSectionLabel extends StatelessWidget {
-  final SettingsTokens tokens;
   final String label;
 
   const SettingsSectionLabel({
     super.key,
-    required this.tokens,
     required this.label,
   });
 
@@ -146,7 +88,7 @@ class SettingsSectionLabel extends StatelessWidget {
         style: Fonts.subtitle(
           fontSize: 10,
           letterSpacing: 1.8,
-          color: tokens.inkMute,
+          color: context.tokens.inkMute,
         ),
       ),
     );
@@ -154,17 +96,16 @@ class SettingsSectionLabel extends StatelessWidget {
 }
 
 class SettingsCard extends StatelessWidget {
-  final SettingsTokens tokens;
   final List<Widget> children;
 
   const SettingsCard({
     super.key,
-    required this.tokens,
     required this.children,
   });
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
@@ -184,30 +125,27 @@ class SettingsCard extends StatelessWidget {
 }
 
 class SettingsDivider extends StatelessWidget {
-  final SettingsTokens tokens;
-
-  const SettingsDivider({super.key, required this.tokens});
+  const SettingsDivider({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(height: 1, color: tokens.line);
+    return Container(height: 1, color: context.tokens.line);
   }
 }
 
 class SettingsIconChip extends StatelessWidget {
-  final SettingsTokens tokens;
   final IconData icon;
   final bool danger;
 
   const SettingsIconChip({
     super.key,
-    required this.tokens,
     required this.icon,
     this.danger = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
     return Container(
       width: 36,
       height: 36,
@@ -222,7 +160,6 @@ class SettingsIconChip extends StatelessWidget {
 }
 
 class SettingsRow extends StatelessWidget {
-  final SettingsTokens tokens;
   final IconData icon;
   final String title;
   final String? subtitle;
@@ -232,7 +169,6 @@ class SettingsRow extends StatelessWidget {
 
   const SettingsRow({
     super.key,
-    required this.tokens,
     required this.icon,
     required this.title,
     this.subtitle,
@@ -243,6 +179,7 @@ class SettingsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
     final Color textColor = danger ? tokens.bad : tokens.ink;
     return InkWell(
       onTap: onTap,
@@ -250,7 +187,7 @@ class SettingsRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         child: Row(
           children: [
-            SettingsIconChip(tokens: tokens, icon: icon, danger: danger),
+            SettingsIconChip(icon: icon, danger: danger),
             const SizedBox(width: 14),
             Expanded(
               child: Column(
@@ -286,20 +223,100 @@ class SettingsRow extends StatelessWidget {
   }
 }
 
-class SettingsSwitch extends StatelessWidget {
-  final SettingsTokens tokens;
-  final bool value;
-  final ValueChanged<bool> onChanged;
+class SettingsSegmentOption<T> {
+  final T value;
+  final IconData icon;
+  final String label;
 
-  const SettingsSwitch({
+  const SettingsSegmentOption({
+    required this.value,
+    required this.icon,
+    required this.label,
+  });
+}
+
+/// Full-width picker for settings with more than two states, where a
+/// [SettingsSwitch] can't express the choice.
+class SettingsSegmented<T> extends StatelessWidget {
+  final List<SettingsSegmentOption<T>> options;
+  final T value;
+  final ValueChanged<T> onChanged;
+
+  const SettingsSegmented({
     super.key,
-    required this.tokens,
+    required this.options,
     required this.value,
     required this.onChanged,
   });
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
+    return Container(
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: tokens.bgInset,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: options.map((option) {
+          final selected = option.value == value;
+          final Color contentColor =
+              selected ? tokens.onAccent : tokens.inkDim;
+          return Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => onChanged(option.value),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: selected ? tokens.accent : Colors.transparent,
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(option.icon, size: 15, color: contentColor),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        option.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Fonts.title(
+                          fontSize: 12.5,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w500,
+                          color: contentColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class SettingsSwitch extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const SettingsSwitch({
+    super.key,
+    required this.value,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final tokens = context.tokens;
     return GestureDetector(
       onTap: () => onChanged(!value),
       child: AnimatedContainer(
@@ -319,7 +336,7 @@ class SettingsSwitch extends StatelessWidget {
             width: 20,
             height: 20,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: tokens.bgRaised,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(

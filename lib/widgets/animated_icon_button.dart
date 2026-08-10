@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
-
-const kBgInset = Color(0xff13100c);
-const kInk = Color(0xfff3ede0);
-const kLineBorder = Color(0xff332c22);
-const kAccent = Color(0xffff7a3f);
 
 class AnimatedIconButton extends StatefulWidget {
   const AnimatedIconButton({
@@ -94,7 +90,8 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
   }
 
   Widget _buildPill(String label) {
-    final selectedColor = widget.selectedColor ?? kAccent;
+    final t = context.tokens;
+    final selectedColor = widget.selectedColor ?? t.accent;
     return TextButton(
       onPressed: widget.onPressed == null ? null : _handlePressed,
       style: TextButton.styleFrom(
@@ -102,12 +99,12 @@ class _AnimatedIconButtonState extends State<AnimatedIconButton>
         minimumSize: const Size(0, 40),
         visualDensity: widget.visualDensity,
         backgroundColor:
-            widget.selected ? selectedColor.withValues(alpha: .11) : kBgInset,
+            widget.selected ? selectedColor.withValues(alpha: .11) : t.bgInset,
         foregroundColor:
-            widget.selected ? selectedColor : widget.unselectedColor ?? kInk,
+            widget.selected ? selectedColor : widget.unselectedColor ?? t.ink,
         shape: StadiumBorder(
           side: BorderSide(
-            color: widget.selected ? selectedColor : kLineBorder,
+            color: widget.selected ? selectedColor : t.line,
           ),
         ),
       ).merge(widget.style),

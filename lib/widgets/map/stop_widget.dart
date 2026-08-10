@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:torino_mobility/controllers/home_controller.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
@@ -47,6 +48,7 @@ class _StopWidgetState extends State<StopWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return GestureDetector(
       onTap: () async {
         Get.find<SearchStopsController>().openInfoPage(widget.marker.fermata);
@@ -67,7 +69,7 @@ class _StopWidgetState extends State<StopWidget> {
                           style: Fonts.subtitle(
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
-                            color: const Color(0xff6e6555),
+                            color: t.inkMute,
                           )),
                       Text(
                         widget.marker.fermata.name,
@@ -100,7 +102,7 @@ class _StopWidgetState extends State<StopWidget> {
                         style: Fonts.subtitle(
                           fontSize: 9,
                           fontWeight: FontWeight.w400,
-                          color: const Color(0xff6e6555),
+                          color: t.inkMute,
                         ),
                       ),
                     )),
@@ -126,7 +128,7 @@ class _StopWidgetState extends State<StopWidget> {
                         selectedIcon: Icons.star,
                         unselectedIcon: Icons.star_outline,
                         selected: isFavorite,
-                        selectedColor: Colors.yellow,
+                        selectedColor: t.warn,
                         selectedLabel: 'Salvato'.hc,
                         unselectedLabel: 'Salva'.hc,
                         onPressed: () {
@@ -146,7 +148,7 @@ class _StopWidgetState extends State<StopWidget> {
                         selectedIcon: Icons.flashlight_on,
                         unselectedIcon: Icons.flashlight_on_outlined,
                         selected: isHighlighted,
-                        selectedColor: Colors.yellow,
+                        selectedColor: t.warn,
                         selectedLabel: 'Evidenziato'.hc,
                         unselectedLabel: 'Evidenzia'.hc,
                         onPressed: () {

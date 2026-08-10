@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:torino_mobility/models/smart_card/chip_paper.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
-import 'package:torino_mobility/widgets/settings/settings_kit.dart';
 
 class TicketInfoPage extends StatelessWidget {
   final ChipPaper ticket;
@@ -11,8 +11,7 @@ class TicketInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = Theme.of(context).brightness == Brightness.dark;
-    final t = SettingsTokens.of(dark);
+    final t = context.tokens;
     final bool valid = !ticket.isExpired;
     final rows = <List<String>>[
       ['Numero'.hc, ticket.cardNumber.toString()],
@@ -55,7 +54,6 @@ class TicketInfoPage extends StatelessWidget {
                   const SizedBox(width: 12),
                   _badge(
                     t,
-                    dark,
                     color: valid ? t.good : t.bad,
                     icon: valid ? Icons.check_rounded : Icons.close_rounded,
                     label: valid ? 'valido'.hc : 'scaduto'.hc,
@@ -117,7 +115,7 @@ class TicketInfoPage extends StatelessWidget {
     );
   }
 
-  Widget _infoCard(SettingsTokens t, List<List<String>> rows) {
+  Widget _infoCard(AppTokens t, List<List<String>> rows) {
     return Container(
       decoration: BoxDecoration(
         color: t.bgRaised,
@@ -165,8 +163,7 @@ class TicketInfoPage extends StatelessWidget {
   }
 
   Widget _badge(
-    SettingsTokens t,
-    bool dark, {
+    AppTokens t, {
     required Color color,
     required IconData icon,
     required String label,
@@ -174,7 +171,7 @@ class TicketInfoPage extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(9, 6, 11, 6),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: dark ? 0.13 : 0.11),
+        color: t.soft(color),
         borderRadius: BorderRadius.circular(100),
       ),
       child: Row(

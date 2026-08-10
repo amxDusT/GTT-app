@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/controllers/route_list_controller.dart';
 import 'package:torino_mobility/models/gtt/route.dart' as gtt;
@@ -49,6 +50,7 @@ class _AddRouteModalState extends State<AddRouteModal> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return DraggableScrollableSheet(
       maxChildSize: .85,
       initialChildSize: .7,
@@ -73,7 +75,7 @@ class _AddRouteModalState extends State<AddRouteModal> {
                       hintText: 'Cerca linea'.hc,
                       hintStyle: Fonts.subtitle(
                         fontSize: 13,
-                        color: const Color(0xff8a8273),
+                        color: t.inkMute,
                       ),
                       prefixIcon: const Icon(Icons.search, size: 20),
                       contentPadding: const EdgeInsets.symmetric(
@@ -91,7 +93,7 @@ class _AddRouteModalState extends State<AddRouteModal> {
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   'Hai raggiunto il numero massimo di linee'.hc,
-                  style: Fonts.subtitle(color: const Color(0xff8a8273)),
+                  style: Fonts.subtitle(color: t.inkMute),
                 ),
               )
             else
@@ -100,7 +102,7 @@ class _AddRouteModalState extends State<AddRouteModal> {
                     ? Center(
                         child: Text(
                           'Nessuna linea da aggiungere'.hc,
-                          style: Fonts.subtitle(color: const Color(0xff8a8273)),
+                          style: Fonts.subtitle(color: t.inkMute),
                         ),
                       )
                     : ListView.separated(
@@ -125,7 +127,7 @@ class _AddRouteModalState extends State<AddRouteModal> {
                                   .hc,
                               style: Fonts.subtitle(
                                 fontSize: 10,
-                                color: const Color(0xff8a8273),
+                                color: t.inkMute,
                               ),
                             ),
                             trailing: const Icon(Icons.add),

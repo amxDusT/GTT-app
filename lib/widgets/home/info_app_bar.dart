@@ -10,7 +10,7 @@ import 'package:torino_mobility/resources/storage.dart';
 import 'package:torino_mobility/resources/utils/extensions.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/widgets/home/info_icon_button.dart';
 import 'package:torino_mobility/widgets/star_icon_button.dart';
 
@@ -129,16 +129,13 @@ class StopSliverAppBar extends StatelessWidget {
   Color _bgColor(BuildContext context, {FavStop? fav}) {
     final theme = Theme.of(context);
     if (fav == null) return theme.colorScheme.inversePrimary;
-    final tinted = theme.brightness == Brightness.dark
-        ? Utils.darken(fav.color, 30)
-        : Utils.lighten(fav.color);
-    return tinted.withValues(alpha: 0.9);
+    return context.tokens.tint(fav.color).withValues(alpha: 0.9);
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final theme = Theme.of(context);
-    final onBg = theme.colorScheme.onSurface;
 
     return SliverAppBar(
       pinned: true,
@@ -174,10 +171,10 @@ class StopSliverAppBar extends StatelessWidget {
               return StarIconButton(
                 onPressed: controller.switchAddDeleteFermata,
                 selected: isFavorite,
-                selectedColor: const Color(0xffff5a1f),
-                unselectedColor: onBg,
+                selectedColor: t.accent,
+                unselectedColor: t.onColor(_bgColor(context, fav: _favStop())),
                 style: IconButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(77, 82, 68, 70),
+                  backgroundColor: t.ink.withValues(alpha: 0.10),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
                   ),
@@ -199,6 +196,7 @@ class StopSliverAppBar extends StatelessWidget {
           return Obx(() {
             final fav = _favStop();
             final bg = _bgColor(context, fav: fav);
+            final onBg = t.onColor(bg.withValues(alpha: 1));
             return AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               decoration: BoxDecoration(
@@ -379,8 +377,7 @@ class StopSliverAppBar extends StatelessWidget {
                                                 .isAfter(DateTime.now()),
                                             isLoading
                                           )) {
-                                            (true, false) =>
-                                              const Color(0xff9bd14a),
+                                            (true, false) => t.good,
                                             (false, false) =>
                                               const Color.fromARGB(
                                                   211, 220, 131, 48),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 
 class PanelDragger extends StatelessWidget {
   const PanelDragger({super.key});
@@ -11,7 +12,7 @@ class PanelDragger extends StatelessWidget {
       height: 5,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: context.tokens.line,
         borderRadius: BorderRadius.circular(3),
       ),
     );

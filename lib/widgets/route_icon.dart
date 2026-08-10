@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:torino_mobility/controllers/settings_controller.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/color_utils.dart';
 
 class RouteIcon extends StatelessWidget {
@@ -28,7 +27,10 @@ class RouteIcon extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final name = routeName.replaceAll(' ', '');
+    final fill =
+        color ?? t.tint(ColorUtils.indexColor(int.tryParse(name) ?? 0));
 
     Widget mainWidget = Skeleton.leaf(
       child: Container(
@@ -38,11 +40,7 @@ class RouteIcon extends StatelessWidget {
         width: size,
         height: size,
         decoration: BoxDecoration(
-          color: color ??
-              ColorUtils.normalize(
-                ColorUtils.indexColor(int.tryParse(name) ?? 0),
-                dark: Get.find<SettingsController>().isDarkMode.isTrue,
-              ),
+          color: fill,
           shape: BoxShape.rectangle,
           borderRadius: BorderRadius.circular(8),
         ),
@@ -50,8 +48,8 @@ class RouteIcon extends StatelessWidget {
           child: Text(
             name,
             maxLines: 1,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: t.onColor(fill),
               fontSize: 20,
             ),
           ),

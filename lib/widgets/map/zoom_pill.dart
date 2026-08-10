@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/widgets/animated_icon_button.dart';
 
 /// A vertical pill-shaped control with a zoom-in button on top and a
@@ -14,11 +15,13 @@ class ZoomPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Container(
       decoration: BoxDecoration(
-        color: kBgInset.withValues(alpha: 0.85),
+        color: t.floating,
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: kLineBorder),
+        border: t.hairline,
+        boxShadow: t.floatingShadow,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -26,20 +29,20 @@ class ZoomPill extends StatelessWidget {
           AnimatedIconButton(
             selectedIcon: Icons.add,
             unselectedIcon: Icons.add,
-            selectedColor: kInk,
-            unselectedColor: kInk,
+            selectedColor: t.ink,
+            unselectedColor: t.ink,
             onPressed: onZoomIn,
           ),
           Container(
             width: 22,
             height: 1,
-            color: kLineBorder,
+            color: t.line,
           ),
           AnimatedIconButton(
             selectedIcon: Icons.remove,
             unselectedIcon: Icons.remove,
-            selectedColor: kInk,
-            unselectedColor: kInk,
+            selectedColor: t.ink,
+            unselectedColor: t.ink,
             onPressed: onZoomOut,
           ),
         ],

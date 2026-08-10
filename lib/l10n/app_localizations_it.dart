@@ -36,7 +36,16 @@ class AppLocalizationsIt extends AppLocalizations {
       'Ecco un breve tutorial per aiutarti a capire come funziona.';
 
   @override
-  String get settingsDarkThemeTitle => 'Tema scuro';
+  String get settingsThemeTitle => 'Tema';
+
+  @override
+  String get settingsThemeSystem => 'Sistema';
+
+  @override
+  String get settingsThemeLight => 'Chiaro';
+
+  @override
+  String get settingsThemeDark => 'Scuro';
 
   @override
   String get settingsShowFavoriteRoutesTitle =>

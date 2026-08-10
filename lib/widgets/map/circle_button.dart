@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:torino_mobility/widgets/animated_icon_button.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 
 class CircleButton extends StatelessWidget {
   final String? tooltip;
@@ -18,20 +18,22 @@ class CircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     assert(icon != null || child != null, 'icon or child must be not null');
     return Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: kBgInset.withValues(alpha: 0.85),
+        color: t.floating,
         shape: BoxShape.circle,
-        border: Border.all(color: kLineBorder),
+        border: t.hairline,
+        boxShadow: t.floatingShadow,
       ),
       child: child ??
           IconButton(
             tooltip: tooltip,
             onPressed: onPressed,
-            color: kInk,
+            color: t.ink,
             icon: icon!,
           ),
     );

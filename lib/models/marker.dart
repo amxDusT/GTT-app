@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/utils/color_utils.dart';
 import 'package:torino_mobility/controllers/map/map_controller.dart';
 import 'package:torino_mobility/models/gtt/stop.dart';
 import 'package:torino_mobility/models/mqtt_data.dart';
 import 'package:torino_mobility/resources/globals.dart';
-import 'package:torino_mobility/resources/utils/utils.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:icon_decoration/icon_decoration.dart';
@@ -53,7 +53,7 @@ class VehicleMarker extends Marker {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: internalColor ??
-                        Utils.lighten(color ?? Colors.blue)
+                        ColorUtils.lighten(color ?? Colors.blue)
                             .withValues(alpha: 0.9),
                   ),
                 ),

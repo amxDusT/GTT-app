@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:torino_mobility/resources/config/app_tokens.dart';
 import 'package:torino_mobility/resources/utils/fonts.dart';
 import 'package:torino_mobility/resources/utils/spacing.dart';
 
@@ -6,7 +7,7 @@ class AppHeader extends StatelessWidget {
   final Widget subtitle;
   final String titleTop;
   final String titleBottom;
-  final Color accentColor;
+  final Color? accentColor;
   final List<Widget> actions;
 
   const AppHeader({
@@ -14,7 +15,7 @@ class AppHeader extends StatelessWidget {
     required this.subtitle,
     required this.titleTop,
     required this.titleBottom,
-    this.accentColor = const Color(0xffff7a3f),
+    this.accentColor,
     this.actions = const [],
   });
 
@@ -46,7 +47,7 @@ class AppHeader extends StatelessWidget {
                     fontSize: 52,
                     fontWeight: FontWeight.w600,
                     height: .9,
-                    color: accentColor,
+                    color: accentColor ?? context.tokens.accent,
                   ),
                 ),
               ],

@@ -20,8 +20,7 @@ class GttToast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool dark = Theme.of(context).brightness == Brightness.dark;
-    final style = ToastStyle.of(tone, dark: dark);
+    final style = ToastStyle.of(context, tone);
     final double topInset = MediaQuery.of(context).padding.top + 16;
 
     return Container(
