@@ -27,50 +27,57 @@ class NavShell extends StatelessWidget {
 
   static final _pages = <Widget>[
     HomePage(),
-    RouteListPage(),
-    NfcPage(),
+    const RouteListPage(),
+    const NfcPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
-    final pages = List<Widget>.generate(
-      _pages.length,
-      (i) => i == homeIndex ? _pages[i] : NavBackInterceptor(child: _pages[i]),
-    );
+    final pages = List<Widget>.generate(_pages.length, (i) => _pages[i]);
     return Scaffold(
-      body: Stack(
-        children: [
-          Obx(() => IndexedStack(
+      body: Obx(() {
+        return NavBackInterceptor(
+          overrideBack: _controller.currentIndex.value != homeIndex,
+          child: Stack(
+            children: [
+              IndexedStack(
                 index: _controller.currentIndex.value,
                 children: pages,
-              )),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 16,
-            child: SafeArea(
-              child: Center(
-                child: Obx(() => FloatingNavPill(
+              ),
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 16,
+                child: SafeArea(
+                  child: Center(
+                    child: FloatingNavPill(
                       items: _items,
                       currentIndex: _controller.currentIndex.value,
                       onChanged: _controller.changeIndex,
-                    )),
+                    ),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      }),
     );
   }
 }
 
 class NavBackInterceptor extends StatelessWidget {
-  const NavBackInterceptor({required this.child, super.key});
+  const NavBackInterceptor({
+    this.overrideBack = true,
+    required this.child,
+    super.key,
+  });
+  final bool overrideBack;
   final Widget child;
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: !overrideBack,
       onPopInvokedWithResult: (bool didPop, _) {
         if (!didPop) NavShell.goTo(NavShell.homeIndex);
       },
